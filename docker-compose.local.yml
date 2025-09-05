@@ -1,0 +1,47 @@
+version: "3.7"
+
+services:
+    mhb:
+        build:
+            context: .
+            dockerfile: DockerfileLocal
+        image: mhb
+        container_name: 'mhb'
+        #restart: always
+        ports:
+            - '8082:80'
+            - '5173:5173'
+        volumes:
+            - '.:/var/www/html'
+        environment:
+            - DB_HOST=db
+            - DB_PORT=3306
+            - DB_USERNAME=bn_myapp
+            - DB_DATABASE=mhb
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - db
+        networks:
+            - laravel
+
+    db:
+        image: docker.io/bitnami/mariadb:10.6
+        container_name: 'mhb_db'
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+            - MARIADB_USER=bn_myapp
+            - MARIADB_DATABASE=mhb
+        ports:
+            - '33006:3306'
+        networks:
+            - laravel
+        volumes:
+            - 'mariadb_data:/bitnami/mariadb'
+
+networks:
+    laravel:
+        driver: bridge
+
+volumes:
+    mariadb_data:
