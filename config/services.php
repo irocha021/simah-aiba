@@ -34,5 +34,9 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    'hidroweb' => [
+        'identifier' => env('HIDROWEB_IDENTIFIER'),
+        'password' => env('HIDROWEB_PASSWORD'),
+        'base_url' => env('HIDROWEB_BASE_URL'),
+    ],
 ];

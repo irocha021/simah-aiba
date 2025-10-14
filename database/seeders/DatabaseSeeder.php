@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DcpFailureCodeSeeder::class,
             DcpStationSeeder::class,
+            HwStationQaImportSeeder::class,
         ]);
     }
 }

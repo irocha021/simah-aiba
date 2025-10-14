@@ -1,0 +1,149 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Models\HwInventoryStation as Model;
+use App\Repositories\Interfaces\HwInventoryStationInterface;
+use App\Repositories\Presenters\PaginationPresenter;
+
+class HwInventoryStationRepository implements HwInventoryStationInterface
+{   
+    protected $model;
+
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+    }
+
+    public function store(array $data)
+    {
+        $this->model->create($data);
+    }
+
+    public function update(int $id, array $data)
+    {   
+        $station = $this->model->where('station_code', $id)->first();
+        $station->update($data);
+    }
+
+    public function getByStationCode(int $stationCode)
+    {
+        $dataDb = $this->model->where('station_code', $stationCode)->first();
+
+        return $dataDb;
+    }
+
+    public function getAll($onlyDisplayInSystem = false)
+    {
+        if ($onlyDisplayInSystem) {
+            $dataDb = $this->model->where('status', 1)->get();
+        } else {
+            $dataDb = $this->model->all();
+        }
+
+        return $dataDb;
+    }
+
+    public function getAllWithArea()
+    {
+        $dataDb = $this->model
+                    ->whereNotNull('file_id_geojson')
+                    ->where('status', 1)
+                    ->get();
+
+        return $dataDb;
+    }
+
+    public function getOperationalStations()
+    {
+        $dataDb = $this->model->where('is_operational', 1)->get();
+
+        return $dataDb;
+    }
+
+    public function paginate(array $options = [], $sort = "id", $order = 'DESC', int $page = 1, int $perPage = 15): PaginationPresenter 
+    {
+        $query = $this->model
+            // SEARCH
+            ->when(!empty($options['search']), function($q) use ($options) {
+                $term = $options['search'];
+                $q->where(function($q2) use ($term) {
+                    $q2->where('station_code', 'ilike', "%{$term}%")
+                    ->orWhere('station_name', 'ilike', "%{$term}%");
+                });
+            })
+            // STATUS
+            ->when(isset($options['status']), function($q) use ($options) {
+                $q->where('status', (bool) $options['status']);
+            })
+            // SHAPEFILE
+            ->when(isset($options['shapefile']), function($q) use ($options) {
+                if ($options['shapefile'] === 'with') {
+                    $q->whereNotNull('file_id_geojson');
+                } elseif ($options['shapefile'] === 'without') {
+                    $q->whereNull('file_id_geojson');
+                }
+            })
+            ->with(['geojson', 'shapefile'])
+            ->orderBy($sort, $order);
+
+        $dataDb = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return new PaginationPresenter($dataDb);
+    }
+
+    public function changeStatus(int $stationCode, array $data)
+    {
+        $station = $this->model->where('station_code', $stationCode)->first();
+        $station->update($data);
+    }
+
+    public function updateFilesId(int $stationCode, array $data)
+    {   
+        $station = $this->model->where('station_code', $stationCode)->first();
+        $station->update($data);
+    }
+
+    public function updateReferenceFlow(int $stationCode, array $data)
+    {     
+        $station = $this->model->where('station_code', $stationCode)->first();
+        $station->update($data);
+    }
+
+    public function getStatusActive()
+    {
+        $dataDb = $this->model->where('status', 1)->get();
+
+        return $dataDb;
+    }
+
+    /**
+     * Get stations by type and status.
+     * @param string|null $type ['telemetry', 'water_quality']
+     * @param bool $active
+     */
+    public function getStationsByType(string $type = null, bool $active=true)
+    {
+        $query = $this->model->newQuery();
+
+        if ($type === 'telemetry') {
+            $query->where('telemetry_station_type', 1);
+        } elseif ($type === 'water_quality') {
+            $query->where('water_quality_station_type', 1);
+        }
+
+        if ($active) {
+            $query->where('status', 1);
+        }
+        
+        return $query->get();
+    }
+
+    public function deleteFiles(int $stationCode, array $data)
+    {
+        $station = $this->model->where('station_code', $stationCode)->first();
+        $station->update($data);
+    }
+
+}
+ 
