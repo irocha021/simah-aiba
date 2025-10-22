@@ -26,6 +26,10 @@ use App\Repositories\Interfaces\HwStationReadingInterface;
 use App\Repositories\Interfaces\HwStationReadingQaInterface;
 use App\Repositories\Interfaces\JobStatusInterface;
 use App\Repositories\JobStatusRepository;
+use App\Repositories\Interfaces\PocoSiagasRepositoryInterface;
+use App\Repositories\PocoSiagasRepository;
+use App\Repositories\Interfaces\PocoRimasRepositoryInterface;
+use App\Repositories\PocoRimasRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -49,6 +53,10 @@ class AppServiceProvider extends ServiceProvider
 
         //Status Job
         $this->app->bind(JobStatusInterface::class, JobStatusRepository::class);
+
+        // Bindings for DBF Import repositories
+        $this->app->bind(PocoSiagasRepositoryInterface::class, PocoSiagasRepository::class);
+        $this->app->bind(PocoRimasRepositoryInterface::class, PocoRimasRepository::class);
     }
 
     /**

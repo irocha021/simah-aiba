@@ -77,9 +77,13 @@ class HidroInventoryStationManagerController extends Controller
             //Log::info('['.++$count.'] Station Code: ' . $station['codigoestacao'] . ' - Operando: ' . $station['Operando'] . ' - Tipo_Estacao_Telemetrica: ' . $station['Tipo_Estacao_Telemetrica'] . ' - Tipo_Estacao_Qual_Agua: ' . $station['Tipo_Estacao_Qual_Agua']);
             
             // CORREÇÃO: usar 'codigoestacao' ao invés de 'Codigo_Estacao'
-            if (($station['Operando'] == "1" && $station['Tipo_Estacao_Telemetrica'] == "1") ||
-                (in_array($station['codigoestacao'], $stationsQaImport) && $station['Tipo_Estacao_Qual_Agua'] == "1")
-            ) {
+            // if (($station['Operando'] == "1" && $station['Tipo_Estacao_Telemetrica'] == "1") ||
+            //     (in_array($station['codigoestacao'], $stationsQaImport) && $station['Tipo_Estacao_Qual_Agua'] == "1")
+            // ) {
+            //     $inventoryStations[] = $station;
+            // }
+
+            if (in_array($station['codigoestacao'], $stationsQaImport)) {
                 $inventoryStations[] = $station;
             }
         } 

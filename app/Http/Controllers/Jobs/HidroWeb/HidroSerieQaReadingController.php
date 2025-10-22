@@ -48,6 +48,7 @@ class HidroSerieQaReadingController extends Controller
         if ($fromYear) {
             // Valida se o ano é válido
             $startYear = intval($fromYear);
+
             if ($startYear < 2000 || $startYear > $currentYear) {
                 return response()->json(['error' => 'Ano inicial inválido. Deve ser entre 2000 e ' . $currentYear], 400);
             }
@@ -156,6 +157,8 @@ class HidroSerieQaReadingController extends Controller
         $attempts = 0;
         $maxAttempts = 10;
         $success = false;
+
+        //sleep(2);
 
         while ($attempts < $maxAttempts && !$success) {
             Log::info("Tentativa " . ($attempts + 1) . " para a estação {$station->station_code}");
