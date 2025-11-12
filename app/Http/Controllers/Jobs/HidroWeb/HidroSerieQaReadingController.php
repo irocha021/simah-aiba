@@ -158,8 +158,9 @@ class HidroSerieQaReadingController extends Controller
         $maxAttempts = 10;
         $success = false;
 
-        //sleep(2);
+        sleep(0.5);
 
+        
         while ($attempts < $maxAttempts && !$success) {
             Log::info("Tentativa " . ($attempts + 1) . " para a estação {$station->station_code}");
 
@@ -176,6 +177,16 @@ class HidroSerieQaReadingController extends Controller
 
                 if (isset($reading['error'])) {
                     Log::error("Erro ao chamar a API para a estação {$station->station_code}: {$reading['error']}");
+
+                    // Se for erro 401, tenta renovar o token e fazer nova tentativa
+                    if (str_contains($reading['error'], '401')) {
+                        Log::info("Erro 401 detectado - renovando token de autenticação...");
+                        $this->apiHidroweb->authenticate();
+
+                        // Não lança exceção ainda, deixa o loop tentar novamente
+                        throw new \Exception($reading['error']);
+                    }
+
                     throw new \Exception($reading['error']);
                 }
 
@@ -579,8 +590,13 @@ class HidroSerieQaReadingController extends Controller
                     throw $e;
                 }
 
-                Log::warning("Erro na tentativa {$attempts}. Aguardando 30 segundos antes de tentar novamente...");
-                sleep(30);
+                // Backoff exponencial: 30s, 60s, 120s, 240s, etc.
+                $waitTime = 30 * pow(2, $attempts - 1);
+                // Limita o tempo máximo de espera em 5 minutos
+                $waitTime = min($waitTime, 300);
+
+                Log::warning("Erro na tentativa {$attempts}. Aguardando {$waitTime} segundos antes de tentar novamente...");
+                sleep($waitTime);
             }
         }
     }

@@ -68,13 +68,19 @@ class BaseHidroWebService
         $url = "{$this->baseUrl}/{$endpoint}";
 
         try {
-            $response = Http::withHeaders([
-                'Authorization' => "Bearer {$this->token}",
-                'accept' => '*/*',
-            ])->get($url, $queryParams);
+            $response = Http::timeout(60) // Aumenta timeout para 60 segundos
+                ->withHeaders([
+                    'Authorization' => "Bearer {$this->token}",
+                    'accept' => '*/*',
+                ])->get($url, $queryParams);
 
             if ($response->successful()) {
                 return $response->json();
+            }
+
+            // Se receber 401, o token pode ter expirado - invalidar para forçar nova autenticação
+            if ($response->status() === 401) {
+                $this->token = null;
             }
 
             throw new \Exception("API Error: {$response->status()} - {$response->body()}");

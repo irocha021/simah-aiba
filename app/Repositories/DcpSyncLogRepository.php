@@ -1,5 +1,4 @@
 <?php
-// app/Repositories/DcpSyncLogRepository.php
 
 namespace App\Repositories;
 
@@ -13,51 +12,76 @@ class DcpSyncLogRepository implements DcpSyncLogRepositoryInterface
     {
         return DcpSyncLog::find($id);
     }
-    
+
     public function create(array $data): DcpSyncLog
     {
         return DcpSyncLog::create($data);
     }
-    
+
     public function update(int $id, array $data): bool
     {
         return DcpSyncLog::where('id', $id)->update($data);
     }
-    
+
     public function getByStation(int $stationId): Collection
     {
-        return DcpSyncLog::where('station_id', $stationId)
+        return DcpSyncLog::where('dcp_station_id', $stationId)
             ->orderBy('created_at', 'desc')
             ->get();
     }
-    
+
     public function getLastSyncByStation(int $stationId): ?DcpSyncLog
     {
-        return DcpSyncLog::where('station_id', $stationId)
+        return DcpSyncLog::where('dcp_station_id', $stationId)
             ->where('status', 'completed')
-            ->orderBy('sync_completed_at', 'desc')
+            ->orderBy('completed_at', 'desc')
             ->first();
     }
-    
+
     public function getRunningSync(int $stationId): ?DcpSyncLog
     {
-        return DcpSyncLog::where('station_id', $stationId)
+        return DcpSyncLog::where('dcp_station_id', $stationId)
             ->where('status', 'running')
             ->first();
     }
-    
+
     public function getRecentLogs(int $limit = 10): Collection
     {
-        return DcpSyncLog::with('station')
+        return DcpSyncLog::with('dcpStation')
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
     }
-    
+
     public function getFailedLogs(): Collection
     {
         return DcpSyncLog::where('status', 'failed')
             ->orderBy('created_at', 'desc')
             ->get();
+    }
+
+    public function findPendingOrStuck(): Collection
+    {
+        return DcpSyncLog::where(function ($query) {
+            $query->where('status', 'pending')
+                ->orWhere(function ($subQuery) {
+                    $subQuery->where('status', 'running')
+                        ->where('started_at', '<', now()->subMinutes(10));
+                });
+        })
+            ->where('attempts', '<', 3)
+            ->orderBy('created_at', 'asc')
+            ->get();
+    }
+
+    public function canRetry(int $id): bool
+    {
+        $log = $this->find($id);
+        return $log && $log->attempts < 3;
+    }
+
+    public function incrementAttempts(int $id): bool
+    {
+        return DcpSyncLog::where('id', $id)->increment('attempts');
     }
 }

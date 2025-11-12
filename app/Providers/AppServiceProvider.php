@@ -19,6 +19,8 @@ use App\Repositories\HwStationQaImportRepository;
 use App\Repositories\HwStationReadingQaRepository;
 use App\Repositories\HwStationReadingRepository;
 use App\Repositories\Interfaces\DcpSyncLogRepositoryInterface;
+use App\Repositories\Interfaces\DcpReadingRepositoryInterface;
+use App\Repositories\DcpReadingRepository;
 use App\Repositories\Interfaces\HwEntityInterface;
 use App\Repositories\Interfaces\HwInventoryStationInterface;
 use App\Repositories\Interfaces\HwStationQaImportInterface;
@@ -43,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(DcpTransmissionRawDataRepositoryInterface::class, DcpTransmissionRawDataRepository::class);
         $this->app->bind(DcpFailureCodeRepositoryInterface::class, DcpFailureCodeRepository::class);
         $this->app->bind(DcpSyncLogRepositoryInterface::class, DcpSyncLogRepository::class);
+        $this->app->bind(DcpReadingRepositoryInterface::class, DcpReadingRepository::class);
 
         // Bindings for HidroWeb repositories
         $this->app->bind(HwInventoryStationInterface::class, HwInventoryStationRepository::class);

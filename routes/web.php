@@ -4,9 +4,11 @@ use App\Http\Controllers\DcpMonitorController;
 use App\Http\Controllers\DbfZipController;
 use App\Http\Controllers\DbfReaderController;
 use App\Http\Controllers\DbfImportController;
+use App\Http\Controllers\LrgsTestController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroInfoAnaAdoptedTelemetricSeriesReadingController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroInventoryStationManagerController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroSerieQaReadingController;
+use App\Http\Controllers\Jobs\Lrgs\ReadDcpMessagesController;
 use App\Jobs\DcpSyncJob;
 
 // Grupo de rotas para o DCP Monitor
@@ -36,6 +38,13 @@ Route::prefix('jobs')->group(function () {
     Route::get('/hidroweb/inventory-station', [HidroInventoryStationManagerController::class, 'index']);
     Route::get('/hidroweb/info-ana-adopted-telemetric-series-reading', [HidroInfoAnaAdoptedTelemetricSeriesReadingController::class, 'index']);
     Route::get('/hidroweb/readings/hidro-serie-qa', [HidroSerieQaReadingController::class, 'index']);
+
+    // LRGS DCP Messages - Processamento automático (período corrente)
+    Route::get('/lrgs/readings/dcp-messages', [ReadDcpMessagesController::class, 'retrieveMessages']);
+
+    // LRGS DCP Messages - Reprocessamento manual (período específico)
+    Route::get('/lrgs/readings/dcp-messages/manual', [ReadDcpMessagesController::class, 'retrieveMessagesManual']);
+    Route::post('/lrgs/readings/dcp-messages/manual', [ReadDcpMessagesController::class, 'retrieveMessagesManual']);
 });
 
 // Grupo de rotas para extração de DBF do ZIP
@@ -107,8 +116,9 @@ Route::prefix('dbf-import')->group(function () {
 
 Route::get('/test-dcp-sync', function () {
     DcpSyncJob::dispatchSync();
-    
+
     return response()->json([
         'message' => 'Job executado - verifique o log/terminal'
     ]);
 });
+

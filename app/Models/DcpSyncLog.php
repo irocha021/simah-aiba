@@ -1,5 +1,4 @@
 <?php
-// app/Models/DcpSyncLog.php
 
 namespace App\Models;
 
@@ -14,34 +13,40 @@ class DcpSyncLog extends Model
     protected $table = 'dcp_sync_logs';
 
     protected $fillable = [
-        'station_id',
-        'sync_started_at',
-        'sync_completed_at',
-        'transmissions_found',
-        'transmissions_saved',
-        'raw_data_fetched',
-        'raw_data_saved',
-        'errors',
+        'dcp_station_id',
+        'start_time',
+        'end_time',
         'status',
-        'date_range_start',
-        'date_range_end',
-        'duration_seconds'
+        'total_messages',
+        'total_inserted',
+        'total_corrupted',
+        'corrupted_headers',
+        'attempts',
+        'error_message',
+        'started_at',
+        'completed_at',
     ];
 
     protected $casts = [
-        'sync_started_at' => 'datetime',
-        'sync_completed_at' => 'datetime',
-        'transmissions_found' => 'integer',
-        'transmissions_saved' => 'integer',
-        'raw_data_fetched' => 'integer',
-        'raw_data_saved' => 'integer',
-        'errors' => 'array',
-        'duration_seconds' => 'integer'
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+        'started_at' => 'datetime',
+        'completed_at' => 'datetime',
+        'total_messages' => 'integer',
+        'total_inserted' => 'integer',
+        'total_corrupted' => 'integer',
+        'corrupted_headers' => 'array',
+        'attempts' => 'integer',
     ];
 
-    public function station(): BelongsTo
+    public function dcpStation(): BelongsTo
     {
-        return $this->belongsTo(DcpStation::class, 'station_id');
+        return $this->belongsTo(DcpStation::class, 'dcp_station_id');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
     }
 
     public function scopeRunning($query)
@@ -59,39 +64,10 @@ class DcpSyncLog extends Model
         return $query->where('status', 'failed');
     }
 
-    public function markAsCompleted(): void
+    public function scopeStuck($query)
     {
-        $this->update([
-            'status' => 'completed',
-            'sync_completed_at' => now(),
-            'duration_seconds' => now()->diffInSeconds($this->sync_started_at)
-        ]);
-    }
-
-    public function markAsFailed(string $error): void
-    {
-        $errors = $this->errors ?? [];
-        $errors[] = [
-            'message' => $error,
-            'timestamp' => now()->toIso8601String()
-        ];
-
-        $this->update([
-            'status' => 'failed',
-            'sync_completed_at' => now(),
-            'duration_seconds' => now()->diffInSeconds($this->sync_started_at),
-            'errors' => $errors
-        ]);
-    }
-
-    public function addError(string $error): void
-    {
-        $errors = $this->errors ?? [];
-        $errors[] = [
-            'message' => $error,
-            'timestamp' => now()->toIso8601String()
-        ];
-
-        $this->update(['errors' => $errors]);
+        // Running jobs that started more than 10 minutes ago
+        return $query->where('status', 'running')
+            ->where('started_at', '<', now()->subMinutes(10));
     }
 }
