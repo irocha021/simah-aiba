@@ -78,9 +78,9 @@ class DcpSyncLogService
     /**
      * Find all pending or stuck logs that can be retried
      */
-    public function findPendingOrStuckLogs(): Collection
+    public function findPendingForRetry(): Collection
     {
-        return $this->syncLogRepository->findPendingOrStuck();
+        return $this->syncLogRepository->findPendingForRetry();
     }
 
     /**

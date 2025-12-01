@@ -19,4 +19,5 @@ interface HwInventoryStationInterface
     public function changeStatus(int $stationCode, array $data);
     public function store(array $data);
     public function paginate(array $options = [], $sort = "id", $order = 'DESC', int $page = 1, int $perPage = 15): IPagination;
+    public function getAllWithCoordinates();
 }

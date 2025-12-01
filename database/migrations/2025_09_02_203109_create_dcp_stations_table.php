@@ -12,6 +12,8 @@ return new class extends Migration
             $table->string('dcp_address', 20)->unique();
             $table->string('station_name', 100)->nullable();
             $table->string('station_label', 255)->nullable()->comment('Nome amigável definido pelo usuário');
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->integer('channel')->nullable();
             $table->string('transmission_interval', 10)->nullable()->comment('ex: 01:00:00');
             $table->time('first_transmission_time')->nullable()->comment('ex: 00:06:20');
@@ -21,9 +23,10 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamp('last_successful_transmission_at')->nullable();
             $table->timestamps();
-            
+
             $table->index('dcp_address');
             $table->index('is_active');
+            $table->index(['latitude', 'longitude']);
         });
     }
 

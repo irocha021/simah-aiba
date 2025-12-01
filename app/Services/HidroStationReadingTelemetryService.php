@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\HwStationReadingInterface;
+use App\Repositories\Interfaces\HwStationReadingTelemetryInterface;
 
-class HidroStationReadingService
+class HidroStationReadingTelemetryService
 {
-    protected HwStationReadingInterface $repository;
+    protected HwStationReadingTelemetryInterface $repository;
 
     public function __construct(
-        HwStationReadingInterface $repository
+        HwStationReadingTelemetryInterface $repository
     ) {
         $this->repository = $repository;
     }

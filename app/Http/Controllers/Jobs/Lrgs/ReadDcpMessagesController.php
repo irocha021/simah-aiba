@@ -38,7 +38,7 @@ class ReadDcpMessagesController extends Controller
     {
         try {
             // Busca estações ativas
-            $stations = $this->dcpStationService->getActiveStations();
+            $stations = (object) $this->dcpStationService->getActiveStations();
 
             if ($stations->isEmpty()) {
                 return response()->json([
@@ -102,9 +102,13 @@ class ReadDcpMessagesController extends Controller
                     $filteredMessages = array_filter($messages, function($line) {
                         $line = trim($line);
                         return !empty($line) &&
-                               !str_contains($line, 'Normal termination') &&
-                               !str_contains($line, 'Until time reached');
+                            !str_contains($line, 'Normal termination') &&
+                            !str_contains($line, 'Until time reached') &&
+                            !str_contains($line, 'Missing message') &&        // NOVO
+                            !str_contains($line, 'Wrong channel') &&          // NOVO
+                            !str_contains($line, 'TESTE DE TRANSMISSAO');     // NOVO (opcional)
                     });
+            
 
                     // 4. Processa e insere mensagens (agora retorna corrupted_headers)
                     $stats = $this->dcpReadingService->processAndInsertMessages(array_values($filteredMessages));
@@ -180,6 +184,8 @@ class ReadDcpMessagesController extends Controller
             // Após processar período corrente, tenta reprocessar logs pendentes/stuck
             $this->reprocessStuckJobs();
 
+            
+
             return response()->json([
                 'success' => true,
                 'interval' => [
@@ -218,18 +224,18 @@ class ReadDcpMessagesController extends Controller
     private function reprocessStuckJobs(): void
     {
         try {
-            $pendingOrStuckLogs = $this->dcpSyncLogService->findPendingOrStuckLogs();
+            $pendingForRetry = (object) $this->dcpSyncLogService->findPendingForRetry();
 
-            if ($pendingOrStuckLogs->isEmpty()) {
+            if ($pendingForRetry->isEmpty()) {
                 Log::info('Nenhum job pendente/stuck para reprocessar');
                 return;
             }
 
             Log::info('Iniciando reprocessamento de jobs pendentes/stuck', [
-                'total_logs' => $pendingOrStuckLogs->count()
+                'total_logs' => $pendingForRetry->count()
             ]);
 
-            foreach ($pendingOrStuckLogs as $syncLog) {
+            foreach ($pendingForRetry as $syncLog) {
                 try {
                     // Verifica se ainda pode retentar
                     if (!$this->dcpSyncLogService->canRetry($syncLog->id)) {
@@ -290,9 +296,13 @@ class ReadDcpMessagesController extends Controller
                     $filteredMessages = array_filter($messages, function($line) {
                         $line = trim($line);
                         return !empty($line) &&
-                               !str_contains($line, 'Normal termination') &&
-                               !str_contains($line, 'Until time reached');
+                            !str_contains($line, 'Normal termination') &&
+                            !str_contains($line, 'Until time reached') &&
+                            !str_contains($line, 'Missing message') &&        // NOVO
+                            !str_contains($line, 'Wrong channel') &&          // NOVO
+                            !str_contains($line, 'TESTE DE TRANSMISSAO');     // NOVO (opcional)
                     });
+            
 
                     // Processa e insere
                     $stats = $this->dcpReadingService->processAndInsertMessages(array_values($filteredMessages));
@@ -324,7 +334,7 @@ class ReadDcpMessagesController extends Controller
             }
 
             Log::info('Reprocessamento concluído', [
-                'total_processed' => $pendingOrStuckLogs->count()
+                'total_processed' => $pendingForRetry->count()
             ]);
 
         } catch (\Exception $e) {
@@ -407,8 +417,11 @@ class ReadDcpMessagesController extends Controller
             $filteredMessages = array_filter($messages, function($line) {
                 $line = trim($line);
                 return !empty($line) &&
-                       !str_contains($line, 'Normal termination') &&
-                       !str_contains($line, 'Until time reached');
+                    !str_contains($line, 'Normal termination') &&
+                    !str_contains($line, 'Until time reached') &&
+                    !str_contains($line, 'Missing message') &&        // NOVO
+                    !str_contains($line, 'Wrong channel') &&          // NOVO
+                    !str_contains($line, 'TESTE DE TRANSMISSAO');     // NOVO (opcional)
             });
 
             // Processa e insere

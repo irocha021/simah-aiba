@@ -18,7 +18,8 @@ RUN apt-get update \
     && apt-get install -y gdal-bin gdal-data gdal-plugins \
     && apt-get install -y libgdal-dev libgdal-grass libgdal32 \
     && apt-get install -y libzip-dev \
-    && apt-get install -y nodejs npm
+    && apt-get install -y nodejs npm \
+    && apt-get install -y default-jre
 
 RUN docker-php-ext-install pdo_mysql zip \
     && docker-php-ext-enable pdo_mysql zip \

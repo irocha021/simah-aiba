@@ -135,4 +135,13 @@ class PocoRimasRepository implements PocoRimasRepositoryInterface
 
         return $normalized;
     }
+
+    public function getAllWithCoordinates(): Collection
+    {
+        return PocoRimas::select('id_ponto', 'latitude_d', 'longitude')
+            ->whereNotNull('latitude_d')
+            ->whereNotNull('longitude')
+            ->distinct()
+            ->get();
+    }
 }

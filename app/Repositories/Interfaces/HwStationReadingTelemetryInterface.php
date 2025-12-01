@@ -4,7 +4,7 @@ namespace App\Repositories\Interfaces;
 
 use App\Repositories\Presenters\IPagination;
 
-interface HwStationReadingInterface
+interface HwStationReadingTelemetryInterface
 {   
     public function getAll();
     public function storeReadingsOfStation(array $data);

@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Jobs\HidroWeb;
 use App\Enums\Job;
 use App\Enums\JobStatus as EnumsJobStatus;
 use App\Http\Controllers\Controller;
-use App\Services\HidroStationReadingService;
+use App\Services\HidroStationReadingTelemetryService;
 use App\Services\API_Hidroweb\HidrowebService;
-use App\Services\HidroInventoryStationService;
+use App\Services\HidroStationTelemetryImportService;
 use App\Services\JobStatusService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,20 +15,20 @@ use Illuminate\Support\Facades\Log;
 
 class HidroInfoAnaAdoptedTelemetricSeriesReadingController extends Controller
 {
-    protected HidroInventoryStationService $hidroInventoryStationService;
+    protected HidroStationTelemetryImportService $hidroStationTelemetryImportService;
     protected HidrowebService $apiHidroweb;
-    protected HidroStationReadingService $hidroStationReadingService;
+    protected HidroStationReadingTelemetryService $hidroStationReadingTelemetryService;
     protected JobStatusService $jobStatusService;
 
     public function __construct(
-        HidroInventoryStationService $hidroInventoryStationService,
+        HidroStationTelemetryImportService $hidroStationTelemetryImportService,
         HidrowebService $apiHidroweb,
-        HidroStationReadingService $hidroStationReadingService,
+        HidroStationReadingTelemetryService $hidroStationReadingTelemetryService,
         JobStatusService $jobStatusService
     ) {
-        $this->hidroInventoryStationService = $hidroInventoryStationService;
+        $this->hidroStationTelemetryImportService = $hidroStationTelemetryImportService;
         $this->apiHidroweb = $apiHidroweb;
-        $this->hidroStationReadingService = $hidroStationReadingService;
+        $this->hidroStationReadingTelemetryService = $hidroStationReadingTelemetryService;
         $this->jobStatusService = $jobStatusService;
     }
 
@@ -41,7 +41,7 @@ class HidroInfoAnaAdoptedTelemetricSeriesReadingController extends Controller
         $date = $request->input('date', Carbon::now()->subDay()->format('Y-m-d'));
 
         // Delete existing readings for the date
-        $this->hidroStationReadingService->deleteByDate($date);
+        $this->hidroStationReadingTelemetryService->deleteByDate($date);
 
         // Create job status
         $jobStatus = $this->jobStatusService->store([
@@ -51,8 +51,9 @@ class HidroInfoAnaAdoptedTelemetricSeriesReadingController extends Controller
         ]);
 
 
-        $stations = $this->hidroInventoryStationService->getStationsByType('telemetry');
-        
+        $stations = $this->hidroStationTelemetryImportService->getAll();
+
+      
         $errorLogs = []; // Array to store error logs
 
         foreach ($stations as $station) {
@@ -97,6 +98,8 @@ class HidroInfoAnaAdoptedTelemetricSeriesReadingController extends Controller
 
         while ($attempts < $maxAttempts && !$success) {
             try {
+
+                
                 // Tenta buscar os dados da API
                 $reading = $this->apiHidroweb->fetchHidroinfoanaSerieTelemetricaAdotada([
                     'Código da Estação' => $station->station_code,
@@ -117,7 +120,7 @@ class HidroInfoAnaAdoptedTelemetricSeriesReadingController extends Controller
                 if (isset($reading['items']) && count($reading['items']) > 0) {
                     foreach ($reading['items'] as $item) {
                         $items[] = [
-                            'station_code' => $item['codigoestacao'],
+                            'station_code' => $station->station_code,
                             'adopted_rainfall' => $item['Chuva_Adotada'],
                             'adopted_quota' => $item['Cota_Adotada'],
                             'adopted_flow' => $item['Vazao_Adotada'],
@@ -128,7 +131,7 @@ class HidroInfoAnaAdoptedTelemetricSeriesReadingController extends Controller
                     }
 
                     // Store readings
-                    $this->hidroStationReadingService->storeReadingsOfStation($items);
+                    $this->hidroStationReadingTelemetryService->storeReadingsOfStation($items);
                 }
             } catch (\Exception $e) {
                 $attempts++;

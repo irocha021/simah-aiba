@@ -26,4 +26,6 @@ interface PocoSiagasRepositoryInterface
     public function softDeleteAll(): bool;
 
     public function paginate(int $perPage = 15, int $page = 1): array;
+
+    public function getAllWithCoordinates(): Collection;
 }

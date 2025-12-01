@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
             DcpFailureCodeSeeder::class,
             DcpStationSeeder::class,
             HwStationQaImportSeeder::class,
+            HwStationTelemetryImportSeeder::class,
+            LrgsServerSeeder::class
         ]);
     }
 }

@@ -135,4 +135,11 @@ class PocoSiagasRepository implements PocoSiagasRepositoryInterface
 
         return $normalized;
     }
+
+    public function getAllWithCoordinates(): Collection
+    {
+        return PocoSiagas::whereNotNull('latitude_d')
+            ->whereNotNull('longitude_')
+            ->get();
+    }
 }

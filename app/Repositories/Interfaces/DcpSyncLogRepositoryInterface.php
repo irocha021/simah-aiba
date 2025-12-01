@@ -26,7 +26,7 @@ interface DcpSyncLogRepositoryInterface
     /**
      * Find all pending or stuck logs that can be retried (attempts < 3)
      */
-    public function findPendingOrStuck(): Collection;
+    public function findPendingForRetry(): Collection;
 
     /**
      * Check if a log can be retried (attempts < 3)

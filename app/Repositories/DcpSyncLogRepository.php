@@ -60,10 +60,11 @@ class DcpSyncLogRepository implements DcpSyncLogRepositoryInterface
             ->get();
     }
 
-    public function findPendingOrStuck(): Collection
+    public function findPendingForRetry(): Collection
     {
         return DcpSyncLog::where(function ($query) {
             $query->where('status', 'pending')
+                ->orWhere('status', 'failed')
                 ->orWhere(function ($subQuery) {
                     $subQuery->where('status', 'running')
                         ->where('started_at', '<', now()->subMinutes(10));

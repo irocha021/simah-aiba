@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\API_Hidroweb\HidrowebService;
 use App\Services\HidroInventoryStationService;
 use App\Services\HidroStationQaImportService;
+use App\Services\HidroStationTelemetryImportService;
 use Illuminate\Http\JsonResponse;
 use Log;
 
@@ -14,15 +15,18 @@ class HidroInventoryStationManagerController extends Controller
     protected HidrowebService $apiHidrowebService;
     protected HidroInventoryStationService $hidroInventoryStationService;
     protected HidroStationQaImportService $hidroStationQaImportService;
+    protected HidroStationTelemetryImportService $hidroStationTelemetryImportService;
 
     public function __construct(
         HidrowebService $apiHidrowebService,
         HidroInventoryStationService $hidroInventoryStationService,
-        HidroStationQaImportService $hidroStationQaImportService
+        HidroStationQaImportService $hidroStationQaImportService,
+        HidroStationTelemetryImportService $hidroStationTelemetryImportService
     ) {
         $this->apiHidrowebService = $apiHidrowebService;
         $this->hidroInventoryStationService = $hidroInventoryStationService;
         $this->hidroStationQaImportService = $hidroStationQaImportService;
+        $this->hidroStationTelemetryImportService = $hidroStationTelemetryImportService;
     } 
 
     /**
@@ -70,6 +74,10 @@ class HidroInventoryStationManagerController extends Controller
         $stationsQaImport = $this->hidroStationQaImportService->getAll();
         $stationsQaImport = $stationsQaImport->pluck('station_code')->toArray();
 
+        $stationsTelemetryImport = $this->hidroStationTelemetryImportService->getAll();
+        $stationsTelemetryImport = $stationsTelemetryImport->pluck('station_code')->toArray();
+
+    
         $inventoryStations = [];
 
         //$count = 0;
@@ -83,7 +91,7 @@ class HidroInventoryStationManagerController extends Controller
             //     $inventoryStations[] = $station;
             // }
 
-            if (in_array($station['codigoestacao'], $stationsQaImport)) {
+            if (in_array($station['codigoestacao'], $stationsQaImport) || in_array($station['codigoestacao'], $stationsTelemetryImport)) {
                 $inventoryStations[] = $station;
             }
         } 

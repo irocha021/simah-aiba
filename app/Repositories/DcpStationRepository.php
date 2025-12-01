@@ -43,4 +43,11 @@ class DcpStationRepository implements DcpStationRepositoryInterface
     {
         return DcpStation::where('is_active', true)->get();
     }
+
+    public function getAllWithCoordinates(): Collection
+    {
+        return DcpStation::whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->get();
+    }
 }

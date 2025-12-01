@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class HwStationReading extends Model
+class HwStationReadingTelemetry extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -15,7 +15,7 @@ class HwStationReading extends Model
      *
      * @var string
      */
-    protected $table = 'hw_station_readings';
+    protected $table = 'hw_station_readings_telemetry';
 
     /**
      * The attributes that are mass assignable.

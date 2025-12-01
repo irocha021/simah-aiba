@@ -85,4 +85,14 @@ class HwInventoryStation extends Model
             ->whereNotNull('adopted_flow')
             ->orderByDesc('measurement_datetime');
     }
+
+    public function qaImport()
+    {
+        return $this->hasOne(HwStationQaImport::class, 'station_code', 'station_code');
+    }
+
+    public function telemetryImport()
+    {
+        return $this->hasOne(HwStationTelemetryImport::class, 'station_code', 'station_code');
+    }
 }

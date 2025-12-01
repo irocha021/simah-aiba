@@ -23,6 +23,8 @@ class DcpStationSeeder extends Seeder
                 'baud_rate' => 300,
                 'preamble' => 'S',
                 'is_active' => true,
+                'latitude' => -12.1436,
+                'longitude' => -45.0108,
                 'last_successful_transmission_at' => null,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()

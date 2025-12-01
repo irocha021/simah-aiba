@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hw_station_readings', function (Blueprint $table) {
+        Schema::create('hw_station_readings_telemetry', function (Blueprint $table) {
             $table->id();
             $table->integer('station_code');
             $table->decimal('adopted_rainfall', 10, 2)->nullable();
@@ -32,7 +32,7 @@ return new class extends Migration
             // Indexes
             $table->index('station_code');
             $table->index('measurement_datetime');
-            $table->index(['station_code', 'measurement_datetime']);
+            $table->index(['station_code', 'measurement_datetime'], 'hw_telemetry_station_datetime_idx');
         });
     }
 
@@ -41,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hw_station_readings');
+        Schema::dropIfExists('hw_station_readings_telemetry');
     }
 };

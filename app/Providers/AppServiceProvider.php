@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\HwStationReading;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Interfaces\DcpStationRepositoryInterface;
 use App\Repositories\DcpStationRepository;
@@ -17,14 +16,14 @@ use App\Repositories\HwEntityRepository;
 use App\Repositories\HwInventoryStationRepository;
 use App\Repositories\HwStationQaImportRepository;
 use App\Repositories\HwStationReadingQaRepository;
-use App\Repositories\HwStationReadingRepository;
+use App\Repositories\HwStationReadingTelemetryRepository;
 use App\Repositories\Interfaces\DcpSyncLogRepositoryInterface;
 use App\Repositories\Interfaces\DcpReadingRepositoryInterface;
 use App\Repositories\DcpReadingRepository;
 use App\Repositories\Interfaces\HwEntityInterface;
 use App\Repositories\Interfaces\HwInventoryStationInterface;
 use App\Repositories\Interfaces\HwStationQaImportInterface;
-use App\Repositories\Interfaces\HwStationReadingInterface;
+use App\Repositories\Interfaces\HwStationReadingTelemetryInterface;
 use App\Repositories\Interfaces\HwStationReadingQaInterface;
 use App\Repositories\Interfaces\JobStatusInterface;
 use App\Repositories\JobStatusRepository;
@@ -32,6 +31,10 @@ use App\Repositories\Interfaces\PocoSiagasRepositoryInterface;
 use App\Repositories\PocoSiagasRepository;
 use App\Repositories\Interfaces\PocoRimasRepositoryInterface;
 use App\Repositories\PocoRimasRepository;
+use App\Repositories\Interfaces\CnarhRepositoryInterface;
+use App\Repositories\CnarhRepository;
+use App\Repositories\HwStationTelemetryImportRepository;
+use App\Repositories\Interfaces\HwStationTelemetryImportInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -50,9 +53,10 @@ class AppServiceProvider extends ServiceProvider
         // Bindings for HidroWeb repositories
         $this->app->bind(HwInventoryStationInterface::class, HwInventoryStationRepository::class);
         $this->app->bind(HwEntityInterface::class, HwEntityRepository::class);
-        $this->app->bind(HwStationReadingInterface::class, HwStationReadingRepository::class);
+        $this->app->bind(HwStationReadingTelemetryInterface::class, HwStationReadingTelemetryRepository::class);
         $this->app->bind(HwStationReadingQaInterface::class, HwStationReadingQaRepository::class);
         $this->app->bind(HwStationQaImportInterface::class, HwStationQaImportRepository::class);
+        $this->app->bind(HwStationTelemetryImportInterface::class, HwStationTelemetryImportRepository::class);
 
         //Status Job
         $this->app->bind(JobStatusInterface::class, JobStatusRepository::class);
@@ -60,6 +64,9 @@ class AppServiceProvider extends ServiceProvider
         // Bindings for DBF Import repositories
         $this->app->bind(PocoSiagasRepositoryInterface::class, PocoSiagasRepository::class);
         $this->app->bind(PocoRimasRepositoryInterface::class, PocoRimasRepository::class);
+
+        // Binding for CNARH CSV Import
+        $this->app->bind(CnarhRepositoryInterface::class, CnarhRepository::class);
     }
 
     /**

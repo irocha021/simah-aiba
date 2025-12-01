@@ -145,5 +145,23 @@ class HwInventoryStationRepository implements HwInventoryStationInterface
         $station->update($data);
     }
 
+    public function getAllWithCoordinates()
+    {
+        return $this->model
+            ->select([
+                'hw_inventory_stations.*',
+                \DB::raw('CASE
+                    WHEN hw_station_qa_import.station_code IS NOT NULL THEN \'hidroweb_qualidade_agua\'
+                    WHEN hw_station_telemetry_import.station_code IS NOT NULL THEN \'hidroweb_telemetria\'
+                    ELSE \'hidroweb_qualidade_agua\'
+                END as source')
+            ])
+            ->leftJoin('hw_station_qa_import', 'hw_inventory_stations.station_code', '=', 'hw_station_qa_import.station_code')
+            ->leftJoin('hw_station_telemetry_import', 'hw_inventory_stations.station_code', '=', 'hw_station_telemetry_import.station_code')
+            ->whereNotNull('hw_inventory_stations.latitude')
+            ->whereNotNull('hw_inventory_stations.longitude')
+            ->get();
+    }
+
 }
  

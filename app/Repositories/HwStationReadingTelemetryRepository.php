@@ -2,11 +2,13 @@
 
 namespace App\Repositories;
 
-use App\Models\HwStationReading as Model;
-use App\Repositories\Interfaces\HwStationReadingInterface;
+use App\Models\HwStationReadingTelemetry as Model;
+use App\Repositories\Interfaces\HwStationReadingTelemetryInterface;
 use App\Repositories\Presenters\PaginationPresenter;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
-class HwStationReadingRepository implements HwStationReadingInterface
+class HwStationReadingTelemetryRepository implements HwStationReadingTelemetryInterface
 {   
     protected $model;
 
@@ -17,7 +19,37 @@ class HwStationReadingRepository implements HwStationReadingInterface
 
     public function storeReadingsOfStation(array $data)
     {
-        $this->model->insert($data);
+        try {
+           
+            $result = $this->model->insert($data);
+
+            if (!$result) {
+                Log::error('Falha ao inserir readings - insert retornou false', [
+                    'data_count' => count($data),
+                    'first_item' => !empty($data) ? $data[0] : null
+                ]);
+                throw new Exception('Insert operation returned false');
+            }
+
+            Log::info('Readings inseridas com sucesso', [
+                'total_records' => count($data)
+            ]);
+
+            return $result;
+
+        } catch (Exception $e) {
+            Log::error('ERRO ao inserir readings de estação', [
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'data_count' => count($data),
+                'first_item' => !empty($data) ? $data[0] : null,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            throw $e;
+        }
     }
  
     public function getAll()
