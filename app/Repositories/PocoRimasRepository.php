@@ -144,4 +144,12 @@ class PocoRimasRepository implements PocoRimasRepositoryInterface
             ->distinct()
             ->get();
     }
+
+    public function getReadingsByIdPonto(string $idPonto, int $limit = 50)
+    {
+        return PocoRimas::where('id_ponto', $idPonto)
+            ->orderBy('numero_de', 'desc')
+            ->limit($limit)
+            ->get();
+    }
 }

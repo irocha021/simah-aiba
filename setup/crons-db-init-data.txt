@@ -1,0 +1,55 @@
+----------------------------------------------------------------------------------
+CRONS
+----------------------------------------------------------------------------------
+
+#[1 vez na madrugada] Importar estações HIDROWEB Qualidade da Água e HIDROWEB Telemetria
+https://{domain}/jobs/hidroweb/inventory-station
+
+#[1 vez na madrugada] Leituras hidroweb Qualidade da Agua
+https://{domain}//jobs/hidroweb/readings/hidro-serie-qa
+
+#[1 vez na madrugada] Leitura hidroweb Telemetria
+https://{domain}/jobs/hidroweb/info-ana-adopted-telemetric-series-reading
+
+#[Minuto 10 de cada hora] Leitura do LRGS
+https://{domain}/jobs/lrgs/readings/dcp-messages
+----------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------
+Setup BD:
+----------------------------------------------------------------------------------
+Rodar comando php artisan migrate:fresh --seed
+----------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------
+Popular dados RIMAS:
+----------------------------------------------------------------------------------
+- Acessar URL https://{domain}/dbf-import 
+- Escolher origem RIMAS
+- Enviar o arquivo .zip
+----------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------
+Popular dados SIAGAS:
+----------------------------------------------------------------------------------
+- Acessar URL https://{domain}/dbf-import 
+- Escolher origem SIAGAS
+- Enviar o arquivo .zip
+----------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------
+Popular dados CNARH:
+----------------------------------------------------------------------------------
+- Acessar a URL https://{domain}/cnarh
+- Enviar o arquivo .csv
+----------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------
+Popular dados HIDROWEB qualidade da água a partir do ano 200:
+----------------------------------------------------------------------------------
+- RODAR url https://{domain}/jobs/hidroweb/readings/hidro-serie-qa?from-year=2000
+----------------------------------------------------------------------------------

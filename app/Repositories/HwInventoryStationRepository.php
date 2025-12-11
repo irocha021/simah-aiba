@@ -147,19 +147,34 @@ class HwInventoryStationRepository implements HwInventoryStationInterface
 
     public function getAllWithCoordinates()
     {
+        // Retorna TODAS as estações com coordenadas sem JOIN
         return $this->model
-            ->select([
-                'hw_inventory_stations.*',
-                \DB::raw('CASE
-                    WHEN hw_station_qa_import.station_code IS NOT NULL THEN \'hidroweb_qualidade_agua\'
-                    WHEN hw_station_telemetry_import.station_code IS NOT NULL THEN \'hidroweb_telemetria\'
-                    ELSE \'hidroweb_qualidade_agua\'
-                END as source')
-            ])
-            ->leftJoin('hw_station_qa_import', 'hw_inventory_stations.station_code', '=', 'hw_station_qa_import.station_code')
-            ->leftJoin('hw_station_telemetry_import', 'hw_inventory_stations.station_code', '=', 'hw_station_telemetry_import.station_code')
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->get();
+    }
+
+    public function getTelemetryStationsWithCoordinates()
+    {
+        // Estações que têm dados de telemetria
+        return $this->model
+            ->select('hw_inventory_stations.*')
+            ->join('hw_station_telemetry_import', 'hw_inventory_stations.station_code', '=', 'hw_station_telemetry_import.station_code')
             ->whereNotNull('hw_inventory_stations.latitude')
             ->whereNotNull('hw_inventory_stations.longitude')
+            ->distinct()
+            ->get();
+    }
+
+    public function getQualityStationsWithCoordinates()
+    {
+        // Estações que têm dados de qualidade da água
+        return $this->model
+            ->select('hw_inventory_stations.*')
+            ->join('hw_station_qa_import', 'hw_inventory_stations.station_code', '=', 'hw_station_qa_import.station_code')
+            ->whereNotNull('hw_inventory_stations.latitude')
+            ->whereNotNull('hw_inventory_stations.longitude')
+            ->distinct()
             ->get();
     }
 

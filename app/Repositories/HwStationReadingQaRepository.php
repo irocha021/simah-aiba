@@ -127,5 +127,13 @@ class HwStationReadingQaRepository implements HwStationReadingQaInterface
         return new PaginationPresenter($dataDb);
     }
 
+    public function getReadingsByStationCode(string $stationCode, int $limit = 50)
+    {
+        return $this->model->where('station_code', $stationCode)
+            ->orderBy('data_hora_dado', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+
 }
  

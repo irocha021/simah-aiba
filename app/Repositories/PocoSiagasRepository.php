@@ -142,4 +142,9 @@ class PocoSiagasRepository implements PocoSiagasRepositoryInterface
             ->whereNotNull('longitude_')
             ->get();
     }
+
+    public function getByIdPonto(string $idPonto)
+    {
+        return PocoSiagas::where('ponto', $idPonto)->first();
+    }
 }

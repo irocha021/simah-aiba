@@ -14,4 +14,5 @@ interface HwStationReadingQaInterface
     public function deleteByDate($date);
     public function getLastAdoptedFlowByStationCode($stationCode);
     public function paginate(array $options = [], $sort = "id", $order = 'DESC', int $page = 1, int $perPage = 15): IPagination;
+    public function getReadingsByStationCode(string $stationCode, int $limit = 50);
 } 

@@ -44,8 +44,6 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(DcpStationRepositoryInterface::class, DcpStationRepository::class);
-        $this->app->bind(DcpStationTransmissionRepositoryInterface::class, DcpStationTransmissionRepository::class);
-        $this->app->bind(DcpTransmissionRawDataRepositoryInterface::class, DcpTransmissionRawDataRepository::class);
         $this->app->bind(DcpFailureCodeRepositoryInterface::class, DcpFailureCodeRepository::class);
         $this->app->bind(DcpSyncLogRepositoryInterface::class, DcpSyncLogRepository::class);
         $this->app->bind(DcpReadingRepositoryInterface::class, DcpReadingRepository::class);
@@ -69,11 +67,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CnarhRepositoryInterface::class, CnarhRepository::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        // Força HTTPS quando a aplicação está atrás de um proxy (ngrok, load balancer, etc)
+        if (config('app.env') !== 'local' || request()->header('X-Forwarded-Proto') === 'https') {
+            \URL::forceScheme('https');
+        }
+        
+        // Ou de forma mais simples, sempre forçar HTTPS se vier do proxy:
+        if (request()->header('X-Forwarded-Proto') === 'https') {
+            \URL::forceScheme('https');
+        }
     }
 }

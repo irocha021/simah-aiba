@@ -9,8 +9,12 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-// Unified Stations API for Map Visualization
+// Stations API for Map Visualization
 Route::prefix('stations')->group(function () {
     Route::get('/', [StationController::class, 'index'])
         ->name('api.stations.index');
 });
+
+Route::get('/pocos-rimas/{id_ponto}/readings', [App\Http\Controllers\Api\PocoRimasController::class, 'getReadings']);
+Route::get('/pocos-siagas/{id_ponto}/readings', [App\Http\Controllers\Api\PocoSiagasController::class, 'getReadings']);
+Route::get('/hidroweb-qualidade-agua/{station_code}/readings', [App\Http\Controllers\Api\HwStationReadingQaController::class, 'getReadings']);

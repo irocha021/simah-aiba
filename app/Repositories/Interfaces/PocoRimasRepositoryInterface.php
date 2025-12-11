@@ -28,4 +28,6 @@ interface PocoRimasRepositoryInterface
     public function paginate(int $perPage = 15, int $page = 1): array;
 
     public function getAllWithCoordinates(): Collection;
+
+    public function getReadingsByIdPonto(string $idPonto, int $limit = 50);
 }
