@@ -1,0 +1,38 @@
+FROM php:8.3.20-apache
+
+LABEL maintainer="pedro.nascimento@lepoti.tech"
+
+ENV TZ="America/Cuiaba"
+
+COPY ./docker/php.ini /usr/local/etc/php/php.ini
+COPY ./docker/apache2.conf /etc/apache2/apache2.conf
+COPY ./docker/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY ./docker/production/crontab /etc/cron.d/crontab
+
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y cron libwww-perl \
+    && apt-get install -y screen \
+    && apt-get install -y gdal-bin gdal-data gdal-plugins \
+    && apt-get install -y libgdal-dev libgdal-grass libgdal32 \
+    && apt-get install -y libzip-dev \
+    && apt-get install -y nodejs npm \
+    && apt-get install -y default-jre
+
+RUN docker-php-ext-install pdo_mysql zip \
+    && docker-php-ext-enable pdo_mysql zip \
+    && a2enmod rewrite \
+    && a2enmod headers \
+    && sed -ri -e 's/^([ \t]*)(<\/VirtualHost>)/\1\tHeader set Access-Control-Allow-Origin "*"\n\1\2/g' /etc/apache2/sites-available/*.conf \
+    && service apache2 restart
+
+RUN mkdir -p /var/www/html/storage \
+    && mkdir -p /var/www/html/storage/logs
+
+RUN chmod -R 775 /var/www/html/storage \
+    && chown -R www-data:www-data /var/www/html/storage \
+    && chmod -R 775 /var/www/html/storage/logs \
+    && chown -R www-data:www-data /var/www/html/storage/logs
+
+RUN chmod 0644 /etc/cron.d/crontab \
+    && crontab /etc/cron.d/crontab

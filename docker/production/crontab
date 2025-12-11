@@ -1,15 +1,7 @@
-05 * * * * GET https://sihub.imafir.org.br/spimrh/jobs/imafir/get-readings
+00 1 * * * GET https://simah.std1.net/jobs/hidroweb/inventory-station
 
-30 * * * * GET https://sihub.imafir.org.br/spimrh/jobs/device-reading/calculate-hourly
-00 1 * * * GET https://sihub.imafir.org.br/spimrh/jobs/device-reading/calculate-daily
+30 1 * * * GET https://simah.std1.net//jobs/hidroweb/readings/hidro-serie-qa
 
-30 1 * * * GET https://sihub.imafir.org.br/spimrh/jobs/hidroweb/inventory-station
-00 2 * * * GET https://sihub.imafir.org.br/spimrh/jobs/hidroweb/info-ana-adopted-telemetric-series-reading
+00 2 * * * GET https://simah.std1.net/jobs/hidroweb/info-ana-adopted-telemetric-series-reading
 
-20 * * * * GET https://sihub.imafir.org.br/spimrh/jobs/formulas-output/calculate-hourly
-40 * * * * GET https://sihub.imafir.org.br/spimrh/jobs/formulas-output/calculate-hourly-average
-
-30 1 * * * GET https://sihub.imafir.org.br/spimrh/jobs/formulas-output/calculate-daily
-30 2 * * * GET https://sihub.imafir.org.br/spimrh/jobs/formulas-output/calculate-daily-average
-
-30 3 * * * GET https://sihub.imafir.org.br/spimrh/jobs/inmet/import-station-data
+10 * * * * GET https://simah.std1.net/jobs/lrgs/readings/dcp-messages
