@@ -72,4 +72,9 @@ class CnarhService
             ];
         }
     }
+
+    public function getByCnarh(string $intCdCnarh40)
+    {
+        return $this->repository->getByCnarh($intCdCnarh40);
+    }
 }

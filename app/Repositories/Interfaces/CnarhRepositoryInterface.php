@@ -9,4 +9,6 @@ interface CnarhRepositoryInterface
     public function insertBatch(array $data): void;
 
     public function getAllWithCoordinates();
+
+    public function getByCnarh(string $intCdCnarh40);
 }

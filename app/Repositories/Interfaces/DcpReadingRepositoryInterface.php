@@ -10,7 +10,7 @@ interface DcpReadingRepositoryInterface
 
     public function find(int $id): ?DcpReading;
 
-    public function findByAddress(string $address): Collection;
+    public function findByAddress(string $address, int $limit = 50);
 
     public function create(array $data): DcpReading;
 
@@ -25,4 +25,6 @@ interface DcpReadingRepositoryInterface
     public function findByDateRange(int $stationId, string $startDate, string $endDate): Collection;
 
     public function softDeleteByStationAndPeriod(int $stationId, $startTime, $endTime): int;
+
+    
 }
