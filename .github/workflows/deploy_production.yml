@@ -46,4 +46,4 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /root/system/mhb
-            docker compose -f docker-compose.prod.yml -p mhb up -d --build
+            docker compose -f docker-compose.production.yml -p mhb up -d --build
