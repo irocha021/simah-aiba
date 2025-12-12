@@ -39,6 +39,9 @@ class HidroStationReadingTelemetryService
         return $this->repository->paginate($options, $sort, $order, $page, $perPage);
     }
 
-
+    public function getReadingsByStationCode(string $stationCode, int $limit = 50)
+{
+    return $this->repository->getReadingsByStationCode($stationCode, $limit);
+}
 
 }

@@ -18,9 +18,12 @@ class DcpReadingRepository implements DcpReadingRepositoryInterface
         return DcpReading::find($id);
     }
 
-    public function findByAddress(string $address): Collection
+    public function findByAddress(string $address, int $limit = 50)
     {
-        return DcpReading::where('address', $address)->get();
+        return DcpReading::where('address', $address)
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
     }
 
     public function create(array $data): DcpReading

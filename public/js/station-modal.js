@@ -259,3 +259,230 @@ if (document.readyState === 'loading') {
 } else {
     initStationModal(hidrowebQaModalConfig);
 }
+
+// Configuração específica para LRGS Client (DCP)
+const lrgsModalConfig = {
+    modalId: 'lrgsReadingsModal',
+    stationCodeId: 'lrgsModalStationCode',
+    loadingId: 'lrgsLoadingSpinner',
+    errorMessageId: 'lrgsErrorMessage',
+    errorTextId: 'lrgsErrorText',
+    closeButtonId: 'closeLrgsModal'
+};
+
+function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
+    const modal = document.getElementById(lrgsModalConfig.modalId);
+    const modalStationCode = document.getElementById(lrgsModalConfig.stationCodeId);
+    const loadingSpinner = document.getElementById(lrgsModalConfig.loadingId);
+    const tableContainer = document.getElementById('lrgsTableContainer');
+    const errorMessage = document.getElementById(lrgsModalConfig.errorMessageId);
+    const tableHeader = document.getElementById('lrgsTableHeader');
+    const tableBody = document.getElementById('lrgsTableBody');
+
+    modal.style.display = 'block';
+    modalStationCode.innerHTML = stationCode + ' - ' + stationName + 
+        '<br><strong style="color: #ff7800;">Latitude:</strong> ' + latitude + 
+        ' | <strong style="color: #ff7800;">Longitude:</strong> ' + longitude;
+    loadingSpinner.style.display = 'block';
+    tableContainer.style.display = 'none';
+    errorMessage.style.display = 'none';
+    tableHeader.innerHTML = '';
+    tableBody.innerHTML = '';
+
+    fetch(`/api/lrgs-client/${stationCode}/readings`)
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao buscar leituras');
+            return response.json();
+        })
+        .then(data => {
+            loadingSpinner.style.display = 'none';
+
+            if (data.success && data.data && data.data.readings && data.data.readings.length > 0) {
+                document.getElementById('lrgsModalTotalReadings').textContent = data.data.readings.length;
+
+                const readings = data.data.readings;
+                
+                // Criar cabeçalho da tabela
+                const headerRow = document.createElement('tr');
+                Object.keys(readings[0]).forEach(key => {
+                    const th = document.createElement('th');
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                });
+                tableHeader.appendChild(headerRow);
+
+                // Criar linhas da tabela
+                readings.forEach(reading => {
+                    const row = document.createElement('tr');
+                    Object.keys(reading).forEach(key => {
+                        const td = document.createElement('td');
+                        const value = reading[key];
+                        td.textContent = value !== null && value !== '' ? value : '-';
+                        row.appendChild(td);
+                    });
+                    tableBody.appendChild(row);
+                });
+
+                tableContainer.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById(lrgsModalConfig.errorTextId).textContent = 'Nenhuma leitura encontrada.';
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            loadingSpinner.style.display = 'none';
+            errorMessage.style.display = 'block';
+            document.getElementById(lrgsModalConfig.errorTextId).textContent = error.message;
+        });
+}
+
+// Inicializar modal LRGS
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => initStationModal(lrgsModalConfig));
+} else {
+    initStationModal(lrgsModalConfig);
+}
+
+// Configuração específica para HidroWeb Telemetria
+const hidrowebTelemetryModalConfig = {
+    modalId: 'hidrowebTelemetryReadingsModal',
+    stationCodeId: 'hidrowebTelemetryModalStationCode',
+    loadingId: 'hidrowebTelemetryLoadingSpinner',
+    tableContainerId: 'hidrowebTelemetryTableContainer',
+    errorMessageId: 'hidrowebTelemetryErrorMessage',
+    tableBodyId: 'hidrowebTelemetryTableBody',
+    totalReadingsId: 'hidrowebTelemetryModalTotalReadings',
+    errorTextId: 'hidrowebTelemetryErrorText',
+    closeButtonId: 'closeHidrowebTelemetryModal'
+};
+
+function openHidrowebTelemetryReadingsModal(stationCode, stationName, latitude, longitude) {
+    const modal = document.getElementById(hidrowebTelemetryModalConfig.modalId);
+    const modalStationCode = document.getElementById(hidrowebTelemetryModalConfig.stationCodeId);
+    const loadingSpinner = document.getElementById(hidrowebTelemetryModalConfig.loadingId);
+    const tableContainer = document.getElementById(hidrowebTelemetryModalConfig.tableContainerId);
+    const errorMessage = document.getElementById(hidrowebTelemetryModalConfig.errorMessageId);
+    const tableBody = document.getElementById(hidrowebTelemetryModalConfig.tableBodyId);
+
+    modal.style.display = 'block';
+    modalStationCode.innerHTML = stationCode + ' - ' + stationName + 
+        '<br><strong style="color: #00cc66;">Latitude:</strong> ' + latitude + 
+        ' | <strong style="color: #00cc66;">Longitude:</strong> ' + longitude;
+    loadingSpinner.style.display = 'block';
+    tableContainer.style.display = 'none';
+    errorMessage.style.display = 'none';
+    tableBody.innerHTML = '';
+
+    fetch(`/api/hidroweb-telemetria/${stationCode}/readings`)
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao buscar leituras');
+            return response.json();
+        })
+        .then(data => {
+            loadingSpinner.style.display = 'none';
+
+            if (data.success && data.data && data.data.readings && data.data.readings.length > 0) {
+                document.getElementById(hidrowebTelemetryModalConfig.totalReadingsId).textContent = data.data.readings.length;
+
+                data.data.readings.forEach(reading => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${reading.measurement_datetime || '-'}</td>
+                        <td>${reading.adopted_rainfall || '-'}</td>
+                        <td>${reading.adopted_quota || '-'}</td>
+                        <td>${reading.adopted_flow || '-'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                tableContainer.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById(hidrowebTelemetryModalConfig.errorTextId).textContent = 'Nenhuma leitura encontrada.';
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            loadingSpinner.style.display = 'none';
+            errorMessage.style.display = 'block';
+            document.getElementById(hidrowebTelemetryModalConfig.errorTextId).textContent = error.message;
+        });
+}
+
+// Inicializar modal Telemetria
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => initStationModal(hidrowebTelemetryModalConfig));
+} else {
+    initStationModal(hidrowebTelemetryModalConfig);
+} 
+
+// Configuração específica para CNARH
+const cnarhModalConfig = {
+    modalId: 'cnarhReadingsModal',
+    codeId: 'cnarhModalCode',
+    loadingId: 'cnarhLoadingSpinner',
+    dataContainerId: 'cnarhDataContainer',
+    errorMessageId: 'cnarhErrorMessage',
+    errorTextId: 'cnarhErrorText',
+    closeButtonId: 'closeCnarhModal'
+};
+
+function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
+    const modal = document.getElementById(cnarhModalConfig.modalId);
+    const modalCode = document.getElementById(cnarhModalConfig.codeId);
+    const loadingSpinner = document.getElementById(cnarhModalConfig.loadingId);
+    const dataContainer = document.getElementById(cnarhModalConfig.dataContainerId);
+    const errorMessage = document.getElementById(cnarhModalConfig.errorMessageId);
+
+    modal.style.display = 'block';
+    modalCode.innerHTML = cnarhCode + ' - ' + stationName + 
+        '<br><strong style="color: #A47864;">Latitude:</strong> ' + latitude + 
+        ' | <strong style="color: #A47864;">Longitude:</strong> ' + longitude;
+    loadingSpinner.style.display = 'block';
+    dataContainer.style.display = 'none';
+    errorMessage.style.display = 'none';
+
+    fetch(`/api/cnarh/${cnarhCode}/readings`)
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao buscar dados');
+            return response.json();
+        })
+        .then(data => {
+            loadingSpinner.style.display = 'none';
+
+            if (data.success && data.data && data.data.cnarh) {
+                const cnarh = data.data.cnarh;
+                let html = '';
+
+                Object.keys(cnarh).forEach(key => {
+                    const value = cnarh[key] !== null && cnarh[key] !== '' ? cnarh[key] : '-';
+                    html += `
+                        <div class="cnarh-data-row">
+                            <div class="cnarh-data-label">${key}:</div>
+                            <div class="cnarh-data-value">${value}</div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('cnarhDataContent').innerHTML = html;
+                dataContainer.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById(cnarhModalConfig.errorTextId).textContent = 'Nenhum dado encontrado.';
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            loadingSpinner.style.display = 'none';
+            errorMessage.style.display = 'block';
+            document.getElementById(cnarhModalConfig.errorTextId).textContent = error.message;
+        });
+}
+
+// Inicializar modal CNARH
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => initStationModal(cnarhModalConfig));
+} else {
+    initStationModal(cnarhModalConfig);
+}

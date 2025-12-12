@@ -52,8 +52,9 @@ Route::prefix('cnarh')->group(function () {
 });
 
 Route::get('/', function () {
-    return view('home');
+    return view('dashboard2');
 });
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dashboard2', [DashboardController::class, 'index2'])->name('dashboard2');
+
+//Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+//Route::get('/dashboard2', [DashboardController::class, 'index2'])->name('dashboard2');
 

@@ -89,9 +89,9 @@ class DcpReadingService
      * @param string $address
      * @return \Illuminate\Support\Collection
      */
-    public function getReadingsByAddress(string $address)
+    public function getReadingsByAddress(string $address, int $limit = 50)
     {
-        return $this->dcpReadingRepository->findByAddress($address);
+        return $this->dcpReadingRepository->findByAddress($address, $limit);
     }
 
     /**
@@ -107,4 +107,5 @@ class DcpReadingService
     {
         return $this->dcpReadingRepository->softDeleteByStationAndPeriod($stationId, $startTime, $endTime);
     }
+
 }

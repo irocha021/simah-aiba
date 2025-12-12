@@ -102,5 +102,13 @@ class HwStationReadingTelemetryRepository implements HwStationReadingTelemetryIn
         return new PaginationPresenter($dataDb);
     }
 
+    public function getReadingsByStationCode(string $stationCode, int $limit = 50)
+    {
+        return $this->model->where('station_code', $stationCode)
+            ->orderBy('measurement_datetime', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+
 }
  

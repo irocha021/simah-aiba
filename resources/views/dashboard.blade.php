@@ -153,6 +153,32 @@
                                 '📊 Ver Leituras (Últimas 50)</button>';
                         }
 
+                        if (station.source === 'lrgs_client') {
+                            popupContent += '<br><br>' +
+                                '<button onclick="openLrgsReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
+                                'style="background-color: #ff7800; color: white; border: none; padding: 8px 16px; ' +
+                                'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
+                                '📊 Ver Leituras (Últimas 50)</button>';
+                        }
+
+                        // Se for HidroWeb Telemetria, adicionar botão para ver leituras
+                        if (station.source === 'hidroweb_telemetria') {
+                            popupContent += '<br><br>' +
+                                '<button onclick="openHidrowebTelemetryReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
+                                'style="background-color: #00cc66; color: white; border: none; padding: 8px 16px; ' +
+                                'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
+                                '📊 Ver Leituras (Últimas 50)</button>';
+                        }
+
+                        // Se for CNARH, adicionar botão para ver dados
+                        if (station.source === 'cnarh') {
+                            popupContent += '<br><br>' +
+                                '<button onclick="openCnarhReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
+                                'style="background-color: #A47864; color: white; border: none; padding: 8px 16px; ' +
+                                'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
+                                '📊 Ver Dados CNARH</button>';
+                        }
+
 
                         marker.bindPopup(popupContent);
                         
@@ -204,5 +230,8 @@
     @include('partials.rimas-readings-modal')
     @include('partials.siagas-readings-modal')
     @include('partials.hidroweb-qa-readings-modal')
+    @include('partials.lrgs-readings-modal')
+    @include('partials.hidroweb-telemetry-readings-modal')
+    @include('partials.cnarh-readings-modal')
 </body>
 </html>

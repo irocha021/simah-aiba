@@ -45,4 +45,9 @@ class CnarhRepository implements CnarhRepositoryInterface
             ->whereNotNull('int_nu_longitude')
             ->get();
     }
+
+    public function getByCnarh(string $intCdCnarh40)
+    {
+        return Cnarh::where('int_cd_cnarh40', $intCdCnarh40)->first();
+    }
 }
