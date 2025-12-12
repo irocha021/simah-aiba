@@ -19,11 +19,6 @@ jobs:
           php-version: '8.3'
           tools: composer
 
-      - name: Install node.js and npm
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22'
-
       - name: Install dependencies
         run: |
           cp .env.example .env
@@ -31,7 +26,7 @@ jobs:
           rm .env
           npm install --force
 
-      - name: Upload Files to Production Server
+      - name: Upload Files to Server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -42,7 +37,7 @@ jobs:
           source: './*'
           target: '/root/system/mhb'
 
-      - name: Set Permissions and Clear Logs
+      - name: Update Docker Container
         uses: appleboy/ssh-action@v1.0.1
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -51,19 +46,4 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /root/system/mhb
-            chmod -R 777 storage
-            rm -rf storage/logs/*
-
-      - name: Update Database and Link File Storage
-        uses: appleboy/ssh-action@v1.0.1
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          port: ${{ secrets.VPS_PORT }}
-          script: |
-            cd /root/system/mhb
-            npm run build
-            php artisan migrate --force
-            php artisan cache:clear
-            php artisan storage:link
+            docker compose -f docker-compose.prod.yml -p mhb up -d --build
