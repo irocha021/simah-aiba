@@ -51,7 +51,7 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /root/system/mhb
-            chmod -R 755 storage
+            chmod -R 777 storage
             rm -rf storage/logs/*
             docker compose -f docker-compose.production.yml -p mhb up -d --build
 
@@ -67,3 +67,5 @@ jobs:
             docker exec spimrh php artisan optimize:clear
             docker exec spimrh php artisan storage:link
             docker exec spimrh php artisan key:generate
+            docker exec spimrh php artisan cache:clear
+            docker exec spimrh php artisan config:clear
