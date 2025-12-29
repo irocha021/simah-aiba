@@ -19,6 +19,9 @@
 </head>
 <body>
     <div id="map"></div>
+
+    {{-- Side Menu --}}
+    @include('components.side-menu')
     
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -27,6 +30,7 @@
     <script>
         // Criar o mapa
         var map = L.map('map').setView([-12.5, -41.5], 8);
+        map.zoomControl.setPosition('bottomright');
         
         // Adicionar o tile layer (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -48,49 +52,49 @@
             var styles = {
                 'cnarh': {
                     radius: 5,
-                    fillColor: "#A47864",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#A47864",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 },
                 'hidroweb_qualidade_agua': {
                     radius: 5,
-                    fillColor: "#3388ff",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#3388ff",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 },
                 'hidroweb_telemetria': {
                     radius: 5,
-                    fillColor: "#00cc66",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#00cc66",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 },
                 'lrgs_client': {
                     radius: 5,
-                    fillColor: "#ff7800",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#ff7800",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 },
                 'pocos_rimas': {
                     radius: 5,
-                    fillColor: "#ff0000",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#ff0000",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 },
                 'pocos_siagas': {
                     radius: 5,
-                    fillColor: "#e16ccfff",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#e16ccfff",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 }
