@@ -5,8 +5,11 @@
     <!-- Header fixo no topo -->
     <div class="sidebar-header">
         <div class="header-content">
-            <img src="{{ asset('images/Logo-icon.svg') }}" alt="Logo" class="logo-svg">
-            <span class="logo-text">Menu</span>
+            <!-- Imagem quando FECHADO (sempre visível) -->
+            <img src="{{ asset('images/Logo-icon.svg') }}" alt="Logo" class="logo-icon-closed">
+
+            <!-- Imagem quando ABERTO (só aparece quando expandido) -->
+            <img src="{{ asset('images/logo-top-sigmah.svg') }}" alt="Logo Completo" class="logo-icon-open">
         </div>
     </div>
 
@@ -123,7 +126,6 @@
     </div>
 </nav>
 
-<!-- CSS DO COMPONENTE -->
 <style>
     /* ===== ESTILOS DO SIDEBAR ===== */
     .sidebar {
@@ -145,8 +147,7 @@
         left: 0;
         top: 0;
         overflow: hidden;
-        /* Impede scroll na sidebar inteira */
-        transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        transition: width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 1000;
         box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
         border-top-right-radius: 20px;
@@ -166,7 +167,6 @@
         flex-direction: column;
         flex: 1;
         min-height: 0;
-        /* Importante para scroll interno */
     }
 
     /* Header fixo no topo */
@@ -178,7 +178,6 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
-        /* Impede que o header encolha */
         transition: padding var(--transition-speed);
     }
 
@@ -192,29 +191,65 @@
         justify-content: flex-start;
         transition: justify-content var(--transition-speed);
         width: 100%;
+        position: relative;
     }
 
     .sidebar.collapsed .header-content {
         justify-content: center;
     }
 
-    .logo-svg {
+    /* Logos com animação de fade limpa */
+    .logo-icon-closed,
+    .logo-icon-open {
+        transition: opacity var(--transition-speed) ease,
+            visibility var(--transition-speed) ease,
+            transform var(--transition-speed) ease;
+        position: absolute;
+        left: 0;
+    }
+
+    .logo-icon-closed {
         width: 2.5em;
         height: 2.5em;
         flex-shrink: 0;
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
     }
 
-    .logo-text {
-        font-size: 1.3rem;
-        font-weight: 600;
-        margin-left: 12px;
-        /* Espaço entre imagem e texto */
-        transition: opacity var(--transition-speed), transform var(--transition-speed);
-        white-space: nowrap;
+    .logo-icon-open {
+        width: 100%;
+        height: auto;
+        flex-shrink: 0;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-10px);
     }
 
-    .sidebar.collapsed .logo-text {
-        margin-left: 0;
+    /* Quando sidebar está EXPANDIDA (aberta) */
+    .sidebar:not(.collapsed) .logo-icon-closed {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-10px);
+    }
+
+    .sidebar:not(.collapsed) .logo-icon-open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    /* Quando sidebar está COLAPSADA (fechada) */
+    .sidebar.collapsed .logo-icon-closed {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed .logo-icon-open {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-10px);
     }
 
     /* Conteúdo com scroll */
@@ -223,7 +258,6 @@
         overflow-y: auto;
         overflow-x: hidden;
         min-height: 0;
-        /* Importante para scroll funcionar */
         padding: 10px 0;
     }
 
@@ -293,11 +327,11 @@
     }
 
     /* Elementos escondidos quando colapsado */
-    .sidebar.collapsed .logo-text,
     .sidebar.collapsed .login-text,
     .sidebar.collapsed .menu-text,
     .sidebar.collapsed .dropdown-icon {
         opacity: 0;
+        visibility: hidden;
         transform: translateX(-10px);
         width: 0;
         overflow: hidden;
@@ -326,13 +360,13 @@
         padding: 0;
         background: rgba(26, 37, 47, 0.95);
         display: none;
-        animation: slideDown 0.3s ease;
+        animation: fadeIn 0.3s ease;
     }
 
-    @keyframes slideDown {
+    @keyframes fadeIn {
         from {
             opacity: 0;
-            transform: translateY(-10px);
+            transform: translateY(-5px);
         }
 
         to {
@@ -385,7 +419,6 @@
         justify-content: flex-start;
         padding: 0 20px;
         flex-shrink: 0;
-        /* Fixa na base */
         transition: all var(--transition-speed);
     }
 
@@ -393,6 +426,7 @@
         display: flex;
         align-items: center;
         width: 100%;
+        position: relative;
     }
 
     /* Quando expandido: alinha à esquerda com espaço */
@@ -425,8 +459,9 @@
         font-weight: 600;
         color: #5C5E64;
         margin-left: 12px;
-        /* Espaço entre imagem e texto quando aberto */
-        transition: opacity var(--transition-speed), transform var(--transition-speed);
+        transition: opacity var(--transition-speed) ease,
+            visibility var(--transition-speed) ease,
+            transform var(--transition-speed) ease;
         white-space: nowrap;
     }
 
@@ -468,6 +503,7 @@
         .sidebar {
             transform: translateX(-100%);
             width: var(--sidebar-width);
+            transition: transform var(--transition-speed);
         }
 
         .sidebar.active {
