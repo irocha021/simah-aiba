@@ -732,3 +732,72 @@
         box-shadow: none;
     }
 }
+
+/* ===== ESTILOS PARA TEXTO DE CONFIGURAÇÃO ===== */
+.config-text-item {
+    margin: 20px 15px 10px;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.config-text-wrapper {
+    position: relative;
+    display: block;
+    height: 20px;
+}
+
+.config-text-open,
+.config-text-closed {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #757575;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    transition: all var(--transition-speed) ease;
+    position: absolute;
+    top: 0;
+    left: 12px;
+}
+
+.config-text-closed {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px);
+}
+
+.config-text-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+/* Estado colapsado */
+.sidebar.collapsed .config-text-item {
+    margin: 20px 10px 10px;
+}
+
+.sidebar.collapsed .config-text-open {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px);
+}
+
+.sidebar.collapsed .config-text-closed {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Ajuste de posicionamento quando sidebar não está colapsada */
+.sidebar:not(.collapsed) .config-text-open {
+    left: 12px;
+}
+
+.sidebar:not(.collapsed) .config-text-closed {
+    left: 12px;
+}

@@ -39,6 +39,15 @@
                 </li>
                 <!-- ===== FIM CONTROLE DE CAMADAS ===== -->
 
+                <!-- ===== TEXTO DE CONFIGURAÇÃO ===== -->
+                <li class="config-text-item">
+                    <div class="config-text-wrapper">
+                        <span class="config-text-open">CONFIGURAÇÕES</span>
+                        <span class="config-text-closed">CONFIG.</span>
+                    </div>
+                </li>
+                <!-- ===== FIM TEXTO DE CONFIGURAÇÃO ===== -->
+
                 <!-- ===== EXEMPLO DE OUTRO CONTROLE ===== -->
                 <li class="menu-item select-control" id="filters-control">
                     <div class="select-header">
