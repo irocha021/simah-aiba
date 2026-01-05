@@ -2,6 +2,8 @@
 
 * {
     font-family: "Inter", sans-serif;
+    text-decoration: none;
+    color: inherit;
 }
 
 .sidebar {
@@ -320,7 +322,6 @@
 
 .login-text {
     font-size: 1.2rem;
-    font-weight: 600;
     color: #5c5e64;
     margin-left: 12px;
     transition: opacity var(--transition-speed) ease,

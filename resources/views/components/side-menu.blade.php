@@ -112,10 +112,12 @@
 
         <!-- Toggle button fixo na base -->
         <div class="sidebar-toggle">
-            <div class="toggle-content">
-                <img src="{{ asset('images/icons/user-menu.svg') }}" alt="Logo" class="user-icon">
-                <span class="login-text">Login Privativo</span>
-            </div>
+            <a href="/login">
+                <div class="toggle-content">
+                    <img src="{{ asset('images/icons/user-menu.svg') }}" alt="Logo" class="user-icon">
+                    <span class="login-text">Login Privativo</span>
+                </div>
+            </a>
         </div>
     </div>
 </nav>
