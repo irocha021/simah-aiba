@@ -201,11 +201,11 @@
                     '<span style="color: #e16ccfff;">●</span> Poços SIAGAS': layerGroups['pocos_siagas']
                 };
 
-                // Adicionar controle ao mapa
+                /* // Adicionar controle ao mapa
                 L.control.layers(null, overlayMaps, {
                     collapsed: false,
                     position: 'topright'
-                }).addTo(map);
+                }).addTo(map); */
                 
                 // Ajustar zoom para mostrar todos os pontos MAS com mais zoom
                 if (bounds.length > 0) {

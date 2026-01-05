@@ -209,11 +209,11 @@
                     '<span style="color: #e16ccfff;">●</span> Poços SIAGAS': clusterGroups['pocos_siagas']
                 };
 
-                // Adicionar controle ao mapa
+                /* // Adicionar controle ao mapa
                 L.control.layers(null, overlayMaps, {
-                    collapsed: false,
+                    collapsed: true,
                     position: 'topright'
-                }).addTo(map);
+                }).addTo(map); */
                 
                 // Ajustar zoom para mostrar todos os pontos
                 if (bounds.length > 0) {
