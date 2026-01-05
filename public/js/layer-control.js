@@ -75,8 +75,6 @@ function initLayerControl() {
             button.innerHTML = `
                 <span class="option-indicator" style="background: ${config.color}"></span>
                 <span class="option-name">${config.name}</span>
-                <span class="option-count">${layerCounts[key] || 0}</span>
-                <span class="option-status"></span>
             `;
 
             button.addEventListener('click', function (e) {
