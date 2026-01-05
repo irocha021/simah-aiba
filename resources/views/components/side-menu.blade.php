@@ -27,8 +27,6 @@
                         <i class="fas fa-chevron-down dropdown-icon"></i>
                     </div>
 
-                    <div class="select-tooltip">Camadas</div>
-
                     <div class="select-dropdown">
                         <div class="select-content">
                             <div class="select-box">
@@ -50,8 +48,6 @@
                         <i class="fas fa-chevron-down dropdown-icon"></i>
                     </div>
 
-                    <div class="select-tooltip">Cadastro</div>
-
                     <div class="select-dropdown">
                         <div class="select-content">
                             <div class="select-box">
@@ -59,12 +55,10 @@
                                     <button class="select-option active">
                                         <span class="option-indicator" style="background: #ff6b6b"></span>
                                         <span class="option-name">Todos</span>
-                                        <span class="option-status"></span>
                                     </button>
                                     <button class="select-option">
                                         <span class="option-indicator" style="background: #4ecdc4"></span>
                                         <span class="option-name">Ativos</span>
-                                        <span class="option-status"></span>
                                     </button>
                                 </div>
                             </div>
@@ -81,8 +75,6 @@
                         <span class="select-text">Upload</span>
                         <i class="fas fa-chevron-down dropdown-icon"></i>
                     </div>
-
-                    <div class="select-tooltip">Upload</div>
 
                     <div class="select-dropdown">
                         <div class="select-content">

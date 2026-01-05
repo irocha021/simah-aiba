@@ -1,3 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+* {
+    font-family: "Inter", sans-serif;
+}
+
 .sidebar {
     --sidebar-width: 300px;
     --sidebar-collapsed-width: 95px;
@@ -73,8 +79,8 @@
 }
 
 .logo-icon-closed {
-    width: 3.5em;
-    height: 3.5em;
+    width: 3.5rem;
+    height: 3.5rem;
     flex-shrink: 0;
     opacity: 0;
     visibility: hidden;
@@ -245,7 +251,7 @@
     padding-left: 60px;
     padding-top: 12px;
     padding-bottom: 12px;
-    font-size: 0.9em;
+    font-size: 0.9rem;
     color: #95a5a6;
 }
 
@@ -280,7 +286,7 @@
     padding: 0 20px;
     flex-shrink: 0;
     transition: all var(--transition-speed);
-    height: 7.4rem;
+    height: 6rem;
 }
 
 .toggle-content {
@@ -308,8 +314,8 @@
 }
 
 .user-icon {
-    width: 3.5em;
-    height: 3.5em;
+    width: 3.5rem;
+    height: 3.5rem;
 }
 
 .login-text {
@@ -356,16 +362,11 @@
 
 .select-control {
     position: relative;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    border-bottom: none;
     margin: 10px 15px;
     padding: 0;
     overflow: visible;
     transition: all 0.3s;
-}
-
-.sidebar:not(.collapsed) .select-control {
-    background: #f8f9fa;
 }
 
 .sidebar.collapsed .select-control {
@@ -400,7 +401,7 @@
 
 .select-header:hover {
     background: #f6f6f6;
-    color: #5C5E64;
+    color: #5c5e64;
     border: none;
 }
 
@@ -492,37 +493,7 @@
     color: black;
 }
 
-.select-tooltip {
-    position: absolute;
-    left: calc(100% + 10px);
-    top: 50%;
-    transform: translateY(-50%);
-    background: #2c3e50;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s;
-    z-index: 1001;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    pointer-events: none;
-}
-
-.select-tooltip::before {
-    content: "";
-    position: absolute;
-    right: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    border-width: 6px;
-    border-style: solid;
-    border-color: transparent #2c3e50 transparent transparent;
-}
-
-.sidebar.collapsed .select-header:hover ~ .select-tooltip {
+.sidebar.collapsed .select-header:hover ~ {
     opacity: 1;
     visibility: visible;
     left: calc(100% + 15px);
@@ -610,7 +581,7 @@
 
 .select-option.active {
     background: #ffffff;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 500;
     color: #165b9c;
 }
@@ -641,7 +612,6 @@
 
 .option-name {
     flex: 1;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -715,7 +685,7 @@
         margin: 10px;
     }
 
-    .sidebar.collapsed .select-tooltip {
+    .sidebar.collapsed {
         display: none;
     }
 
