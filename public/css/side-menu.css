@@ -508,6 +508,10 @@
     margin-left: 0;
 }
 
+.sidebar:not(.collapsed) .select-control.active .select-text {
+    color: #000000;
+}
+
 .sidebar.collapsed .select-header .select-text {
     display: none;
 }
