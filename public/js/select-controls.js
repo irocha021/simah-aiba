@@ -1,5 +1,34 @@
 // select-controls.js
 
+// Função para atualizar ícones de um controle específico
+function updateSelectIcons(control) {
+    const isActive = control.classList.contains('active');
+    const iconOpen = control.querySelector('.select-icon-open');
+    const iconClosed = control.querySelector('.select-icon-closed');
+
+    if (iconOpen && iconClosed) {
+        if (isActive) {
+            // Select ABERTO: mostrar bold, esconder normal
+            iconOpen.style.opacity = '1';
+            iconOpen.style.visibility = 'visible';
+            iconOpen.style.display = 'block';
+
+            iconClosed.style.opacity = '0';
+            iconClosed.style.visibility = 'hidden';
+            iconClosed.style.display = 'none';
+        } else {
+            // Select FECHADO: mostrar normal, esconder bold
+            iconOpen.style.opacity = '0';
+            iconOpen.style.visibility = 'hidden';
+            iconOpen.style.display = 'none';
+
+            iconClosed.style.opacity = '1';
+            iconClosed.style.visibility = 'visible';
+            iconClosed.style.display = 'block';
+        }
+    }
+}
+
 // Função genérica para inicializar todos os controles
 function initSelectControls() {
     const selectControls = document.querySelectorAll('.select-control');
@@ -13,6 +42,7 @@ function initSelectControls() {
                 e.stopPropagation();
 
                 const sidebar = document.getElementById('sidebar');
+                const wasActive = control.classList.contains('active');
 
                 // Se menu está colapsado, expande primeiro
                 if (sidebar.classList.contains('collapsed')) {
@@ -22,16 +52,23 @@ function initSelectControls() {
                     // Aguardar transição e abrir dropdown
                     setTimeout(() => {
                         control.classList.add('active');
+                        updateSelectIcons(control);
                     }, 100);
                 } else {
                     // Se já está expandido, toggle dropdown
-                    control.classList.toggle('active');
+                    if (wasActive) {
+                        control.classList.remove('active');
+                    } else {
+                        control.classList.add('active');
+                    }
+                    updateSelectIcons(control);
                 }
 
-                // Fechar outros controles
+                // Fechar outros controles e atualizar seus ícones
                 selectControls.forEach(otherControl => {
                     if (otherControl !== control) {
                         otherControl.classList.remove('active');
+                        updateSelectIcons(otherControl);
                     }
                 });
             });
@@ -59,9 +96,12 @@ function initSelectControls() {
                 control.dispatchEvent(event);
             });
         });
+
+        // Inicializar ícones no estado correto (todos fechados inicialmente)
+        updateSelectIcons(control);
     });
 
-    // Fechar controles ao clicar fora
+    // Fechar controles ao clicar fora e atualizar ícones
     document.addEventListener('click', function (e) {
         const isSelectControl = e.target.closest('.select-control') ||
             e.target.closest('.select-header') ||
@@ -70,6 +110,7 @@ function initSelectControls() {
         if (!isSelectControl) {
             selectControls.forEach(control => {
                 control.classList.remove('active');
+                updateSelectIcons(control);
             });
         }
     });
@@ -86,6 +127,12 @@ function initSelectControls() {
                     if (isCollapsed) {
                         selectControls.forEach(control => {
                             control.classList.remove('active');
+                            updateSelectIcons(control);
+                        });
+                    } else {
+                        // Se menu expandiu, apenas atualizar ícones (mantém estado)
+                        selectControls.forEach(control => {
+                            updateSelectIcons(control);
                         });
                     }
                 }
@@ -113,6 +160,7 @@ window.selectControls = {
         const control = document.getElementById(controlId);
         if (control) {
             control.classList.add('active');
+            updateSelectIcons(control);
         }
     },
 
@@ -121,6 +169,7 @@ window.selectControls = {
         const control = document.getElementById(controlId);
         if (control) {
             control.classList.remove('active');
+            updateSelectIcons(control);
         }
     },
 
@@ -128,6 +177,7 @@ window.selectControls = {
     closeAll: function () {
         document.querySelectorAll('.select-control').forEach(control => {
             control.classList.remove('active');
+            updateSelectIcons(control);
         });
     },
 

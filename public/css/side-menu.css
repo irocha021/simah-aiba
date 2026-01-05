@@ -422,43 +422,80 @@
     left: 0;
 }
 
-.select-icon-open {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(0);
-}
-
+.select-icon-open,
 .select-icon-closed {
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(-10px);
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    object-fit: contain;
+    transition: all var(--transition-speed) ease;
+    position: absolute;
+    left: 12px;
 }
 
-.sidebar:not(.collapsed) .select-icon-open {
+.sidebar:not(.collapsed) .select-icon-open,
+.sidebar:not(.collapsed) .select-icon-closed {
     position: relative;
     left: 0;
     margin-right: 15px;
 }
 
-.sidebar:not(.collapsed) .select-icon-closed {
-    display: none;
-}
-
-.sidebar.collapsed .select-icon-open {
-    display: none;
-}
-
+.sidebar.collapsed .select-icon-open,
 .sidebar.collapsed .select-icon-closed {
     position: relative;
     left: 0;
     margin-right: 0;
+}
+
+/* Ícone normal SEMPRE visível quando select FECHADO */
+.select-control:not(.active) .select-icon-closed {
     opacity: 1;
     visibility: visible;
-    transform: translateX(0);
+    display: block;
+}
+
+.select-control:not(.active) .select-icon-open {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+}
+
+/* Ícone bold SOMENTE quando select ABERTO */
+.select-control.active .select-icon-closed {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
 }
 
 .select-control.active .select-icon-open {
-    filter: brightness(0.8);
+    opacity: 1;
+    visibility: visible;
+    display: block;
+}
+
+/* Menu colapsado - garantir que mostre o ícone correto */
+.sidebar.collapsed .select-control:not(.active) .select-icon-closed {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+}
+
+.sidebar.collapsed .select-control:not(.active) .select-icon-open {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    display: none !important;
+}
+
+.sidebar.collapsed .select-control.active .select-icon-closed {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    display: none !important;
+}
+
+.sidebar.collapsed .select-control.active .select-icon-open {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
 }
 
 .sidebar:not(.collapsed) .select-header .select-text {

@@ -17,7 +17,7 @@
             <ul class="sidebar-menu">
 
                 <!-- ===== CONTROLE DE CAMADAS ===== -->
-                <li class="menu-item select-control active" id="layer-control">
+                <li class="menu-item select-control" id="layer-control">
                     <div class="select-header">
                         <img src="{{ asset('images/icons/gota-camada-bold.svg') }}" alt="Camadas"
                             class="select-icon-open">
@@ -42,7 +42,8 @@
                 <!-- ===== EXEMPLO DE OUTRO CONTROLE ===== -->
                 <li class="menu-item select-control" id="filters-control">
                     <div class="select-header">
-                        <img src="{{ asset('images/icons/cadastro-bold.svg') }}" alt="Filtros" class="select-icon-open">
+                        <img src="{{ asset('images/icons/cadastro-bold.svg') }}" alt="Filtros"
+                            class="select-icon-open">
                         <img src="{{ asset('images/icons/cadastro.svg') }}" alt="Filtros" class="select-icon-closed">
                         <span class="select-text">Cadastro</span>
                         <i class="fas fa-chevron-down dropdown-icon"></i>
@@ -52,7 +53,7 @@
                         <div class="select-content">
                             <div class="select-box">
                                 <div class="select-options">
-                                    <button class="select-option active">
+                                    <button class="select-option">
                                         <span class="option-indicator" style="background: #ff6b6b"></span>
                                         <span class="option-name">Todos</span>
                                     </button>
@@ -70,8 +71,10 @@
                 <!-- ===== EXEMPLO DE TERCEIRO CONTROLE ===== -->
                 <li class="menu-item select-control" id="sort-control">
                     <div class="select-header">
-                        <img src="{{ asset('images/icons/upload-page-bold.svg') }}" alt="Ordenar" class="select-icon-open">
-                        <img src="{{ asset('images/icons/upload-page.svg') }}" alt="Ordenar" class="select-icon-closed">
+                        <img src="{{ asset('images/icons/upload-page-bold.svg') }}" alt="Ordenar"
+                            class="select-icon-open">
+                        <img src="{{ asset('images/icons/upload-page.svg') }}" alt="Ordenar"
+                            class="select-icon-closed">
                         <span class="select-text">Upload</span>
                         <i class="fas fa-chevron-down dropdown-icon"></i>
                     </div>
