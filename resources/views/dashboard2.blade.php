@@ -46,6 +46,11 @@
             'pocos_rimas': L.markerClusterGroup({ maxClusterRadius: 50, spiderfyOnMaxZoom: true, showCoverageOnHover: false, zoomToBoundsOnClick: true }),
             'pocos_siagas': L.markerClusterGroup({ maxClusterRadius: 50, spiderfyOnMaxZoom: true, showCoverageOnHover: false, zoomToBoundsOnClick: true })
         };
+
+        window.clusterGroups = clusterGroups; // Expoe globalmente
+        if (window.layerControl && window.layerControl.updateCounts) {
+            window.layerControl.updateCounts();
+        }
         
         // Função para retornar o estilo do marcador baseado no source
         function getMarkerStyle(source) {
