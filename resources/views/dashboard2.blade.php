@@ -139,7 +139,7 @@
                         if (station.source === 'pocos_rimas') {
                             popupContent += '<br><br>' +
                                 '<button onclick="openRimasReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
-                                'style="background-color: #ff0000; color: white; border: none; padding: 8px 16px; ' +
+                                'style="background-color: #3388ff; color: white; border: none; padding: 8px 16px; ' +
                                 'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
                                 '📊 Ver Leituras (Últimas 50)</button>';
                         }
@@ -148,7 +148,7 @@
                         if (station.source === 'pocos_siagas') {
                             popupContent += '<br><br>' +
                                 '<button onclick="openSiagasReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
-                                'style="background-color: #e16ccfff; color: white; border: none; padding: 8px 16px; ' +
+                                'style="background-color: #3388ff; color: white; border: none; padding: 8px 16px; ' +
                                 'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
                                 '📊 Ver Dados do Poço</button>';
                         }
@@ -165,7 +165,7 @@
                         if (station.source === 'lrgs_client') {
                             popupContent += '<br><br>' +
                                 '<button onclick="openLrgsReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
-                                'style="background-color: #ff7800; color: white; border: none; padding: 8px 16px; ' +
+                                'style="background-color: #3388ff; color: white; border: none; padding: 8px 16px; ' +
                                 'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
                                 '📊 Ver Leituras (Últimas 50)</button>';
                         }
@@ -174,7 +174,7 @@
                         if (station.source === 'hidroweb_telemetria') {
                             popupContent += '<br><br>' +
                                 '<button onclick="openHidrowebTelemetryReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
-                                'style="background-color: #00cc66; color: white; border: none; padding: 8px 16px; ' +
+                                'style="background-color: #3388ff; color: white; border: none; padding: 8px 16px; ' +
                                 'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
                                 '📊 Ver Leituras (Últimas 50)</button>';
                         }
@@ -183,7 +183,7 @@
                         if (station.source === 'cnarh') {
                             popupContent += '<br><br>' +
                                 '<button onclick="openCnarhReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
-                                'style="background-color: #A47864; color: white; border: none; padding: 8px 16px; ' +
+                                'style="background-color: #3388ff; color: white; border: none; padding: 8px 16px; ' +
                                 'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
                                 '📊 Ver Dados CNARH</button>';
                         }

@@ -124,8 +124,8 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
 
     modal.style.display = 'block';
     modalIdPonto.innerHTML = idPonto + ' - ' + stationName + 
-        '<br><strong style="color: #e16ccfff;">Latitude:</strong> ' + latitude + 
-        ' | <strong style="color: #e16ccfff;">Longitude:</strong> ' + longitude;
+        '<br><strong style="color: #3388ff;">Latitude:</strong> ' + latitude + 
+        ' | <strong style="color: #3388ff;">Longitude:</strong> ' + longitude;
     loadingSpinner.style.display = 'block';
     dataContainer.style.display = 'none';
     errorMessage.style.display = 'none';

@@ -47,7 +47,7 @@
                     <div class="form-group">
                         <label for="password">Senha</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-lock"></i>
+                            <i class="fas fa-key"></i>
                             <input type="password" id="password" name="password" class="form-control"
                                 placeholder="••••••••" required>
                             <button type="button" class="password-toggle" id="togglePassword">
