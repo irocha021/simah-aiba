@@ -48,7 +48,7 @@
                 </li>
                 <!-- ===== FIM TEXTO DE CONFIGURAÇÃO ===== -->
 
-                <!-- ===== EXEMPLO DE OUTRO CONTROLE ===== -->
+                <!-- ===== CONTROLE DE CADASTRO ===== -->
                 <li class="menu-item select-control" id="filters-control">
                     <div class="select-header">
                         <img src="{{ asset('images/icons/cadastro-bold.svg') }}" alt="Filtros"
@@ -75,9 +75,9 @@
                         </div>
                     </div>
                 </li>
-                <!-- ===== FIM OUTRO CONTROLE ===== -->
+                <!-- ===== FIM CONTROLE DE CADASTRO ===== -->
 
-                <!-- ===== EXEMPLO DE TERCEIRO CONTROLE ===== -->
+                <!-- ===== CONTROLE DE UPLOAD ===== -->
                 <li class="menu-item select-control" id="sort-control">
                     <div class="select-header">
                         <img src="{{ asset('images/icons/upload-page-bold.svg') }}" alt="Ordenar"
@@ -92,21 +92,19 @@
                         <div class="select-content">
                             <div class="select-box">
                                 <div class="select-options">
-                                    <button class="select-option active">
-                                        <span class="option-name">Nome (A-Z)</span>
-                                    </button>
-                                    <button class="select-option">
-                                        <span class="option-name">Nome (Z-A)</span>
-                                    </button>
-                                    <button class="select-option">
-                                        <span class="option-name">Data</span>
-                                    </button>
+                                    <!-- Links com classe específica -->
+                                    <a href="{{ route('dbf-import.index') }}" class="select-link">
+                                        <span class="option-name">Importar DBF</span>
+                                    </a>
+                                    <a href="{{ route('cnarh.index') }}" class="select-link">
+                                        <span class="option-name">Importar CNRH</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </li>
-                <!-- ===== FIM TERCEIRO CONTROLE ===== -->
+                <!-- ===== FIM CONTROLE DE UPLOAD ===== -->
             </ul>
         </div>
 
