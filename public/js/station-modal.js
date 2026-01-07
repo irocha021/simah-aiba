@@ -123,9 +123,14 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
     const errorMessage = document.getElementById(siagasModalConfig.errorMessageId);
 
     modal.style.display = 'block';
-    modalIdPonto.innerHTML = idPonto + ' - ' + stationName + 
-        '<br><strong style="color: #3388ff;">Latitude:</strong> ' + latitude + 
-        ' | <strong style="color: #3388ff;">Longitude:</strong> ' + longitude;
+
+    modalIdPonto.innerHTML = `
+        <div class="siagas-header-content-title">
+            <h2 style="margin: 0;">Informações sobre poços</h2>
+            <p style="margin: 0;">Localização, profundidade, tipo de poço, testes de bombeamento, vazão, entre outros.</p>
+        </div>
+    `;
+
     loadingSpinner.style.display = 'block';
     dataContainer.style.display = 'none';
     errorMessage.style.display = 'none';
@@ -147,7 +152,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                     const value = poco[key] !== null && poco[key] !== '' ? poco[key] : '-';
                     html += `
                         <div class="siagas-data-row">
-                            <div class="siagas-data-label">${key}:</div>
+                            <div class="siagas-data-label" style="text-transform: capitalize;">${key}:</div>
                             <div class="siagas-data-value">${value}</div>
                         </div>
                     `;

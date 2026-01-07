@@ -6,8 +6,8 @@
             <div class="siagas-header-content">
                 <img src="{{ asset('images/logo-top-sigmah.svg') }}" alt="Logo SIGMAH" class="logo-siagas-modal" />
                 <div class="siagas-header-content-title">
-                    <h2>Dados do Poço SIAGAS</h2>
-                    <p>informações detalhadas sobre poços artesianos e não artesianos no Brasil, coletados e
+                    <h2>Dados SIAGAS</h2>
+                    <p>Informações detalhadas sobre poços artesianos e não artesianos no Brasil, coletados e
                         disponibilizados pelo Serviço Geológico do Brasil (SGB/CPRM).</p>
                 </div>
             </div>
@@ -16,7 +16,7 @@
 
         <!-- Informações do Poço -->
         <div class="siagas-modal-info">
-            <strong>ID do Ponto:</strong> <span id="siagasModalIdPonto">-</span>
+            <div id="siagasModalIdPonto"></div>
         </div>
 
         <!-- Loading -->
@@ -86,14 +86,14 @@
         width: 60%;
     }
 
-    .siagas-modal-header h2 {
+    .siagas-header-content-title h2 {
         color: #000000;
         font-weight: bold;
         font-size: 1.5rem;
         margin: 0;
     }
 
-    .siagas-modal-header p {
+    .siagas-header-content-title p {
         color: #575F6E;
         font-size: 1rem;
         margin: 0;
@@ -111,10 +111,8 @@
     }
 
     .siagas-modal-info {
-        margin: 20px;
+        margin: 20px 50px;
         padding: 10px;
-        background-color: #f9f9f9;
-        border-radius: 5px;
     }
 
     .siagas-loading {
@@ -133,9 +131,9 @@
     }
 
     .siagas-data-container {
-        max-height: 67%;
+        max-height: 62%;
         overflow-y: auto;
-        margin: 20px;
+        margin: 20px 50px;
     }
 
     .siagas-data-content {
