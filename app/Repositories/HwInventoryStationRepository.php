@@ -166,6 +166,18 @@ class HwInventoryStationRepository implements HwInventoryStationInterface
             ->get();
     }
 
+    public function getTelemetryStationsWithForecastCoordinates()
+    {
+        // Estações que têm dados de previsão de vazão
+        return $this->model
+            ->select('hw_inventory_stations.*')
+            ->join('hw_station_flow_forecasts', 'hw_inventory_stations.station_code', '=', 'hw_station_flow_forecasts.station_code')
+            ->whereNotNull('hw_inventory_stations.latitude')
+            ->whereNotNull('hw_inventory_stations.longitude')
+            ->distinct()
+            ->get();
+    }
+
     public function getQualityStationsWithCoordinates()
     {
         // Estações que têm dados de qualidade da água

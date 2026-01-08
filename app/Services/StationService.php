@@ -27,7 +27,7 @@ class StationService
             'by_source' => []
         ];
 
-        // 1. HidroWeb Telemetria
+        //  HidroWeb Telemetria
         foreach ($this->hwInventoryStationRepository->getTelemetryStationsWithCoordinates() as $station) {
             $source = 'hidroweb_telemetria';
             $stations[] = [
@@ -40,7 +40,7 @@ class StationService
             $statistics['by_source'][$source] = ($statistics['by_source'][$source] ?? 0) + 1;
         }
 
-        // 2. HidroWeb Qualidade da Água
+        //  HidroWeb Qualidade da Água
         foreach ($this->hwInventoryStationRepository->getQualityStationsWithCoordinates() as $station) {
             $source = 'hidroweb_qualidade_agua';
             $stations[] = [
@@ -53,7 +53,7 @@ class StationService
             $statistics['by_source'][$source] = ($statistics['by_source'][$source] ?? 0) + 1;
         }
 
-        // 2. DCP Stations
+        //  DCP Stations
         foreach ($this->dcpStationRepository->getAllWithCoordinates() as $station) {
             $source = StationSourceEnum::DCP->value;
             $stations[] = [
@@ -66,7 +66,20 @@ class StationService
             $statistics['by_source'][$source] = ($statistics['by_source'][$source] ?? 0) + 1;
         }
 
-        // 3. RIMAS
+        //  HidroWeb Telemetria com Previsão
+        foreach ($this->hwInventoryStationRepository->getTelemetryStationsWithForecastCoordinates() as $station) {
+            $source = StationSourceEnum::HIDROWEB_TELEMETRIA_COM_PREVISAO->value ;
+            $stations[] = [
+                'code' => (string) $station->station_code,
+                'name' => $station->station_name,
+                'latitude' => (float) $station->latitude,
+                'longitude' => (float) $station->longitude,
+                'source' => $source, 
+            ];
+            $statistics['by_source'][$source] = ($statistics['by_source'][$source] ?? 0) + 1;
+        }
+
+        //  RIMAS
           foreach ($this->pocoRimasRepository->getAllWithCoordinates() as $station) {
               $source = StationSourceEnum::RIMAS->value;
               $stations[] = [
@@ -79,7 +92,7 @@ class StationService
               $statistics['by_source'][$source] = ($statistics['by_source'][$source] ?? 0) + 1;
           }
 
-        // 4. SIAGAS
+        //  SIAGAS
          foreach ($this->pocoSiagasRepository->getAllWithCoordinates() as $station) {
               $source = StationSourceEnum::SIAGAS->value;
               $stations[] = [
@@ -92,7 +105,7 @@ class StationService
               $statistics['by_source'][$source] = ($statistics['by_source'][$source] ?? 0) + 1;
          }
 
-        // 5. CNARH
+        //  CNARH
         foreach ($this->cnarhRepository->getAllWithCoordinates() as $station) {
             $source = StationSourceEnum::CNARH->value;
             $stations[] = [

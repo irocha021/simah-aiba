@@ -4,8 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DbfImportController;
 use App\Http\Controllers\CnarhUploadController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Jobs\HidroWeb\HidroFlowForecastController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroInfoAnaAdoptedTelemetricSeriesReadingController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroInventoryStationManagerController;
+use App\Http\Controllers\Jobs\HidroWeb\HidroMonthlyTelemetricReadingController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroSerieQaReadingController;
 use App\Http\Controllers\Jobs\Lrgs\ReadDcpMessagesController;
 
@@ -15,6 +17,8 @@ Route::prefix('jobs')->group(function () {
         Route::get('/inventory-station', [HidroInventoryStationManagerController::class, 'index']);
         Route::get('/info-ana-adopted-telemetric-series-reading', [HidroInfoAnaAdoptedTelemetricSeriesReadingController::class, 'index']);
         Route::get('/readings/hidro-serie-qa', [HidroSerieQaReadingController::class, 'index']);
+        Route::get('/readings/telemetric/monthly', [HidroMonthlyTelemetricReadingController::class, 'index']);
+        Route::get('/flow-forecast', [HidroFlowForecastController::class, 'index']);
     });
 
     Route::prefix('lrgs')->group(function(){
@@ -56,5 +60,5 @@ Route::get('/', function () {
 });
 
 //Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-//Route::get('/dashboard2', [DashboardController::class, 'index2'])->name('dashboard2');
+Route::get('/dashboard2', [DashboardController::class, 'index'])->name('dashboard2');
 

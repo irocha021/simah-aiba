@@ -37,6 +37,7 @@
             'cnarh': L.layerGroup(),
             'hidroweb_qualidade_agua': L.layerGroup(),
             'hidroweb_telemetria': L.layerGroup(),
+            'hidroweb_telemetria_com_previsao': L.layerGroup(),
             'lrgs_client': L.layerGroup(),
             'pocos_rimas': L.layerGroup(),
             'pocos_siagas': L.layerGroup()
@@ -64,6 +65,14 @@
                 'hidroweb_telemetria': {
                     radius: 5,
                     fillColor: "#00cc66",
+                    color: "#fff",
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.7
+                },
+                'hidroweb_telemetria_com_previsao': {
+                    radius: 5,
+                    fillColor: "#9933ff",
                     color: "#fff",
                     weight: 1,
                     opacity: 1,
@@ -161,13 +170,14 @@
                                 '📊 Ver Leituras (Últimas 50)</button>';
                         }
 
-                        // Se for HidroWeb Telemetria, adicionar botão para ver leituras
-                        if (station.source === 'hidroweb_telemetria') {
+                        // Se for HidroWeb Telemetria OU Telemetria com Previsão
+                        if (station.source === 'hidroweb_telemetria' || station.source === 'hidroweb_telemetria_com_previsao') {
+                            var buttonColor = station.source === 'hidroweb_telemetria_com_previsao' ? '#9933ff' : '#00cc66';
                             popupContent += '<br><br>' +
-                                '<button onclick="openHidrowebTelemetryReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
-                                'style="background-color: #00cc66; color: white; border: none; padding: 8px 16px; ' +
+                                '<button onclick="openHidrowebTelemetryDataModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
+                                'style="background-color: ' + buttonColor + '; color: white; border: none; padding: 8px 16px; ' +
                                 'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
-                                '📊 Ver Leituras (Últimas 50)</button>';
+                                '📊 Ver Dados</button>';
                         }
 
                         // Se for CNARH, adicionar botão para ver dados
@@ -196,6 +206,7 @@
                     '<span style="color: #A47864;">●</span> CNARH': layerGroups['cnarh'],
                     '<span style="color: #3388ff;">●</span> HidroWeb - Qualidade da Água': layerGroups['hidroweb_qualidade_agua'],
                     '<span style="color: #00cc66;">●</span> HidroWeb - Telemetria': layerGroups['hidroweb_telemetria'],
+                    '<span style="color: #9933ff;">●</span> HidroWeb - Telemetria c/ Previsão': layerGroups['hidroweb_telemetria_com_previsao'],
                     '<span style="color: #ff7800;">●</span> LRGS Client (DCP)': layerGroups['lrgs_client'],
                     '<span style="color: #ff0000;">●</span> Poços RIMAS': layerGroups['pocos_rimas'],
                     '<span style="color: #e16ccfff;">●</span> Poços SIAGAS': layerGroups['pocos_siagas']
@@ -231,7 +242,7 @@
     @include('partials.siagas-readings-modal')
     @include('partials.hidroweb-qa-readings-modal')
     @include('partials.lrgs-readings-modal')
-    @include('partials.hidroweb-telemetry-readings-modal')
+    @include('partials.hidroweb-telemetry-data-modal')
     @include('partials.cnarh-readings-modal')
 </body>
 </html>

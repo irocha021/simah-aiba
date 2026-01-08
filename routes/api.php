@@ -20,4 +20,5 @@ Route::get('/pocos-siagas/{id_ponto}/readings', [App\Http\Controllers\Api\PocoSi
 Route::get('/hidroweb-qualidade-agua/{station_code}/readings', [App\Http\Controllers\Api\HwStationReadingQaController::class, 'getReadings']);
 Route::get('/lrgs-client/{station_code}/readings', [App\Http\Controllers\Api\LrgsClientController::class, 'getReadings']);
 Route::get('/hidroweb-telemetria/{station_code}/readings', [App\Http\Controllers\Api\HwStationReadingTelemetryController::class, 'getReadings']);
+Route::get('/hidroweb-telemetria/{station_code}/forecast', [App\Http\Controllers\Jobs\HidroWeb\HidroFlowForecastController::class, 'getForecastForStation']);
 Route::get('/cnarh/{int_cd_cnarh40}/readings', [App\Http\Controllers\Api\CnarhController::class, 'getReadings']);

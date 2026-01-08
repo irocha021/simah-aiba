@@ -344,79 +344,6 @@ if (document.readyState === 'loading') {
     initStationModal(lrgsModalConfig);
 }
 
-// Configuração específica para HidroWeb Telemetria
-const hidrowebTelemetryModalConfig = {
-    modalId: 'hidrowebTelemetryReadingsModal',
-    stationCodeId: 'hidrowebTelemetryModalStationCode',
-    loadingId: 'hidrowebTelemetryLoadingSpinner',
-    tableContainerId: 'hidrowebTelemetryTableContainer',
-    errorMessageId: 'hidrowebTelemetryErrorMessage',
-    tableBodyId: 'hidrowebTelemetryTableBody',
-    totalReadingsId: 'hidrowebTelemetryModalTotalReadings',
-    errorTextId: 'hidrowebTelemetryErrorText',
-    closeButtonId: 'closeHidrowebTelemetryModal'
-};
-
-function openHidrowebTelemetryReadingsModal(stationCode, stationName, latitude, longitude) {
-    const modal = document.getElementById(hidrowebTelemetryModalConfig.modalId);
-    const modalStationCode = document.getElementById(hidrowebTelemetryModalConfig.stationCodeId);
-    const loadingSpinner = document.getElementById(hidrowebTelemetryModalConfig.loadingId);
-    const tableContainer = document.getElementById(hidrowebTelemetryModalConfig.tableContainerId);
-    const errorMessage = document.getElementById(hidrowebTelemetryModalConfig.errorMessageId);
-    const tableBody = document.getElementById(hidrowebTelemetryModalConfig.tableBodyId);
-
-    modal.style.display = 'block';
-    modalStationCode.innerHTML = stationCode + ' - ' + stationName + 
-        '<br><strong style="color: #00cc66;">Latitude:</strong> ' + latitude + 
-        ' | <strong style="color: #00cc66;">Longitude:</strong> ' + longitude;
-    loadingSpinner.style.display = 'block';
-    tableContainer.style.display = 'none';
-    errorMessage.style.display = 'none';
-    tableBody.innerHTML = '';
-
-    fetch(`/api/hidroweb-telemetria/${stationCode}/readings`)
-        .then(response => {
-            if (!response.ok) throw new Error('Erro ao buscar leituras');
-            return response.json();
-        })
-        .then(data => {
-            loadingSpinner.style.display = 'none';
-
-            if (data.success && data.data && data.data.readings && data.data.readings.length > 0) {
-                document.getElementById(hidrowebTelemetryModalConfig.totalReadingsId).textContent = data.data.readings.length;
-
-                data.data.readings.forEach(reading => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${reading.measurement_datetime || '-'}</td>
-                        <td>${reading.adopted_rainfall || '-'}</td>
-                        <td>${reading.adopted_quota || '-'}</td>
-                        <td>${reading.adopted_flow || '-'}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-
-                tableContainer.style.display = 'block';
-            } else {
-                errorMessage.style.display = 'block';
-                document.getElementById(hidrowebTelemetryModalConfig.errorTextId).textContent = 'Nenhuma leitura encontrada.';
-            }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            loadingSpinner.style.display = 'none';
-            errorMessage.style.display = 'block';
-            document.getElementById(hidrowebTelemetryModalConfig.errorTextId).textContent = error.message;
-        });
-}
-
-// Inicializar modal Telemetria
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => initStationModal(hidrowebTelemetryModalConfig));
-} else {
-    initStationModal(hidrowebTelemetryModalConfig);
-} 
-
 // Configuração específica para CNARH
 const cnarhModalConfig = {
     modalId: 'cnarhReadingsModal',
@@ -485,4 +412,195 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => initStationModal(cnarhModalConfig));
 } else {
     initStationModal(cnarhModalConfig);
+}
+
+
+// ========================================
+// HidroWeb Telemetria Data Modal (com Tabs: Leituras + Previsões)
+// ========================================
+
+// Configuração do modal
+const hidrowebDataModalConfig = {
+    modalId: 'hidrowebTelemetryDataModal',
+    stationCodeId: 'hidrowebDataModalStationCode',
+    stationNameId: 'hidrowebDataModalStationName',
+    closeButtonId: 'closeHidrowebDataModal'
+};
+
+function openHidrowebTelemetryDataModal(stationCode, stationName, lat, lng) {
+    const modal = document.getElementById(hidrowebDataModalConfig.modalId);
+    
+    // Atualizar informações da estação
+    document.getElementById(hidrowebDataModalConfig.stationCodeId).textContent = stationCode;
+    document.getElementById(hidrowebDataModalConfig.stationNameId).textContent = stationName;
+    
+    // Resetar tabs (voltar para Leituras)
+    document.querySelectorAll('.hidroweb-data-tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.hidroweb-data-tab-content').forEach(content => content.classList.remove('active'));
+    document.querySelector('.hidroweb-data-tab-btn[data-tab="leituras"]').classList.add('active');
+    document.getElementById('tab-leituras').classList.add('active');
+    
+    // Mostrar modal
+    modal.style.display = 'block';
+    
+    // Carregar dados das abas
+    loadHidrowebLeiturasData(stationCode);
+    loadHidrowebPrevisoesData(stationCode);
+}
+
+function loadHidrowebLeiturasData(stationCode) {
+    const loadingSpinner = document.getElementById('leiturasLoadingSpinner');
+    const tableContainer = document.getElementById('leiturasTableContainer');
+    const errorMessage = document.getElementById('leiturasErrorMessage');
+    const tableBody = document.getElementById('leiturasTableBody');
+    
+    // Mostrar loading
+    loadingSpinner.style.display = 'block';
+    tableContainer.style.display = 'none';
+    errorMessage.style.display = 'none';
+    tableBody.innerHTML = '';
+    
+    // Fetch dos dados (USAR A MESMA API DO MODAL ANTIGO)
+    fetch(`/api/hidroweb-telemetria/${stationCode}/readings`)
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao buscar leituras');
+            return response.json();
+        })
+        .then(data => {
+            loadingSpinner.style.display = 'none';
+            
+            // IMPORTANTE: mesma estrutura do modal antigo
+            if (data.success && data.data && data.data.readings && data.data.readings.length > 0) {
+                // Atualizar total
+                document.getElementById('leiturasTotal').textContent = data.data.readings.length;
+                
+                // Preencher tabela
+                data.data.readings.forEach(reading => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${reading.measurement_datetime || '-'}</td>
+                        <td>${reading.adopted_rainfall || '-'}</td>
+                        <td>${reading.adopted_quota || '-'}</td>
+                        <td>${reading.adopted_flow || '-'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                tableContainer.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById('leiturasErrorText').textContent = 'Nenhuma leitura encontrada.';
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar leituras:', error);
+            loadingSpinner.style.display = 'none';
+            errorMessage.style.display = 'block';
+            document.getElementById('leiturasErrorText').textContent = error.message;
+        });
+}
+
+function loadHidrowebPrevisoesData(stationCode) {
+    const loadingSpinner = document.getElementById('previsoesLoadingSpinner');
+    const tableContainer = document.getElementById('previsoesTableContainer');
+    const errorMessage = document.getElementById('previsoesErrorMessage');
+    const emptyMessage = document.getElementById('previsoesEmpty');
+    const tableBody = document.getElementById('previsoesTableBody');
+    
+    // Mostrar loading
+    loadingSpinner.style.display = 'block';
+    tableContainer.style.display = 'none';
+    errorMessage.style.display = 'none';
+    emptyMessage.style.display = 'none';
+    tableBody.innerHTML = '';
+    
+    // Fetch dos dados (nova API que vamos criar)
+    fetch(`/api/hidroweb-telemetria/${stationCode}/forecast`)
+        .then(response => {
+            if (response.status === 404) {
+                // Sem previsões
+                loadingSpinner.style.display = 'none';
+                emptyMessage.style.display = 'block';
+                return null;
+            }
+            if (!response.ok) throw new Error('Erro ao buscar previsões');
+            return response.json();
+        })
+        .then(data => {
+            if (!data) return;
+            
+            loadingSpinner.style.display = 'none';
+            
+            if (data.success && data.data && data.data.forecasts && data.data.forecasts.length > 0) {
+                // Atualizar total
+                document.getElementById('previsoesTotal').textContent = data.data.forecasts.length;
+                
+                // Preencher tabela
+                data.data.forecasts.forEach(forecast => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${forecast.forecast_year || '-'}</td>
+                        <td>${forecast.forecast_month || '-'}</td>
+                        <td>${forecast.predicted_flow || '-'}</td>
+                        <td>${forecast.alfa_pond || '-'}</td>
+                        <td>${forecast.q_noventa || '-'}</td>
+                        <td>${forecast.vsup || '-'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                tableContainer.style.display = 'block';
+            } else {
+                emptyMessage.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar previsões:', error);
+            loadingSpinner.style.display = 'none';
+            errorMessage.style.display = 'block';
+            document.getElementById('previsoesErrorText').textContent = error.message;
+        });
+}
+
+// Event listeners para tabs e modal
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHidrowebDataModal);
+} else {
+    initHidrowebDataModal();
+}
+
+function initHidrowebDataModal() {
+    // Controle de tabs
+    const tabButtons = document.querySelectorAll('.hidroweb-data-tab-btn');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            
+            // Remove active
+            document.querySelectorAll('.hidroweb-data-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.hidroweb-data-tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Adiciona active
+            this.classList.add('active');
+            document.getElementById('tab-' + targetTab).classList.add('active');
+        });
+    });
+    
+    // Fechar modal
+    const modal = document.getElementById(hidrowebDataModalConfig.modalId);
+    const closeBtn = document.getElementById(hidrowebDataModalConfig.closeButtonId);
+    
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        };
+    }
+    
+    if (modal) {
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        };
+    }
 }
