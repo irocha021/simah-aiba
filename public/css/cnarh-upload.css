@@ -1,3 +1,4 @@
+/* ===== ESTILOS PADRÃO - HERDADOS DO LOGIN ===== */
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 * {
@@ -89,52 +90,6 @@ body {
     font-weight: 500;
     color: #444;
     font-size: 1rem;
-}
-
-/* ===== ESTILOS PARA SELECT ===== */
-.select-with-icon {
-    position: relative;
-}
-
-.select-with-icon i {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #165b9c;
-    font-size: 1.1rem;
-    z-index: 2;
-}
-
-.form-select {
-    width: 100%;
-    padding: 15px 15px 15px 45px;
-    border: 1px solid #000000;
-    border-radius: 25px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background: #ffffff;
-    color: #000000;
-    appearance: none;
-    cursor: pointer;
-}
-
-.form-select:focus {
-    outline: none;
-    border-color: #667eea;
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.select-with-icon::after {
-    content: "▼";
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #165b9c;
-    font-size: 0.9rem;
-    pointer-events: none;
 }
 
 /* ===== ESTILOS PARA FILE INPUT ===== */
@@ -259,7 +214,7 @@ body {
     display: block;
 }
 
-/* ===== LADO DIREITO - INFORMAÇÕES ===== */
+/* ===== LADO DIREITO - INFORMAÇÕES CNARH ===== */
 .upload-info-section {
     flex: 1;
     background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
@@ -327,10 +282,8 @@ body {
 /* ===== RESULTADO DO UPLOAD ===== */
 .result-container {
     margin-top: 30px;
-    padding: 20px;
+    padding: 25px;
     border-radius: 15px;
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
     animation: slideIn 0.5s ease-out;
 }
 
@@ -345,18 +298,6 @@ body {
     }
 }
 
-.result-success {
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-    border: 1px solid #b1dfbb;
-    color: #155724;
-}
-
-.result-error {
-    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-    border: 1px solid #f1b0b7;
-    color: #721c24;
-}
-
 .result-content {
     line-height: 1.6;
 }
@@ -368,16 +309,35 @@ body {
 }
 
 .result-item {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
-    padding: 5px 0;
+    padding: 8px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .result-item:last-child {
     border-bottom: none;
     margin-bottom: 0;
+}
+
+/* Estados do resultado */
+.processing {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    border: 1px solid #ffeeba;
+    color: #856404;
+}
+
+.success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border: 1px solid #b1dfbb;
+    color: #155724;
+}
+
+.error {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border: 1px solid #f1b0b7;
+    color: #721c24;
 }
 
 /* ===== LOGO ===== */
@@ -391,123 +351,6 @@ body {
 .top-logo img {
     height: 50px;
     width: auto;
-}
-
-/* ===== RESPONSIVIDADE ===== */
-@media (max-width: 1100px) {
-    .form-header h1 {
-        font-size: 2.2rem;
-    }
-
-    .info-container h2 {
-        font-size: 2rem;
-    }
-}
-
-@media (max-width: 992px) {
-    .upload-container {
-        flex-direction: column;
-    }
-
-    .upload-form-section {
-        max-width: 100%;
-        min-width: 100%;
-        padding: 30px;
-        order: 2;
-        min-height: 60vh;
-    }
-
-    .upload-info-section {
-        display: none;
-    }
-
-    .form-container {
-        padding: 20px 0;
-    }
-
-    .form-header h1 {
-        font-size: 2rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .upload-form-section {
-        padding: 20px;
-    }
-
-    .form-header h1 {
-        font-size: 1.8rem;
-    }
-
-    .form-header p {
-        font-size: 1rem;
-    }
-
-    .form-select,
-    .file-input-label {
-        padding: 12px 12px 12px 40px;
-        font-size: 0.95rem;
-    }
-
-    .submit-btn {
-        padding: 14px;
-        font-size: 1rem;
-    }
-
-    .top-logo {
-        top: 20px;
-        left: 20px;
-    }
-
-    .top-logo img {
-        height: 40px;
-    }
-}
-
-/* ===== ANIMAÇÕES ===== */
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(0, 121, 82, 0.4);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(0, 121, 82, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(0, 121, 82, 0);
-    }
-}
-
-.pulse {
-    animation: pulse 2s infinite;
-}
-
-/* ===== ESTILOS PARA FOCO ACESSÍVEL ===== */
-.form-select:focus-visible,
-.file-input-label:focus-visible {
-    outline: 2px solid #667eea;
-    outline-offset: 2px;
-}
-
-.submit-btn:focus-visible {
-    outline: 2px solid #fff;
-    outline-offset: 2px;
-}
-
-/* ===== LOADER ===== */
-.loader {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: #fff;
-    animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
 }
 
 /* ===== BOTÃO DE VOLTAR ===== */
@@ -545,7 +388,7 @@ body {
     font-size: 1rem;
 }
 
-/* Botão flutuante */
+/* ===== BOTÃO FLUTUANTE ===== */
 .floating-back-btn {
     position: fixed;
     bottom: 30px;
@@ -607,20 +450,108 @@ body {
     }
 }
 
-@media (max-width: 992px) {
-    .floating-back-btn {
-        bottom: 20px;
-        right: 20px;
+/* ===== LOADER ===== */
+.loader {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-container {
+    margin-top: 15px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 10px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #165b9c, #007952);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 1100px) {
+    .form-header h1 {
+        font-size: 2.2rem;
     }
 
-    .floating-back-btn .btn-circle {
-        width: 50px;
-        height: 50px;
-        font-size: 1.3rem;
+    .info-container h2 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .upload-container {
+        flex-direction: column;
+    }
+
+    .upload-form-section {
+        max-width: 100%;
+        min-width: 100%;
+        padding: 30px;
+        order: 2;
+        min-height: 60vh;
+    }
+
+    .upload-info-section {
+        display: none;
+    }
+
+    .form-container {
+        padding: 20px 0;
+    }
+
+    .form-header h1 {
+        font-size: 2rem;
     }
 }
 
 @media (max-width: 576px) {
+    .upload-form-section {
+        padding: 20px;
+    }
+
+    .form-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .form-header p {
+        font-size: 1rem;
+    }
+
+    .file-input-label {
+        padding: 12px 12px 12px 40px;
+        font-size: 0.95rem;
+    }
+
+    .submit-btn {
+        padding: 14px;
+        font-size: 1rem;
+    }
+
+    .top-logo {
+        top: 20px;
+        left: 20px;
+    }
+
+    .top-logo img {
+        height: 40px;
+    }
+
     .back-btn-container {
         top: 20px;
         right: 20px;
@@ -637,5 +568,16 @@ body {
 
     .back-btn i {
         font-size: 1.2rem;
+    }
+
+    .floating-back-btn {
+        bottom: 20px;
+        right: 20px;
+    }
+
+    .floating-back-btn .btn-circle {
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
     }
 }

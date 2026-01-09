@@ -111,6 +111,15 @@
                 </div>
             </div>
         </div>
+
+        <!-- Botão flutuante para mobile -->
+        <a href="{{ url('/') }}" class="floating-back-btn">
+            <div class="btn-circle">
+                <i class="fas fa-home"></i>
+            </div>
+            <span class="btn-label">Início</span>
+        </a>
+
     </div>
 
     <script>
