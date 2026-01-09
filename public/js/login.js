@@ -1,8 +1,3 @@
-/**
- * Script de Login - Sistema de Autenticação
- * @version 1.0.0
- */
-
 class LoginSystem {
     constructor() {
         this.initElements();
