@@ -1,7 +1,7 @@
 // layer-control.js
 
 function initLayerControl() {
-    // Configurações das camadas (mantém sua lógica específica)
+    // Configurações das camadas
     const layerConfig = {
         'cnarh': {
             name: 'CNARH',
@@ -17,6 +17,11 @@ function initLayerControl() {
             name: 'HidroWeb - Telemetria',
             color: '#00cc66',
             icon: 'fas fa-satellite-dish'
+        },
+        'hidroweb_telemetria_com_previsao': {
+            name: 'HidroWeb - Telemetria c/ Previsão',
+            color: '#9933ff',
+            icon: 'fas fa-chart-line'
         },
         'lrgs_client': {
             name: 'LRGS Client (DCP)',
