@@ -140,10 +140,11 @@
     }
 
     .lrgs-table-container {
-        max-height: 600px;
+        max-height: 62%;
+        width: 92%;
         overflow-x: auto;
         overflow-y: auto;
-        margin-bottom: 20px;
+        margin: auto;
         position: relative;
     }
 
