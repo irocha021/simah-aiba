@@ -325,8 +325,8 @@
                                 
                                 <div class="popup-info">
                                     <div class="popup-info-row"><strong>Código:</strong> ${station.code}</div>
-                                    <div class="popup-info-row"><strong>Lat:</strong> ${station.latitude}</div>
-                                    <div class="popup-info-row"><strong>Lng:</strong> ${station.longitude}</div>
+                                    <div class="popup-info-row"><strong>Latitude:</strong> ${station.latitude}</div>
+                                    <div class="popup-info-row"><strong>Longitude:</strong> ${station.longitude}</div>
                                 </div>
                                 
                                 <div class="popup-buttons">
