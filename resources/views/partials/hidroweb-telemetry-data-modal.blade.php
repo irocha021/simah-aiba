@@ -99,6 +99,8 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
     .hidroweb-data-modal {
         display: none;
@@ -114,10 +116,9 @@
     .hidroweb-data-modal-content {
         background-color: #ffffff;
         margin: 2% auto;
-        padding-bottom: 30px;
         border: 1px solid #888;
         width: 85%;
-        height: 85%;
+        height: 90%;
         overflow-y: auto;
     }
 
@@ -258,7 +259,7 @@
     }
 
     .hidroweb-data-table-container {
-        max-height: 29rem;
+        max-height: 25rem;
         overflow-y: auto;
         margin: auto;
     }

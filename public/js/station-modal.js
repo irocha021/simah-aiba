@@ -434,75 +434,305 @@ const hidrowebDataModalConfig = {
 
 function openHidrowebTelemetryDataModal(stationCode, stationName, lat, lng) {
     const modal = document.getElementById(hidrowebDataModalConfig.modalId);
-    
+
     // Atualizar informações da estação
     document.getElementById(hidrowebDataModalConfig.stationCodeId).textContent = stationCode;
     document.getElementById(hidrowebDataModalConfig.stationNameId).textContent = stationName;
-    
+
     // Resetar tabs (voltar para Leituras)
     document.querySelectorAll('.hidroweb-data-tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.hidroweb-data-tab-content').forEach(content => content.classList.remove('active'));
     document.querySelector('.hidroweb-data-tab-btn[data-tab="leituras"]').classList.add('active');
     document.getElementById('tab-leituras').classList.add('active');
-    
+
     // Mostrar modal
     modal.style.display = 'block';
-    
+
     // Carregar dados das abas
     loadHidrowebLeiturasData(stationCode);
     loadHidrowebPrevisoesData(stationCode);
 }
 
 function loadHidrowebLeiturasData(stationCode) {
-    const loadingSpinner = document.getElementById('leiturasLoadingSpinner');
-    const tableContainer = document.getElementById('leiturasTableContainer');
-    const errorMessage = document.getElementById('leiturasErrorMessage');
-    const tableBody = document.getElementById('leiturasTableBody');
-    
-    // Mostrar loading
-    loadingSpinner.style.display = 'block';
-    tableContainer.style.display = 'none';
-    errorMessage.style.display = 'none';
-    tableBody.innerHTML = '';
-    
-    // Fetch dos dados (USAR A MESMA API DO MODAL ANTIGO)
+    const elements = {
+        loading: document.getElementById('leiturasLoadingSpinner'),
+        tableContainer: document.getElementById('leiturasTableContainer'),
+        error: document.getElementById('leiturasErrorMessage'),
+        tableBody: document.getElementById('leiturasTableBody'),
+        total: document.getElementById('leiturasTotal'),
+        errorText: document.getElementById('leiturasErrorText')
+    };
+
+    // Limpar estado anterior
+    if (window.leiturasChartInstance) {
+        window.leiturasChartInstance.destroy();
+        window.leiturasChartInstance = null;
+    }
+
+    document.querySelector('.view-controls')?.remove();
+    document.getElementById('leiturasChartContainer')?.remove();
+    document.getElementById('leiturasChart')?.remove();
+
+    // Resetar UI
+    Object.values(elements).forEach(el => {
+        if (el && el.style) {
+            if (el === elements.loading) el.style.display = 'block';
+            else if (el === elements.tableContainer) el.style.display = 'none';
+            else if (el === elements.error) el.style.display = 'none';
+            else if (el === elements.tableBody) el.innerHTML = '';
+        }
+    });
+
+    // Criar elementos do gráfico e controles
+    const chartContainer = createChartContainer();
+    const controlsContainer = createControlsContainer();
+    elements.tableContainer.parentNode.insertBefore(chartContainer, elements.tableContainer);
+    elements.tableContainer.parentNode.insertBefore(controlsContainer, elements.tableContainer.nextSibling);
+
+    let chartData = null;
+
+    // Configurar visualizações
+    const views = {
+        table: () => {
+            controlsContainer.children[0].className = 'view-btn active';
+            controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            controlsContainer.children[1].className = 'view-btn';
+            controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            elements.tableContainer.style.display = 'block';
+            chartContainer.style.display = 'none';
+        },
+        chart: () => {
+            controlsContainer.children[0].className = 'view-btn';
+            controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #333; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            controlsContainer.children[1].className = 'view-btn active';
+            controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            elements.tableContainer.style.display = 'none';
+            chartContainer.style.display = 'block';
+            if (chartData && (!window.leiturasChartInstance || window.leiturasChartInstance.canvas.id !== 'leiturasChart')) {
+                createChart(chartData);
+            }
+        }
+    };
+
+    controlsContainer.children[0].onclick = views.table;
+    controlsContainer.children[1].onclick = views.chart;
+
+    // Buscar dados
     fetch(`/api/hidroweb-telemetria/${stationCode}/readings`)
-        .then(response => {
-            if (!response.ok) throw new Error('Erro ao buscar leituras');
-            return response.json();
-        })
+        .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar leituras'))
         .then(data => {
-            loadingSpinner.style.display = 'none';
-            
-            // IMPORTANTE: mesma estrutura do modal antigo
-            if (data.success && data.data && data.data.readings && data.data.readings.length > 0) {
-                // Atualizar total
-                document.getElementById('leiturasTotal').textContent = data.data.readings.length;
-                
-                // Preencher tabela
+            elements.loading.style.display = 'none';
+
+            if (data.success && data.data?.readings?.length > 0) {
+                chartData = data.data.readings;
+                elements.total.textContent = data.data.readings.length;
+
                 data.data.readings.forEach(reading => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${reading.measurement_datetime || '-'}</td>
-                        <td>${reading.adopted_rainfall || '-'}</td>
-                        <td>${reading.adopted_quota || '-'}</td>
-                        <td>${reading.adopted_flow || '-'}</td>
-                    `;
-                    tableBody.appendChild(row);
+                    // Formatar data/hora para tabela: DD/MM/AAAA - HH:MM
+                    const formattedDateTime = formatDateTimeForTable(reading.measurement_datetime);
+
+                    elements.tableBody.innerHTML += `
+                        <tr>
+                            <td>${formattedDateTime}</td>
+                            <td>${reading.adopted_rainfall || '-'}</td>
+                            <td>${reading.adopted_quota || '-'}</td>
+                            <td>${reading.adopted_flow || '-'}</td>
+                        </tr>`;
                 });
-                
-                tableContainer.style.display = 'block';
+
+                views.table();
             } else {
-                errorMessage.style.display = 'block';
-                document.getElementById('leiturasErrorText').textContent = 'Nenhuma leitura encontrada.';
+                showError('Nenhuma leitura encontrada.');
             }
         })
         .catch(error => {
             console.error('Erro ao carregar leituras:', error);
-            loadingSpinner.style.display = 'none';
-            errorMessage.style.display = 'block';
-            document.getElementById('leiturasErrorText').textContent = error.message;
+            elements.loading.style.display = 'none';
+            showError(error.message || error);
         });
+
+    function showError(message) {
+        elements.error.style.display = 'block';
+        elements.errorText.textContent = message;
+        controlsContainer.style.display = 'none';
+        chartContainer.style.display = 'none';
+    }
+
+    function formatDateTimeForTable(dateTimeStr) {
+        if (!dateTimeStr) return '-';
+
+        try {
+            const date = new Date(dateTimeStr);
+            return date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).replace(',', ' -');
+        } catch (e) {
+            return dateTimeStr;
+        }
+    }
+
+    function createChartContainer() {
+        const container = document.createElement('div');
+        container.id = 'leiturasChartContainer';
+        container.style.cssText = 'display: none; width: 100%; height: 400px; margin-bottom: 20px; position: relative;';
+
+        const canvas = document.createElement('canvas');
+        canvas.id = 'leiturasChart';
+        canvas.style.cssText = 'width: 100% !important; height: 100% !important;';
+        container.appendChild(canvas);
+
+        return container;
+    }
+
+    function createControlsContainer() {
+        const container = document.createElement('div');
+        container.className = 'view-controls';
+        container.style.cssText = 'margin: 20px 0; display: flex; justify-content: center; gap: 15px; padding: 15px;';
+
+        ['TABELA', 'GRÁFICO'].forEach((text, i) => {
+            const btn = document.createElement('button');
+            btn.id = i === 0 ? 'tableViewBtn' : 'chartViewBtn';
+            btn.textContent = text;
+            btn.className = i === 0 ? 'view-btn active' : 'view-btn';
+            btn.style.cssText = `padding: 10px 20px; background: ${i === 0 ? '#242731' : '#ffffff'}; color: ${i === 0 ? 'white' : '#242731'}; border: ${i === 0 ? 'none' : '1px solid #79808F'}; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;`;
+            container.appendChild(btn);
+        });
+
+        return container;
+    }
+
+    function createChart(readings) {
+        if (window.leiturasChartInstance) {
+            window.leiturasChartInstance.destroy();
+            window.leiturasChartInstance = null;
+        }
+
+        const canvas = document.getElementById('leiturasChart');
+        if (!canvas) {
+            console.error('Canvas não encontrado!');
+            return;
+        }
+
+        // Para o gráfico: mostrar apenas horas (HH:MM)
+        const hours = readings.map(r => {
+            if (!r.measurement_datetime) return '';
+            try {
+                const date = new Date(r.measurement_datetime);
+                return date.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+            } catch (e) {
+                return '';
+            }
+        }).filter(h => h);
+
+        const datasets = [];
+        const dataTypes = [
+            { key: 'adopted_quota', label: 'Cota (m)', color: '#3388ff', axis: 'y' },
+            { key: 'adopted_flow', label: 'Vazão (m³/s)', color: '#ff5733', axis: 'y1' },
+            { key: 'adopted_rainfall', label: 'Precipitação (mm)', color: '#33ff57', axis: 'y2' }
+        ];
+
+        dataTypes.forEach((type, index) => {
+            const values = readings.map(r => {
+                const val = parseFloat(r[type.key]);
+                return isNaN(val) ? null : val;
+            });
+
+            if (values.some(v => v !== null)) {
+                datasets.push({
+                    label: type.label,
+                    data: values,
+                    borderColor: type.color,
+                    backgroundColor: type.color.replace(')', ', 0.1)').replace('rgb', 'rgba'),
+                    borderWidth: 2,
+                    tension: 0.1,
+                    yAxisID: type.axis
+                });
+            }
+        });
+
+        if (datasets.length === 0) {
+            chartContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">Não há dados numéricos suficientes para exibir o gráfico.</div>';
+            return;
+        }
+
+        const scales = {
+            x: {
+                title: { display: true, text: 'Hora' },
+                ticks: { maxTicksLimit: 10, autoSkip: true }
+            },
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                title: { display: true, text: datasets[0].label.split(' ')[0] + ' ' + datasets[0].label.split(' ')[1] }
+            }
+        };
+
+        datasets.forEach((dataset, i) => {
+            if (i > 0) {
+                scales[`y${i}`] = {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: { display: true, text: dataset.label },
+                    grid: { drawOnChartArea: false }
+                };
+            }
+        });
+
+        window.leiturasChartInstance = new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: { labels: hours, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Estação ${stationCode} - Séries Temporais`,
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            title: function (context) {
+                                const index = context[0].dataIndex;
+                                // Mostrar data e hora completa no tooltip
+                                if (readings[index]?.measurement_datetime) {
+                                    try {
+                                        const date = new Date(readings[index].measurement_datetime);
+                                        return date.toLocaleString('pt-BR', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: false
+                                        });
+                                    } catch (e) {
+                                        return readings[index].measurement_datetime;
+                                    }
+                                }
+                                return '';
+                            }
+                        }
+                    }
+                },
+                scales,
+                interaction: { intersect: false, mode: 'nearest' }
+            }
+        });
+    }
 }
 
 function loadHidrowebPrevisoesData(stationCode) {
@@ -511,14 +741,14 @@ function loadHidrowebPrevisoesData(stationCode) {
     const errorMessage = document.getElementById('previsoesErrorMessage');
     const emptyMessage = document.getElementById('previsoesEmpty');
     const tableBody = document.getElementById('previsoesTableBody');
-    
+
     // Mostrar loading
     loadingSpinner.style.display = 'block';
     tableContainer.style.display = 'none';
     errorMessage.style.display = 'none';
     emptyMessage.style.display = 'none';
     tableBody.innerHTML = '';
-    
+
     // Fetch dos dados (nova API que vamos criar)
     fetch(`/api/hidroweb-telemetria/${stationCode}/forecast`)
         .then(response => {
@@ -533,13 +763,13 @@ function loadHidrowebPrevisoesData(stationCode) {
         })
         .then(data => {
             if (!data) return;
-            
+
             loadingSpinner.style.display = 'none';
-            
+
             if (data.success && data.data && data.data.forecasts && data.data.forecasts.length > 0) {
                 // Atualizar total
                 document.getElementById('previsoesTotal').textContent = data.data.forecasts.length;
-                
+
                 // Preencher tabela
                 data.data.forecasts.forEach(forecast => {
                     const row = document.createElement('tr');
@@ -553,7 +783,7 @@ function loadHidrowebPrevisoesData(stationCode) {
                     `;
                     tableBody.appendChild(row);
                 });
-                
+
                 tableContainer.style.display = 'block';
             } else {
                 emptyMessage.style.display = 'block';
@@ -578,31 +808,31 @@ function initHidrowebDataModal() {
     // Controle de tabs
     const tabButtons = document.querySelectorAll('.hidroweb-data-tab-btn');
     tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const targetTab = this.getAttribute('data-tab');
-            
+
             // Remove active
             document.querySelectorAll('.hidroweb-data-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.hidroweb-data-tab-content').forEach(content => content.classList.remove('active'));
-            
+
             // Adiciona active
             this.classList.add('active');
             document.getElementById('tab-' + targetTab).classList.add('active');
         });
     });
-    
+
     // Fechar modal
     const modal = document.getElementById(hidrowebDataModalConfig.modalId);
     const closeBtn = document.getElementById(hidrowebDataModalConfig.closeButtonId);
-    
+
     if (closeBtn) {
-        closeBtn.onclick = function() {
+        closeBtn.onclick = function () {
             modal.style.display = 'none';
         };
     }
-    
+
     if (modal) {
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target == modal) {
                 modal.style.display = 'none';
             }
