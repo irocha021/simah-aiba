@@ -19,6 +19,9 @@
 </head>
 <body>
     <div id="map"></div>
+
+    {{-- Side Menu --}}
+    @include('components.side-menu')
     
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -27,6 +30,7 @@
     <script>
         // Criar o mapa
         var map = L.map('map').setView([-12.5, -41.5], 8);
+        map.zoomControl.setPosition('bottomright');
         
         // Adicionar o tile layer (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -43,31 +47,36 @@
             'pocos_rimas': L.markerClusterGroup({ maxClusterRadius: 50, spiderfyOnMaxZoom: true, showCoverageOnHover: false, zoomToBoundsOnClick: true }),
             'pocos_siagas': L.markerClusterGroup({ maxClusterRadius: 50, spiderfyOnMaxZoom: true, showCoverageOnHover: false, zoomToBoundsOnClick: true })
         };
+
+        window.clusterGroups = clusterGroups; // Expoe globalmente
+        if (window.layerControl && window.layerControl.updateCounts) {
+            window.layerControl.updateCounts();
+        }
         
         // Função para retornar o estilo do marcador baseado no source
         function getMarkerStyle(source) {
             var styles = {
                 'cnarh': {
                     radius: 5,
-                    fillColor: "#A47864",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#A47864",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 },
                 'hidroweb_qualidade_agua': {
                     radius: 5,
-                    fillColor: "#3388ff",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#3388ff",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 },
                 'hidroweb_telemetria': {
                     radius: 5,
-                    fillColor: "#00cc66",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#00cc66",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 },
@@ -81,25 +90,25 @@
                 },
                 'lrgs_client': {
                     radius: 5,
-                    fillColor: "#ff7800",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#ff7800",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 },
                 'pocos_rimas': {
                     radius: 5,
-                    fillColor: "#ff0000",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#ff0000",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 },
                 'pocos_siagas': {
                     radius: 5,
-                    fillColor: "#e16ccfff",
-                    color: "#fff",
-                    weight: 1,
+                    color: "#e16ccfff",
+                    fillColor: "#fff",
+                    weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
                 }
@@ -139,7 +148,7 @@
                         if (station.source === 'pocos_rimas') {
                             popupContent += '<br><br>' +
                                 '<button onclick="openRimasReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
-                                'style="background-color: #ff0000; color: white; border: none; padding: 8px 16px; ' +
+                                'style="background-color: #3388ff; color: white; border: none; padding: 8px 16px; ' +
                                 'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
                                 '📊 Ver Leituras (Últimas 50)</button>';
                         }
@@ -148,7 +157,7 @@
                         if (station.source === 'pocos_siagas') {
                             popupContent += '<br><br>' +
                                 '<button onclick="openSiagasReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
-                                'style="background-color: #e16ccfff; color: white; border: none; padding: 8px 16px; ' +
+                                'style="background-color: #3388ff; color: white; border: none; padding: 8px 16px; ' +
                                 'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
                                 '📊 Ver Dados do Poço</button>';
                         }
@@ -165,7 +174,7 @@
                         if (station.source === 'lrgs_client') {
                             popupContent += '<br><br>' +
                                 '<button onclick="openLrgsReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
-                                'style="background-color: #ff7800; color: white; border: none; padding: 8px 16px; ' +
+                                'style="background-color: #3388ff; color: white; border: none; padding: 8px 16px; ' +
                                 'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
                                 '📊 Ver Leituras (Últimas 50)</button>';
                         }
@@ -185,7 +194,7 @@
                         if (station.source === 'cnarh') {
                             popupContent += '<br><br>' +
                                 '<button onclick="openCnarhReadingsModal(\'' + station.code + '\', \'' + station.name + '\', \'' + station.latitude + '\', \'' + station.longitude + '\')" ' +
-                                'style="background-color: #A47864; color: white; border: none; padding: 8px 16px; ' +
+                                'style="background-color: #3388ff; color: white; border: none; padding: 8px 16px; ' +
                                 'cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;">' +
                                 '📊 Ver Dados CNARH</button>';
                         }
@@ -212,11 +221,11 @@
                     '<span style="color: #e16ccfff;">●</span> Poços SIAGAS': clusterGroups['pocos_siagas']
                 };
 
-                // Adicionar controle ao mapa
+                /* // Adicionar controle ao mapa
                 L.control.layers(null, overlayMaps, {
-                    collapsed: false,
+                    collapsed: true,
                     position: 'topright'
-                }).addTo(map);
+                }).addTo(map); */
                 
                 // Ajustar zoom para mostrar todos os pontos
                 if (bounds.length > 0) {

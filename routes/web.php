@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DbfImportController;
 use App\Http\Controllers\CnarhUploadController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroFlowForecastController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroInfoAnaAdoptedTelemetricSeriesReadingController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroInventoryStationManagerController;
@@ -58,6 +59,10 @@ Route::prefix('cnarh')->group(function () {
 Route::get('/', function () {
     return view('dashboard2');
 });
+
+// ROTA DE LOGIN
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+
 
 //Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/dashboard2', [DashboardController::class, 'index'])->name('dashboard2');

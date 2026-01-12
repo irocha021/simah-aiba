@@ -7,9 +7,9 @@ function openStationModal(config) {
     const tableBody = document.getElementById(config.tableBodyId);
 
     modal.style.display = 'block';
-    modalIdPonto.innerHTML = config.idPonto + ' - ' + config.stationName + 
-    '<br><br><strong>Latitude:</strong> ' + config.latitude + 
-    '  <strong>Longitude:</strong> ' + config.longitude;
+    modalIdPonto.innerHTML = config.idPonto + ' - ' + config.stationName +
+        '<br><br><strong>Latitude:</strong> ' + config.latitude +
+        '  <strong>Longitude:</strong> ' + config.longitude;
     loadingSpinner.style.display = 'block';
     tableContainer.style.display = 'none';
     errorMessage.style.display = 'none';
@@ -55,8 +55,8 @@ function initStationModal(config) {
     if (closeBtn) {
         closeBtn.addEventListener('click', () => closeStationModal(config.modalId));
     }
-    
-    window.addEventListener('click', function(event) {
+
+    window.addEventListener('click', function (event) {
         const modal = document.getElementById(config.modalId);
         if (event.target === modal) {
             closeStationModal(config.modalId);
@@ -75,7 +75,7 @@ const rimasModalConfig = {
     totalReadingsId: 'rimasModalTotalReadings',
     errorTextId: 'rimasErrorText',
     closeButtonId: 'closeRimasModal',
-    renderRow: function(reading) {
+    renderRow: function (reading) {
         return `
             <td>${reading.numero_de || '-'}</td>
             <td>${reading.data_da_me || '-'}</td>
@@ -123,9 +123,14 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
     const errorMessage = document.getElementById(siagasModalConfig.errorMessageId);
 
     modal.style.display = 'block';
-    modalIdPonto.innerHTML = idPonto + ' - ' + stationName + 
-        '<br><strong style="color: #e16ccfff;">Latitude:</strong> ' + latitude + 
-        ' | <strong style="color: #e16ccfff;">Longitude:</strong> ' + longitude;
+
+    modalIdPonto.innerHTML = `
+        <div class="siagas-header-content-title">
+            <h2 style="margin: 0;">Informações sobre poços</h2>
+            <p style="margin: 0;">Localização, profundidade, tipo de poço, testes de bombeamento, vazão, entre outros.</p>
+        </div>
+    `;
+
     loadingSpinner.style.display = 'block';
     dataContainer.style.display = 'none';
     errorMessage.style.display = 'none';
@@ -147,7 +152,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                     const value = poco[key] !== null && poco[key] !== '' ? poco[key] : '-';
                     html += `
                         <div class="siagas-data-row">
-                            <div class="siagas-data-label">${key}:</div>
+                            <div class="siagas-data-label" style="text-transform: capitalize;">${key}:</div>
                             <div class="siagas-data-value">${value}</div>
                         </div>
                     `;
@@ -196,8 +201,8 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
     const tableBody = document.getElementById('hidrowebQaTableBody');
 
     modal.style.display = 'block';
-    modalStationCode.innerHTML = stationCode + ' - ' + stationName + 
-        '<br><strong style="color: #3388ff;">Latitude:</strong> ' + latitude + 
+    modalStationCode.innerHTML = stationCode + ' - ' + stationName +
+        '<br><strong style="color: #3388ff;">Latitude:</strong> ' + latitude +
         ' | <strong style="color: #3388ff;">Longitude:</strong> ' + longitude;
     loadingSpinner.style.display = 'block';
     tableContainer.style.display = 'none';
@@ -217,7 +222,7 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
                 document.getElementById('hidrowebQaModalTotalReadings').textContent = data.data.readings.length;
 
                 const readings = data.data.readings;
-                
+
                 // Criar cabeçalho da tabela com todos os campos do primeiro registro
                 const headerRow = document.createElement('tr');
                 Object.keys(readings[0]).forEach(key => {
@@ -280,9 +285,9 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
     const tableBody = document.getElementById('lrgsTableBody');
 
     modal.style.display = 'block';
-    modalStationCode.innerHTML = stationCode + ' - ' + stationName + 
-        '<br><strong style="color: #ff7800;">Latitude:</strong> ' + latitude + 
-        ' | <strong style="color: #ff7800;">Longitude:</strong> ' + longitude;
+    modalStationCode.innerHTML = stationCode + ' - ' + stationName +
+        '<br><strong style="color: #3388ff;">Latitude:</strong> ' + latitude +
+        ' | <strong style="color: #3388ff;">Longitude:</strong> ' + longitude;
     loadingSpinner.style.display = 'block';
     tableContainer.style.display = 'none';
     errorMessage.style.display = 'none';
@@ -301,7 +306,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 document.getElementById('lrgsModalTotalReadings').textContent = data.data.readings.length;
 
                 const readings = data.data.readings;
-                
+
                 // Criar cabeçalho da tabela
                 const headerRow = document.createElement('tr');
                 Object.keys(readings[0]).forEach(key => {
@@ -363,8 +368,8 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     const errorMessage = document.getElementById(cnarhModalConfig.errorMessageId);
 
     modal.style.display = 'block';
-    modalCode.innerHTML = cnarhCode + ' - ' + stationName + 
-        '<br><strong style="color: #A47864;">Latitude:</strong> ' + latitude + 
+    modalCode.innerHTML = cnarhCode + ' - ' + stationName +
+        '<br><strong style="color: #A47864;">Latitude:</strong> ' + latitude +
         ' | <strong style="color: #A47864;">Longitude:</strong> ' + longitude;
     loadingSpinner.style.display = 'block';
     dataContainer.style.display = 'none';
