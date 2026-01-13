@@ -16,9 +16,11 @@
 
         <!-- Informações do Poço -->
         <div class="rimas-modal-info">
-            <strong>ID do Ponto:</strong> <span id="rimasModalIdPonto">-</span><br><br>
-            <span style="font-size:12px;">Total de Leituras:</span> <span style="font-size:12px;"
-                id="rimasModalTotalReadings">-</span>
+            <span id="rimasModalIdPonto"></span>
+            <div style="margin: 10px">
+                <span style="font-size:12px; color: #575F6E;">Total de Leituras:</span>
+                <span style="font-size:12px; color: #575F6E;" id="rimasModalTotalReadings">-</span>
+            </div>
         </div>
 
         <!-- Loading -->
@@ -143,7 +145,7 @@
     }
 
     .rimas-table-container {
-        max-height: 26rem;
+        max-height: 25rem;
         width: 92%;
         overflow-x: auto;
         overflow-y: auto;

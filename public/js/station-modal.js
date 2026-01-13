@@ -91,9 +91,12 @@ function openRimasReadingsModal(idPonto, stationName, latitude, longitude) {
     const modalIdPonto = document.getElementById(rimasModalConfig.idPontoId);
 
     modal.style.display = 'block';
-    modalIdPonto.innerHTML = idPonto + ' - ' + stationName +
-        '<br><strong style="color: #ff7800;">Latitude:</strong> ' + latitude +
-        ' | <strong style="color: #ff7800;">Longitude:</strong> ' + longitude;
+    modalIdPonto.innerHTML = `
+        <div class="rimas-header-content-title">
+            <h2 style="margin: 0;">Série temporal de níveis estáticos</h2>
+            <p style="margin: 0;">${stationName} - Registros históricos de medição na rede RIMAS/CPRM.</p>
+        </div>
+    `;
 
     // Limpar estado anterior
     if (window.rimasChartInstance) {
@@ -821,9 +824,12 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
     const modalStationCode = document.getElementById(hidrowebQaModalConfig.stationCodeId);
 
     modal.style.display = 'block';
-    modalStationCode.innerHTML = stationCode + ' - ' + stationName +
-        '<br><strong style="color: #3388ff;">Latitude:</strong> ' + latitude +
-        ' | <strong style="color: #3388ff;">Longitude:</strong> ' + longitude;
+    modalStationCode.innerHTML =  `
+        <div class="hidroweb-qa-header-content-title">
+            <h2 style="margin: 0;">${stationName}</h2>
+            <p style="margin: 0;">Parâmetros físico-químicos, biológicos e contaminantes medidos na estação de monitoramento.</p>
+        </div>
+    `;
 
     // Limpar estado anterior
     if (window.hidrowebQaChartInstance) {
@@ -934,7 +940,7 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
     function createChartContainer() {
         const container = document.createElement('div');
         container.id = 'hidrowebQaChartContainer';
-        container.style.cssText = 'display: none; width: 90%; height: 400px; margin: auto; position: relative;';
+        container.style.cssText = 'display: none; width: 90%; height: 375px; margin: auto; position: relative;';
 
         const canvas = document.createElement('canvas');
         canvas.id = 'hidrowebQaChart';
@@ -1222,9 +1228,12 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
     const modalStationCode = document.getElementById(lrgsModalConfig.stationCodeId);
 
     modal.style.display = 'block';
-    modalStationCode.innerHTML = stationCode + ' - ' + stationName +
-        '<br><strong style="color: #3388ff;">Latitude:</strong> ' + latitude +
-        ' | <strong style="color: #3388ff;">Longitude:</strong> ' + longitude;
+    modalStationCode.innerHTML = `
+        <div class="lrgs-header-content-title">
+            <h2 style="margin: 0;">${stationName}</h2>
+            <p style="margin: 0;">Dados de transmissão via satélite, níveis d'água em tempo quase-real e parâmetros operacionais das estações.</p>
+        </div>
+    `;
 
     // Limpar estado anterior
     if (window.lrgsChartInstance) {
@@ -1632,9 +1641,12 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     const modalCode = document.getElementById(cnarhModalConfig.codeId);
 
     modal.style.display = 'block';
-    modalCode.innerHTML = cnarhCode + ' - ' + stationName +
-        '<br><strong style="color: #A47864;">Latitude:</strong> ' + latitude +
-        ' | <strong style="color: #A47864;">Longitude:</strong> ' + longitude;
+    modalCode.innerHTML = `
+        <div class="cnarh-header-content-title">
+            <h2 style="margin: 0;">${stationName} - ${cnarhCode}</h2>
+            <p style="margin: 0;">Detalhes da outorga, vazões autorizadas, períodos de validade, localização e informações do usuário.</p>
+        </div>
+    `;
 
     // Limpar estado anterior
     if (window.cnarhChartInstance) {
@@ -2124,7 +2136,7 @@ function loadHidrowebLeiturasData(stationCode) {
     function createChartContainer() {
         const container = document.createElement('div');
         container.id = 'leiturasChartContainer';
-        container.style.cssText = 'display: none; width: 100%; height: 400px; margin-bottom: 20px; position: relative;';
+        container.style.cssText = 'display: none; width: 100%; height: 395px; margin-bottom: 20px; position: relative;';
 
         const canvas = document.createElement('canvas');
         canvas.id = 'leiturasChart';

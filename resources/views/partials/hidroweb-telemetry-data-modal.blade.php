@@ -16,8 +16,12 @@
 
         <!-- Informações da Estação -->
         <div class="hidroweb-data-modal-info">
-            <strong>Código da Estação:</strong> <span id="hidrowebDataModalStationCode">-</span><br>
-            <strong>Nome:</strong> <span id="hidrowebDataModalStationName">-</span>
+            <h2 style="margin: 0; color: #000000; font-weight: bold; font-size: 1.5rem;">
+                Telemetria de DCPs Hidrológicos
+            </h2>
+            <p style="margin: 5px 0 0 0; color: #575F6E; font-size: 1rem;">
+                <span id="hidrowebDataModalStationName"></span> - <span id="hidrowebDataModalStationCode"></span>
+            </p>
         </div>
 
         <!-- Tabs -->
@@ -259,7 +263,7 @@
     }
 
     .hidroweb-data-table-container {
-        max-height: 25rem;
+        max-height: 23.5rem;
         overflow-y: auto;
         margin: auto;
     }

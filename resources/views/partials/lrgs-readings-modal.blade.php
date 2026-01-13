@@ -16,9 +16,11 @@
 
         <!-- Informações da Estação -->
         <div class="lrgs-modal-info">
-            <strong>Código da Estação:</strong> <span id="lrgsModalStationCode">-</span><br><br>
-            <span style="font-size:12px;">Total de Leituras:</span> <span style="font-size:12px;"
-                id="lrgsModalTotalReadings">-</span>
+            <span id="lrgsModalStationCode"></span>
+            <div style="margin: 10px">
+                <span style="font-size:12px; color: #575F6E;">Total de Leituras:</span>
+                <span style="font-size:12px; color: #575F6E;" id="lrgsModalTotalReadings"></span>
+            </div>
         </div>
 
         <!-- Loading -->

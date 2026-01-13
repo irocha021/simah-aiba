@@ -16,7 +16,7 @@
 
         <!-- Informações -->
         <div class="cnarh-modal-info">
-            <strong>Código CNARH:</strong> <span id="cnarhModalCode">-</span>
+            <span id="cnarhModalCode"></span>
         </div>
 
         <!-- Loading -->
@@ -130,7 +130,7 @@
     }
 
     .cnarh-data-container {
-        max-height: 29rem;
+        max-height: 26rem;
         overflow-y: auto;
         margin: 20px 50px;
     }

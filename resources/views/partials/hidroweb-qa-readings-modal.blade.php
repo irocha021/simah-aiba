@@ -16,9 +16,11 @@
 
         <!-- Informações da Estação -->
         <div class="hidroweb-qa-modal-info">
-            <strong>Código da Estação:</strong> <span id="hidrowebQaModalStationCode">-</span><br><br>
-            <span style="font-size:12px;">Total de Leituras:</span> <span style="font-size:12px;"
-                id="hidrowebQaModalTotalReadings">-</span>
+            <span id="hidrowebQaModalStationCode"></span>
+            <div style="margin: 10px">
+                <span style="font-size:12px; color: #575F6E;">Total de Leituras:</span>
+                <span style="font-size:12px; color: #575F6E;" id="hidrowebQaModalTotalReadings">-</span>
+            </div>
         </div>
 
         <!-- Loading -->
@@ -139,7 +141,7 @@
     }
 
     .hidroweb-qa-table-container {
-        max-height: 25rem;
+        max-height: 23.5rem;
         width: 92%;
         overflow-x: auto;
         overflow-y: auto;
