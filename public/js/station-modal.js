@@ -468,70 +468,387 @@ const hidrowebQaModalConfig = {
 };
 
 function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitude) {
+    const elements = {
+        loading: document.getElementById('hidrowebQaLoadingSpinner'),
+        tableContainer: document.getElementById('hidrowebQaTableContainer'),
+        error: document.getElementById('hidrowebQaErrorMessage'),
+        tableHeader: document.getElementById('hidrowebQaTableHeader'),
+        tableBody: document.getElementById('hidrowebQaTableBody'),
+        total: document.getElementById('hidrowebQaModalTotalReadings'),
+        errorText: document.getElementById('hidrowebQaErrorText')
+    };
+
     const modal = document.getElementById(hidrowebQaModalConfig.modalId);
     const modalStationCode = document.getElementById(hidrowebQaModalConfig.stationCodeId);
-    const loadingSpinner = document.getElementById(hidrowebQaModalConfig.loadingId);
-    const tableContainer = document.getElementById('hidrowebQaTableContainer');
-    const errorMessage = document.getElementById(hidrowebQaModalConfig.errorMessageId);
-    const tableHeader = document.getElementById('hidrowebQaTableHeader');
-    const tableBody = document.getElementById('hidrowebQaTableBody');
 
     modal.style.display = 'block';
     modalStationCode.innerHTML = stationCode + ' - ' + stationName +
         '<br><strong style="color: #3388ff;">Latitude:</strong> ' + latitude +
         ' | <strong style="color: #3388ff;">Longitude:</strong> ' + longitude;
-    loadingSpinner.style.display = 'block';
-    tableContainer.style.display = 'none';
-    errorMessage.style.display = 'none';
-    tableHeader.innerHTML = '';
-    tableBody.innerHTML = '';
 
+    // Limpar estado anterior
+    if (window.hidrowebQaChartInstance) {
+        window.hidrowebQaChartInstance.destroy();
+        window.hidrowebQaChartInstance = null;
+    }
+
+    document.querySelector('.hidroweb-qa-view-controls')?.remove();
+    document.getElementById('hidrowebQaChartContainer')?.remove();
+    document.getElementById('hidrowebQaChart')?.remove();
+
+    // Resetar UI
+    Object.values(elements).forEach(el => {
+        if (el && el.style) {
+            if (el === elements.loading) el.style.display = 'block';
+            else if (el === elements.tableContainer) el.style.display = 'none';
+            else if (el === elements.error) el.style.display = 'none';
+            else if (el === elements.tableHeader) el.innerHTML = '';
+            else if (el === elements.tableBody) el.innerHTML = '';
+        }
+    });
+
+    // Criar elementos do gráfico e controles
+    const chartContainer = createChartContainer();
+    const controlsContainer = createControlsContainer();
+    elements.tableContainer.parentNode.insertBefore(chartContainer, elements.tableContainer);
+    elements.tableContainer.parentNode.insertBefore(controlsContainer, elements.tableContainer.nextSibling);
+
+    let chartData = null;
+
+    // Configurar visualizações
+    const views = {
+        table: () => {
+            controlsContainer.children[0].className = 'hidroweb-qa-view-btn active';
+            controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            controlsContainer.children[1].className = 'hidroweb-qa-view-btn';
+            controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            elements.tableContainer.style.display = 'block';
+            chartContainer.style.display = 'none';
+        },
+        chart: () => {
+            controlsContainer.children[0].className = 'hidroweb-qa-view-btn';
+            controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #333; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            controlsContainer.children[1].className = 'hidroweb-qa-view-btn active';
+            controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            elements.tableContainer.style.display = 'none';
+            chartContainer.style.display = 'block';
+            if (chartData && (!window.hidrowebQaChartInstance || window.hidrowebQaChartInstance.canvas.id !== 'hidrowebQaChart')) {
+                createChart(chartData);
+            }
+        }
+    };
+
+    controlsContainer.children[0].onclick = views.table;
+    controlsContainer.children[1].onclick = views.chart;
+
+    // Buscar dados
     fetch(`/api/hidroweb-qualidade-agua/${stationCode}/readings`)
-        .then(response => {
-            if (!response.ok) throw new Error('Erro ao buscar leituras');
-            return response.json();
-        })
+        .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar leituras'))
         .then(data => {
-            loadingSpinner.style.display = 'none';
+            elements.loading.style.display = 'none';
 
-            if (data.success && data.data && data.data.readings && data.data.readings.length > 0) {
-                document.getElementById('hidrowebQaModalTotalReadings').textContent = data.data.readings.length;
+            if (data.success && data.data?.readings?.length > 0) {
+                chartData = data.data.readings;
+                elements.total.textContent = data.data.readings.length;
 
-                const readings = data.data.readings;
-
-                // Criar cabeçalho da tabela com todos os campos do primeiro registro
+                // Criar cabeçalho da tabela
                 const headerRow = document.createElement('tr');
-                Object.keys(readings[0]).forEach(key => {
+                Object.keys(chartData[0]).forEach(key => {
                     const th = document.createElement('th');
                     th.textContent = key;
+                    th.style.whiteSpace = 'nowrap';
                     headerRow.appendChild(th);
                 });
-                tableHeader.appendChild(headerRow);
+                elements.tableHeader.appendChild(headerRow);
 
                 // Criar linhas da tabela
-                readings.forEach(reading => {
+                chartData.forEach(reading => {
                     const row = document.createElement('tr');
                     Object.keys(reading).forEach(key => {
                         const td = document.createElement('td');
                         const value = reading[key];
                         td.textContent = value !== null && value !== '' ? value : '-';
+                        td.style.whiteSpace = 'nowrap';
                         row.appendChild(td);
                     });
-                    tableBody.appendChild(row);
+                    elements.tableBody.appendChild(row);
                 });
 
-                tableContainer.style.display = 'block';
+                views.table();
             } else {
-                errorMessage.style.display = 'block';
-                document.getElementById(hidrowebQaModalConfig.errorTextId).textContent = 'Nenhuma leitura encontrada.';
+                showError('Nenhuma leitura encontrada.');
             }
         })
         .catch(error => {
-            console.error('Erro:', error);
-            loadingSpinner.style.display = 'none';
-            errorMessage.style.display = 'block';
-            document.getElementById(hidrowebQaModalConfig.errorTextId).textContent = error.message;
+            console.error('Erro ao carregar leituras:', error);
+            elements.loading.style.display = 'none';
+            showError(error.message || error);
         });
+
+    function showError(message) {
+        elements.error.style.display = 'block';
+        elements.errorText.textContent = message;
+        controlsContainer.style.display = 'none';
+        chartContainer.style.display = 'none';
+    }
+
+    function createChartContainer() {
+        const container = document.createElement('div');
+        container.id = 'hidrowebQaChartContainer';
+        container.style.cssText = 'display: none; width: 90%; height: 400px; margin: auto; position: relative;';
+
+        const canvas = document.createElement('canvas');
+        canvas.id = 'hidrowebQaChart';
+        canvas.style.cssText = 'width: 90% !important; height: 90% !important;';
+        container.appendChild(canvas);
+
+        return container;
+    }
+
+    function createControlsContainer() {
+        const container = document.createElement('div');
+        container.className = 'hidroweb-qa-view-controls';
+        container.style.cssText = 'margin: 20px 0; display: flex; justify-content: center; gap: 15px; padding: 15px;';
+
+        ['TABELA', 'GRÁFICO'].forEach((text, i) => {
+            const btn = document.createElement('button');
+            btn.id = i === 0 ? 'hidrowebQaTableViewBtn' : 'hidrowebQaChartViewBtn';
+            btn.textContent = text;
+            btn.className = i === 0 ? 'hidroweb-qa-view-btn active' : 'hidroweb-qa-view-btn';
+            btn.style.cssText = `padding: 10px 20px; background: ${i === 0 ? '#242731' : '#ffffff'}; color: ${i === 0 ? 'white' : '#242731'}; border: ${i === 0 ? 'none' : '1px solid #79808F'}; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;`;
+            container.appendChild(btn);
+        });
+
+        return container;
+    }
+
+    function createChart(readings) {
+        if (window.hidrowebQaChartInstance) {
+            window.hidrowebQaChartInstance.destroy();
+            window.hidrowebQaChartInstance = null;
+        }
+
+        const canvas = document.getElementById('hidrowebQaChart');
+        if (!canvas) {
+            console.error('Canvas não encontrado!');
+            return;
+        }
+
+        // Analisar variáveis numéricas disponíveis para gráficos
+        const numericFields = (function extractNumericFields(readings) {
+            const numericFields = [];
+            const usedKeys = new Set();
+
+            // Ignorar campos não numéricos
+            const ignoreFields = ['id', 'station_code', 'data_hora_dado', 'data_ultima_alteracao',
+                'nivel_consistencia', 'num_medicao', 'posicao_horizontal_coleta',
+                'posicao_vertical_coleta', 'profundidade_m', 'choveu', 'created_at',
+                'updated_at', 'deleted_at'];
+
+            // Analisar o primeiro registro para encontrar campos numéricos
+            if (readings.length > 0) {
+                Object.keys(readings[0]).forEach(key => {
+                    // Ignorar campos de status (_status) e campos não numéricos
+                    if (ignoreFields.includes(key) || key.endsWith('_status') ||
+                        key.includes('deleted') || key.includes('created') || key.includes('updated')) {
+                        return;
+                    }
+
+                    // Verificar se o campo tem valores numéricos em pelo menos um registro
+                    for (let i = 0; i < Math.min(5, readings.length); i++) {
+                        const value = readings[i][key];
+                        if (value !== null && value !== '' && value !== '-' && !isNaN(parseFloat(value))) {
+                            const numValue = parseFloat(value);
+                            if (!isNaN(numValue)) {
+                                // Extrair nome do parâmetro (remove números iniciais)
+                                let displayName = key.replace(/^\d+_/, '').replace(/_/g, ' ');
+
+                                // Formatar nome para exibição
+                                displayName = displayName.split('_').map(word => {
+                                    if (word.length <= 3) return word.toUpperCase();
+                                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                                }).join(' ');
+
+                                numericFields.push({
+                                    key: key,
+                                    label: displayName,
+                                    unit: extractUnit(key),
+                                    values: readings.map(r => {
+                                        const val = parseFloat(r[key]);
+                                        return isNaN(val) ? null : val;
+                                    })
+                                });
+                                usedKeys.add(key);
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Filtrar apenas campos que têm pelo menos 2 valores numéricos
+            return numericFields.filter(field => {
+                const validValues = field.values.filter(v => v !== null);
+                return validValues.length >= 2;
+            });
+
+            function extractUnit(fieldKey) {
+                // Extrair unidade do nome do campo
+                if (fieldKey.includes('_mgl_')) {
+                    return 'mg/L';
+                } else if (fieldKey.includes('_ugl')) {
+                    return 'µg/L';
+                } else if (fieldKey.includes('_us_cm')) {
+                    return 'µS/cm';
+                } else if (fieldKey.includes('_ntu')) {
+                    return 'NTU';
+                } else if (fieldKey.includes('_c')) {
+                    return '°C';
+                } else if (fieldKey.includes('_m')) {
+                    return 'm';
+                } else if (fieldKey.includes('_m3s')) {
+                    return 'm³/s';
+                } else if (fieldKey.includes('_perc')) {
+                    return '%';
+                } else if (fieldKey.includes('_ufc') || fieldKey.includes('_nmp')) {
+                    return 'UFC/100mL';
+                } else if (fieldKey.includes('_celulas')) {
+                    return 'células/100mL';
+                }
+                return '';
+            }
+        })(readings);
+
+        // Se não houver dados numéricos suficientes
+        if (numericFields.length === 0) {
+            chartContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">Não há dados numéricos suficientes para exibir o gráfico.</div>';
+            return;
+        }
+
+        // Extrair datas para o eixo X
+        const dates = readings.map(r => {
+            if (r.data_hora_dado) {
+                try {
+                    const date = new Date(r.data_hora_dado);
+                    return date.toLocaleDateString('pt-BR');
+                } catch (e) {
+                    return r.data_hora_dado;
+                }
+            }
+            return '';
+        });
+
+        // Selecionar os parâmetros mais interessantes para o gráfico
+        const interestingParams = [
+            'ph', 'temperatura_amostra_c', 'od_mgl_02', 'condutividade_especifica_25oc_us_cm_a_25c',
+            'turbidez_ntu', 'dbo_mgl_02', 'dqo_mgl_02', 'fosforo_total_mgl',
+            'nitratos_mgl_n', 'nitrogenio_amoniacal_mgl'
+        ];
+
+        // Filtrar campos disponíveis que estão na lista de interessantes
+        const selectedFields = numericFields.filter(field =>
+            interestingParams.some(param => field.key.includes(param))
+        ).slice(0, 5); // Limitar a 5 parâmetros
+
+        // Se não encontrou parâmetros interessantes, pegar os primeiros 5
+        if (selectedFields.length === 0) {
+            selectedFields.push(...numericFields.slice(0, 5));
+        }
+
+        // Criar datasets para o gráfico
+        const datasets = selectedFields.map((field, index) => {
+            const colors = ['#3388ff', '#ff5733', '#33ff57', '#ff33a1', '#33fff6'];
+            return {
+                label: `${field.label} ${field.unit ? `(${field.unit})` : ''}`,
+                data: field.values,
+                borderColor: colors[index % colors.length],
+                backgroundColor: colors[index % colors.length].replace(')', ', 0.1)').replace('rgb', 'rgba'),
+                borderWidth: 2,
+                tension: 0.1,
+                fill: false,
+                yAxisID: `y${index}`
+            };
+        });
+
+        // Configurar escalas
+        const scales = {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Data da Coleta'
+                },
+                ticks: {
+                    maxTicksLimit: 10,
+                    autoSkip: true
+                }
+            }
+        };
+
+        // Adicionar eixo Y para cada dataset
+        datasets.forEach((dataset, index) => {
+            scales[`y${index}`] = {
+                type: 'linear',
+                display: true,
+                position: index === 0 ? 'left' : 'right',
+                title: {
+                    display: true,
+                    text: dataset.label.split('(')[0].trim()
+                },
+                grid: {
+                    drawOnChartArea: index === 0 // Apenas o primeiro eixo mostra grid
+                }
+            };
+        });
+
+        window.hidrowebQaChartInstance = new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Estação ${stationCode} - Parâmetros de Qualidade da Água`,
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            title: function (context) {
+                                const index = context[0].dataIndex;
+                                if (readings[index]?.data_hora_dado) {
+                                    try {
+                                        const date = new Date(readings[index].data_hora_dado);
+                                        return date.toLocaleString('pt-BR', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: false
+                                        });
+                                    } catch (e) {
+                                        return readings[index].data_hora_dado;
+                                    }
+                                }
+                                return '';
+                            }
+                        }
+                    }
+                },
+                scales: scales,
+                interaction: {
+                    intersect: false,
+                    mode: 'nearest'
+                }
+            }
+        });
+    }
 }
 
 // Inicializar modal HidroWeb QA
