@@ -3,14 +3,24 @@
     <div class="hidroweb-qa-modal-content">
         <!-- Cabeçalho -->
         <div class="hidroweb-qa-modal-header">
-            <h2>Leituras HidroWeb - Qualidade da Água</h2>
+            <div class="hidroweb-qa-header-content">
+                <img src="{{ asset('images/logo-top-sigmah.svg') }}" alt="Logo SIGMAH" class="logo-hidroweb-qa-modal" />
+                <div class="hidroweb-qa-header-content-title">
+                    <h2>Leituras HidroWeb - Qualidade da Água</h2>
+                    <p>Informações detalhadas sobre parâmetros de qualidade da água em corpos hídricos do Brasil,
+                        coletados e disponibilizados pela Agência Nacional de Águas (ANA) via Rede HidroWeb.</p>
+                </div>
+            </div>
             <span id="closeHidrowebQaModal" class="hidroweb-qa-modal-close">&times;</span>
         </div>
 
         <!-- Informações da Estação -->
         <div class="hidroweb-qa-modal-info">
-            <strong>Código da Estação:</strong> <span id="hidrowebQaModalStationCode">-</span><br><br>
-            <span style="font-size:12px;">Total de Leituras:</span> <span style="font-size:12px;" id="hidrowebQaModalTotalReadings">-</span>
+            <span id="hidrowebQaModalStationCode"></span>
+            <div style="margin: 10px">
+                <span style="font-size:12px; color: #575F6E;">Total de Leituras:</span>
+                <span style="font-size:12px; color: #575F6E;" id="hidrowebQaModalTotalReadings">-</span>
+            </div>
         </div>
 
         <!-- Loading -->
@@ -39,23 +49,166 @@
 </div>
 
 <style>
-.hidroweb-qa-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-.hidroweb-qa-modal-content { background-color: #fefefe; margin: 2% auto; padding: 20px; padding-bottom: 30px; border: 1px solid #888; width: 95%; max-width: 1400px; max-height: 90vh; overflow-y: auto; border-radius: 8px; }
-.hidroweb-qa-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #3388ff; padding-bottom: 10px; }
-.hidroweb-qa-modal-header h2 { margin: 0; color: #3388ff; }
-.hidroweb-qa-modal-close { cursor: pointer; font-size: 28px; font-weight: bold; color: #aaa; }
-.hidroweb-qa-modal-close:hover { color: #3388ff; }
-.hidroweb-qa-modal-info { margin-bottom: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 5px; }
-.hidroweb-qa-loading { text-align: center; padding: 20px; }
-.hidroweb-qa-spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3388ff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
-.hidroweb-qa-table-container { max-height: 600px; overflow-x: auto; overflow-y: auto; margin-bottom: 20px; position: relative; }
-.hidroweb-qa-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: auto; }
-.hidroweb-qa-table thead { position: sticky; top: 0; background-color: #3388ff; color: white; z-index: 10; }
-.hidroweb-qa-table thead th { position: sticky; top: 0; background-color: #3388ff; }
-.hidroweb-qa-table th { padding: 10px 8px; border: 1px solid #ddd; text-align: left; white-space: nowrap; font-size: 11px; }
-.hidroweb-qa-table td { padding: 10px 8px; border: 1px solid #ddd; text-align: left; white-space: nowrap; }
-.hidroweb-qa-table tbody tr:nth-child(even) { background-color: #f9f9f9; }
-.hidroweb-qa-table tbody tr:hover { background-color: #e6f2ff; }
-.hidroweb-qa-error { color: #d9534f; padding: 15px; background-color: #f2dede; border: 1px solid #ebccd1; border-radius: 4px; margin-top: 10px; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .hidroweb-qa-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .hidroweb-qa-modal-content {
+        background-color: #ffffff;
+        margin: 2% auto;
+        border: 1px solid #888;
+        width: 85%;
+        height: 90%;
+        overflow-y: auto;
+    }
+
+    .hidroweb-qa-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        background-color: #E3EBFF;
+        padding: 30px;
+    }
+
+    .logo-hidroweb-qa-modal {
+        height: 4.5rem;
+    }
+
+    .hidroweb-qa-header-content {
+        display: flex;
+        align-items: center;
+        gap: 2.25rem;
+    }
+
+    .hidroweb-qa-header-content-title {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+        width: 60%;
+    }
+
+    .hidroweb-qa-header-content-title h2 {
+        color: #000000;
+        font-weight: bold;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .hidroweb-qa-header-content-title p {
+        color: #575F6E;
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .hidroweb-qa-modal-close {
+        cursor: pointer;
+        font-size: 60px;
+        font-weight: 300;
+        color: #5C5E64;
+    }
+
+    .hidroweb-qa-modal-close:hover {
+        color: #000000;
+    }
+
+    .hidroweb-qa-modal-info {
+        margin: 20px 50px;
+        padding: 10px;
+    }
+
+    .hidroweb-qa-loading {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .hidroweb-qa-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3388ff;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    .hidroweb-qa-table-container {
+        max-height: 23.5rem;
+        width: 92%;
+        overflow-x: auto;
+        overflow-y: auto;
+        margin: auto;
+        position: relative;
+    }
+
+    .hidroweb-qa-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        table-layout: auto;
+    }
+
+    .hidroweb-qa-table thead {
+        position: sticky;
+        top: 0;
+        background-color: #3388ff;
+        color: white;
+        z-index: 10;
+    }
+
+    .hidroweb-qa-table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #3388ff;
+    }
+
+    .hidroweb-qa-table th {
+        padding: 10px 8px;
+        border: 1px solid #ddd;
+        text-align: left;
+        white-space: nowrap;
+        font-size: 11px;
+    }
+
+    .hidroweb-qa-table td {
+        padding: 10px 8px;
+        border: 1px solid #ddd;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .hidroweb-qa-table tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .hidroweb-qa-table tbody tr:hover {
+        background-color: #e6f2ff;
+    }
+
+    .hidroweb-qa-error {
+        color: #d9534f;
+        padding: 15px;
+        background-color: #f2dede;
+        border: 1px solid #ebccd1;
+        border-radius: 4px;
+        margin-top: 10px;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 </style>

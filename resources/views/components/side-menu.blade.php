@@ -49,7 +49,7 @@
                 <!-- ===== FIM TEXTO DE CONFIGURAÇÃO ===== -->
 
                 <!-- ===== CONTROLE DE CADASTRO ===== -->
-                <li class="menu-item select-control" id="filters-control">
+                {{-- <li class="menu-item select-control" id="filters-control">
                     <div class="select-header">
                         <img src="{{ asset('images/icons/cadastro-bold.svg') }}" alt="Filtros"
                             class="select-icon-open">
@@ -74,7 +74,7 @@
                             </div>
                         </div>
                     </div>
-                </li>
+                </li> --}}
                 <!-- ===== FIM CONTROLE DE CADASTRO ===== -->
 
                 <!-- ===== CONTROLE DE UPLOAD ===== -->

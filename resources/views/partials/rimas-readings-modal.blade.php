@@ -3,14 +3,24 @@
     <div class="rimas-modal-content">
         <!-- Cabeçalho -->
         <div class="rimas-modal-header">
-            <h2>Leituras do Poço RIMAS</h2>
+            <div class="rimas-header-content">
+                <img src="{{ asset('images/logo-top-sigmah.svg') }}" alt="Logo SIGMAH" class="logo-rimas-modal" />
+                <div class="rimas-header-content-title">
+                    <h2>Leituras do Poço RIMAS</h2>
+                    <p>Monitoramento de águas subterrâneas da Rede RIMAS, disponibilizado pelo Serviço Geológico do
+                        Brasil (SGB/CPRM).</p>
+                </div>
+            </div>
             <span id="closeRimasModal" class="rimas-modal-close">&times;</span>
         </div>
 
         <!-- Informações do Poço -->
         <div class="rimas-modal-info">
-            <strong>ID do Ponto:</strong> <span id="rimasModalIdPonto">-</span><br><br>
-            <span style="font-size:12px;">Total de Leituras:</span> <span style="font-size:12px;" id="rimasModalTotalReadings">-</span>
+            <span id="rimasModalIdPonto"></span>
+            <div style="margin: 10px">
+                <span style="font-size:12px; color: #575F6E;">Total de Leituras:</span>
+                <span style="font-size:12px; color: #575F6E;" id="rimasModalTotalReadings">-</span>
+            </div>
         </div>
 
         <!-- Loading -->
@@ -43,22 +53,166 @@
 </div>
 
 <style>
-.rimas-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-.rimas-modal-content { background-color: #fefefe; margin: 2% auto; padding: 20px; padding-bottom: 30px; border: 1px solid #888; width: 80%; max-width: 900px; max-height: 90vh; overflow-y: auto; border-radius: 8px; }
-.rimas-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #ff0000; padding-bottom: 10px; }
-.rimas-modal-header h2 { margin: 0; color: #ff0000; }
-.rimas-modal-close { cursor: pointer; font-size: 28px; font-weight: bold; color: #aaa; }
-.rimas-modal-close:hover { color: #ff0000; }
-.rimas-modal-info { margin-bottom: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 5px; }
-.rimas-loading { text-align: center; padding: 20px; }
-.rimas-spinner { border: 4px solid #f3f3f3; border-top: 4px solid #ff0000; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
-.rimas-table-container { max-height: 400px; overflow-y: auto; margin-bottom: 20px; }
-.rimas-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.rimas-table thead { position: sticky; top: 0; background-color: #ff0000; color: white; z-index: 1; }
-.rimas-table th, .rimas-table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-.rimas-table th:nth-child(4), .rimas-table td:nth-child(4) { text-align: right; font-weight: bold; }
-.rimas-table tbody tr:nth-child(even) { background-color: #f9f9f9; }
-.rimas-table tbody tr:hover { background-color: #ffe6e6; }
-.rimas-error { color: #d9534f; padding: 15px; background-color: #f2dede; border: 1px solid #ebccd1; border-radius: 4px; margin-top: 10px; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .rimas-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .rimas-modal-content {
+        background-color: #ffffff;
+        margin: 2% auto;
+        border: 1px solid #888;
+        width: 85%;
+        height: 90%;
+        overflow-y: auto;
+    }
+
+    .rimas-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        background-color: #E3EBFF;
+        padding: 30px;
+    }
+
+    .logo-rimas-modal {
+        height: 4.5rem;
+    }
+
+    .rimas-header-content {
+        display: flex;
+        align-items: center;
+        gap: 2.25rem;
+    }
+
+    .rimas-header-content-title {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+        width: 60%;
+    }
+
+    .rimas-header-content-title h2 {
+        color: #000000;
+        font-weight: bold;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .rimas-header-content-title p {
+        color: #575F6E;
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .rimas-modal-close {
+        cursor: pointer;
+        font-size: 60px;
+        font-weight: 300;
+        color: #5C5E64;
+    }
+
+    .rimas-modal-close:hover {
+        color: #000000;
+    }
+
+    .rimas-modal-info {
+        margin: 20px 50px;
+        padding: 10px;
+    }
+
+    .rimas-loading {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .rimas-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #ff7800;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    .rimas-table-container {
+        max-height: 25rem;
+        width: 92%;
+        overflow-x: auto;
+        overflow-y: auto;
+        margin: auto;
+        position: relative;
+    }
+
+    .rimas-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        table-layout: auto;
+    }
+
+    .rimas-table thead {
+        position: sticky;
+        top: 0;
+        background-color: #ff7800;
+        color: white;
+        z-index: 10;
+    }
+
+    .rimas-table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #ff7800;
+    }
+
+    .rimas-table th {
+        padding: 10px 8px;
+        border: 1px solid #ddd;
+        text-align: left;
+        white-space: nowrap;
+        font-size: 11px;
+    }
+
+    .rimas-table td {
+        padding: 10px 8px;
+        border: 1px solid #ddd;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .rimas-table tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .rimas-table tbody tr:hover {
+        background-color: #fff4e6;
+    }
+
+    .rimas-error {
+        color: #d9534f;
+        padding: 15px;
+        background-color: #f2dede;
+        border: 1px solid #ebccd1;
+        border-radius: 4px;
+        margin: 50px;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 </style>
