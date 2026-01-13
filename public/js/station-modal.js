@@ -1282,55 +1282,340 @@ const cnarhModalConfig = {
 };
 
 function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
+    const elements = {
+        loading: document.getElementById('cnarhLoadingSpinner'),
+        dataContainer: document.getElementById('cnarhDataContainer'),
+        error: document.getElementById('cnarhErrorMessage'),
+        errorText: document.getElementById('cnarhErrorText')
+    };
+
     const modal = document.getElementById(cnarhModalConfig.modalId);
     const modalCode = document.getElementById(cnarhModalConfig.codeId);
-    const loadingSpinner = document.getElementById(cnarhModalConfig.loadingId);
-    const dataContainer = document.getElementById(cnarhModalConfig.dataContainerId);
-    const errorMessage = document.getElementById(cnarhModalConfig.errorMessageId);
 
     modal.style.display = 'block';
     modalCode.innerHTML = cnarhCode + ' - ' + stationName +
         '<br><strong style="color: #A47864;">Latitude:</strong> ' + latitude +
         ' | <strong style="color: #A47864;">Longitude:</strong> ' + longitude;
-    loadingSpinner.style.display = 'block';
-    dataContainer.style.display = 'none';
-    errorMessage.style.display = 'none';
 
+    // Limpar estado anterior
+    if (window.cnarhChartInstance) {
+        window.cnarhChartInstance.destroy();
+    }
+
+    document.querySelector('.cnarh-view-controls')?.remove();
+    document.getElementById('cnarhChartContainer')?.remove();
+
+    // Resetar UI
+    elements.loading.style.display = 'block';
+    elements.dataContainer.style.display = 'none';
+    elements.error.style.display = 'none';
+
+    // Buscar dados
     fetch(`/api/cnarh/${cnarhCode}/readings`)
-        .then(response => {
-            if (!response.ok) throw new Error('Erro ao buscar dados');
-            return response.json();
-        })
+        .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar dados'))
         .then(data => {
-            loadingSpinner.style.display = 'none';
+            elements.loading.style.display = 'none';
 
-            if (data.success && data.data && data.data.cnarh) {
-                const cnarh = data.data.cnarh;
-                let html = '';
+            if (data.success && data.data?.cnarh) {
+                const cnarhData = data.data.cnarh;
 
-                Object.keys(cnarh).forEach(key => {
-                    const value = cnarh[key] !== null && cnarh[key] !== '' ? cnarh[key] : '-';
-                    html += `
-                        <div class="cnarh-data-row">
-                            <div class="cnarh-data-label">${key}:</div>
-                            <div class="cnarh-data-value">${value}</div>
-                        </div>
-                    `;
-                });
+                // Renderizar tabela
+                renderTable(cnarhData);
+                elements.dataContainer.style.display = 'block';
 
-                document.getElementById('cnarhDataContent').innerHTML = html;
-                dataContainer.style.display = 'block';
+                // Extrair campos numéricos
+                const numericFields = extractNumericFields(cnarhData);
+
+                // Criar gráfico e controles se houver dados
+                if (numericFields.length > 0) {
+                    setupChartAndControls(cnarhData, numericFields, cnarhCode);
+                }
+
             } else {
-                errorMessage.style.display = 'block';
-                document.getElementById(cnarhModalConfig.errorTextId).textContent = 'Nenhum dado encontrado.';
+                showError('Nenhum dado encontrado.');
             }
         })
         .catch(error => {
-            console.error('Erro:', error);
-            loadingSpinner.style.display = 'none';
-            errorMessage.style.display = 'block';
-            document.getElementById(cnarhModalConfig.errorTextId).textContent = error.message;
+            elements.loading.style.display = 'none';
+            showError(error.message || error);
         });
+
+    // Funções auxiliares
+    function showError(message) {
+        elements.error.style.display = 'block';
+        elements.errorText.textContent = message;
+    }
+
+    function renderTable(cnarhData) {
+        let html = '<div id="cnarhTableContainer">';
+        Object.entries(cnarhData).forEach(([key, value]) => {
+            if (value !== null && value !== '') {
+                html += `
+                    <div class="cnarh-data-row">
+                        <div class="cnarh-data-label">${formatKey(key)}:</div>
+                        <div class="cnarh-data-value">${value}</div>
+                    </div>
+                `;
+            }
+        });
+        html += '</div>';
+        document.getElementById('cnarhDataContent').innerHTML = html;
+    }
+
+    function formatKey(key) {
+        return key
+            .replace(/^[a-z]+_/, '')
+            .replace(/_/g, ' ')
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+    }
+
+    function extractNumericFields(cnarhData) {
+        const numericFields = [];
+        const patterns = {
+            vazao: /vazao|volume/i,
+            tempo: /hora|dia|minuto/i,
+            coordenada: /latitude|longitude/i,
+            medida: /profundidade|cota|temperatura|condutividade|ph|std/i
+        };
+
+        Object.entries(cnarhData).forEach(([key, value]) => {
+            // Verificar se é numérico
+            if (value && value !== '-' && !isNaN(parseFloat(value))) {
+                const numValue = parseFloat(value);
+
+                // Verificar se é um campo interessante
+                let isInteresting = false;
+                for (const [type, pattern] of Object.entries(patterns)) {
+                    if (pattern.test(key)) {
+                        isInteresting = true;
+                        break;
+                    }
+                }
+
+                if (isInteresting) {
+                    numericFields.push({
+                        key,
+                        label: formatKey(key),
+                        unit: getUnit(key),
+                        value: numValue
+                    });
+                }
+            }
+        });
+
+        return numericFields;
+    }
+
+    function getUnit(key) {
+        // Ordem de prioridade (mais específico primeiro)
+        if (key.includes('volumeanual')) return 'm³/ano';
+        if (key.includes('vazaodia')) return 'L/s';
+        if (key.includes('vazao')) return 'L/s';
+        if (key.includes('volume')) return 'm³';
+        if (key.includes('hora')) return 'h';
+        if (key.includes('dia') && !key.includes('vazao')) return 'dias';
+        if (key.includes('latitude') || key.includes('longitude')) return '°';
+        if (key.includes('profundidade') || key.includes('cota')) return 'm';
+        if (key.includes('condutividade')) return 'µS/cm';
+        if (key.includes('temperatura')) return '°C';
+        if (key.includes('ph')) return 'pH';
+        if (key.includes('std')) return 'mg/L';
+        return '';
+    }
+
+    function setupChartAndControls(cnarhData, numericFields, cnarhCode) {
+        // Criar elementos
+        const chartContainer = createChartContainer();
+        const controlsContainer = createControlsContainer();
+
+        // Inserir no DOM
+        const modalBody = document.querySelector('.modal-body') ||
+            document.querySelector('.modal-content') ||
+            elements.dataContainer.parentNode;
+
+        if (modalBody) {
+            modalBody.insertBefore(chartContainer, elements.dataContainer.nextSibling);
+            modalBody.insertBefore(controlsContainer, chartContainer.nextSibling);
+        }
+
+        // Configurar views
+        const views = {
+            table: () => showView('table', chartContainer, controlsContainer),
+            chart: () => {
+                showView('chart', chartContainer, controlsContainer);
+                renderChart(cnarhData, numericFields, cnarhCode, chartContainer);
+            }
+        };
+
+        // Event listeners
+        document.getElementById('cnarhTableViewBtn').onclick = views.table;
+        document.getElementById('cnarhChartViewBtn').onclick = views.chart;
+
+        // Mostrar tabela por padrão
+        views.table();
+    }
+
+    function showView(viewType, chartContainer, controlsContainer) {
+        const isTable = viewType === 'table';
+        const tableBtn = document.getElementById('cnarhTableViewBtn');
+        const chartBtn = document.getElementById('cnarhChartViewBtn');
+
+        // Atualizar botões
+        tableBtn.className = `cnarh-view-btn ${isTable ? 'active' : ''}`;
+        tableBtn.style.cssText = `padding: 10px 20px; background: ${isTable ? '#242731' : '#ffffff'}; color: ${isTable ? 'white' : '#242731'}; border: ${isTable ? 'none' : '1px solid #79808F'}; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;`;
+
+        chartBtn.className = `cnarh-view-btn ${!isTable ? 'active' : ''}`;
+        chartBtn.style.cssText = `padding: 10px 20px; background: ${!isTable ? '#242731' : '#ffffff'}; color: ${!isTable ? 'white' : '#242731'}; border: ${!isTable ? 'none' : '1px solid #79808F'}; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;`;
+
+        // Mostrar/ocultar elementos
+        elements.dataContainer.style.display = isTable ? 'block' : 'none';
+        chartContainer.style.display = isTable ? 'none' : 'block';
+
+        // Posicionar controles
+        const targetElement = isTable ? elements.dataContainer : chartContainer;
+        if (controlsContainer.parentNode !== targetElement.nextSibling) {
+            targetElement.parentNode.insertBefore(controlsContainer, targetElement.nextSibling);
+        }
+    }
+
+    function createChartContainer() {
+        const container = document.createElement('div');
+        container.id = 'cnarhChartContainer';
+        container.style.cssText = 'display: none; width: 90%; height: 400px; margin: auto; position: relative;';
+
+        const canvas = document.createElement('canvas');
+        canvas.id = 'cnarhChart';
+        canvas.style.cssText = 'width: 90% !important; height: 90% !important;';
+        container.appendChild(canvas);
+
+        return container;
+    }
+
+    function createControlsContainer() {
+        const container = document.createElement('div');
+        container.className = 'cnarh-view-controls';
+        container.style.cssText = 'margin: 20px 0; display: flex; justify-content: center; gap: 15px; padding: 15px;';
+
+        ['TABELA', 'GRÁFICO'].forEach((text, i) => {
+            const btn = document.createElement('button');
+            btn.id = i === 0 ? 'cnarhTableViewBtn' : 'cnarhChartViewBtn';
+            btn.textContent = text;
+            btn.className = i === 0 ? 'cnarh-view-btn active' : 'cnarh-view-btn';
+            btn.style.cssText = `padding: 10px 20px; background: ${i === 0 ? '#242731' : '#ffffff'}; color: ${i === 0 ? 'white' : '#242731'}; border: ${i === 0 ? 'none' : '1px solid #79808F'}; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;`;
+            container.appendChild(btn);
+        });
+
+        return container;
+    }
+
+    function renderChart(cnarhData, numericFields, cnarhCode, chartContainer) {
+        // Limpar gráfico anterior
+        if (window.cnarhChartInstance) {
+            window.cnarhChartInstance.destroy();
+        }
+
+        const canvas = document.getElementById('cnarhChart');
+        if (!canvas) return;
+
+        // Preparar dados (limitar a 10 campos)
+        const displayFields = [...numericFields]
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 10);
+
+        if (displayFields.length === 0) {
+            chartContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">Sem dados para gráfico.</div>';
+            return;
+        }
+
+        // Configurar gráfico
+        const isHorizontal = displayFields.length > 5;
+        const colors = ['#A47864', '#3388ff', '#ff5733', '#33ff57', '#ff33a1',
+            '#33fff6', '#ffcc00', '#9966ff', '#00cc99', '#ff6666'];
+
+        window.cnarhChartInstance = new Chart(canvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: displayFields.map(f => `${f.label} ${f.unit ? `(${f.unit})` : ''}`),
+                datasets: [{
+                    label: 'Valores',
+                    data: displayFields.map(f => f.value),
+                    backgroundColor: displayFields.map((_, i) => colors[i % colors.length]),
+                    borderColor: displayFields.map((_, i) => colors[i % colors.length]),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: isHorizontal ? 'y' : 'x',
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `CNARH ${cnarhCode} - Dados Principais`,
+                        font: { size: 16 }
+                    },
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const field = displayFields[context.dataIndex];
+                                const value = context.parsed[isHorizontal ? 'x' : 'y'];
+
+                                // Formatação personalizada
+                                let formattedValue;
+
+                                if (Math.abs(value) >= 1000) {
+                                    // Para números grandes, mostrar com separador de milhar
+                                    formattedValue = value.toLocaleString('pt-BR', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 2
+                                    });
+                                } else if (Math.abs(value) < 0.01 && value !== 0) {
+                                    // Para números muito pequenos, notação científica
+                                    formattedValue = value.toExponential(2);
+                                } else {
+                                    formattedValue = value.toLocaleString('pt-BR', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 4
+                                    });
+                                }
+
+                                return `${field.label}: ${formattedValue} ${field.unit}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (value) => {
+                                if (Math.abs(value) >= 1000) {
+                                    return value.toLocaleString('pt-BR', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    });
+                                }
+                                return value.toLocaleString('pt-BR', {
+                                    minimumFractionDigits: 1,
+                                    maximumFractionDigits: 2
+                                });
+                            }
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: isHorizontal ? 0 : 45,
+                            minRotation: isHorizontal ? 0 : 45
+                        }
+                    }
+                }
+            }
+        });
+    }
 }
 
 // Inicializar modal CNARH
