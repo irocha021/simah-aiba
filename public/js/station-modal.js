@@ -869,70 +869,398 @@ const lrgsModalConfig = {
 };
 
 function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
+    const elements = {
+        loading: document.getElementById('lrgsLoadingSpinner'),
+        tableContainer: document.getElementById('lrgsTableContainer'),
+        error: document.getElementById('lrgsErrorMessage'),
+        tableHeader: document.getElementById('lrgsTableHeader'),
+        tableBody: document.getElementById('lrgsTableBody'),
+        total: document.getElementById('lrgsModalTotalReadings'),
+        errorText: document.getElementById('lrgsErrorText')
+    };
+
     const modal = document.getElementById(lrgsModalConfig.modalId);
     const modalStationCode = document.getElementById(lrgsModalConfig.stationCodeId);
-    const loadingSpinner = document.getElementById(lrgsModalConfig.loadingId);
-    const tableContainer = document.getElementById('lrgsTableContainer');
-    const errorMessage = document.getElementById(lrgsModalConfig.errorMessageId);
-    const tableHeader = document.getElementById('lrgsTableHeader');
-    const tableBody = document.getElementById('lrgsTableBody');
 
     modal.style.display = 'block';
     modalStationCode.innerHTML = stationCode + ' - ' + stationName +
         '<br><strong style="color: #3388ff;">Latitude:</strong> ' + latitude +
         ' | <strong style="color: #3388ff;">Longitude:</strong> ' + longitude;
-    loadingSpinner.style.display = 'block';
-    tableContainer.style.display = 'none';
-    errorMessage.style.display = 'none';
-    tableHeader.innerHTML = '';
-    tableBody.innerHTML = '';
 
+    // Limpar estado anterior
+    if (window.lrgsChartInstance) {
+        window.lrgsChartInstance.destroy();
+        window.lrgsChartInstance = null;
+    }
+
+    document.querySelector('.lrgs-view-controls')?.remove();
+    document.getElementById('lrgsChartContainer')?.remove();
+    document.getElementById('lrgsChart')?.remove();
+
+    // Resetar UI
+    Object.values(elements).forEach(el => {
+        if (el && el.style) {
+            if (el === elements.loading) el.style.display = 'block';
+            else if (el === elements.tableContainer) el.style.display = 'none';
+            else if (el === elements.error) el.style.display = 'none';
+            else if (el === elements.tableHeader) el.innerHTML = '';
+            else if (el === elements.tableBody) el.innerHTML = '';
+        }
+    });
+
+    // Criar elementos do gráfico e controles
+    const chartContainer = createChartContainer();
+    const controlsContainer = createControlsContainer();
+    elements.tableContainer.parentNode.insertBefore(chartContainer, elements.tableContainer);
+    elements.tableContainer.parentNode.insertBefore(controlsContainer, elements.tableContainer.nextSibling);
+
+    let chartData = null;
+
+    // Configurar visualizações
+    const views = {
+        table: () => {
+            controlsContainer.children[0].className = 'lrgs-view-btn active';
+            controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            controlsContainer.children[1].className = 'lrgs-view-btn';
+            controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            elements.tableContainer.style.display = 'block';
+            chartContainer.style.display = 'none';
+        },
+        chart: () => {
+            controlsContainer.children[0].className = 'lrgs-view-btn';
+            controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #333; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            controlsContainer.children[1].className = 'lrgs-view-btn active';
+            controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            elements.tableContainer.style.display = 'none';
+            chartContainer.style.display = 'block';
+            if (chartData && (!window.lrgsChartInstance || window.lrgsChartInstance.canvas.id !== 'lrgsChart')) {
+                createChart(chartData);
+            }
+        }
+    };
+
+    controlsContainer.children[0].onclick = views.table;
+    controlsContainer.children[1].onclick = views.chart;
+
+    // Buscar dados
     fetch(`/api/lrgs-client/${stationCode}/readings`)
-        .then(response => {
-            if (!response.ok) throw new Error('Erro ao buscar leituras');
-            return response.json();
-        })
+        .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar leituras'))
         .then(data => {
-            loadingSpinner.style.display = 'none';
+            elements.loading.style.display = 'none';
 
-            if (data.success && data.data && data.data.readings && data.data.readings.length > 0) {
-                document.getElementById('lrgsModalTotalReadings').textContent = data.data.readings.length;
-
-                const readings = data.data.readings;
+            if (data.success && data.data?.readings?.length > 0) {
+                chartData = data.data.readings;
+                elements.total.textContent = data.data.readings.length;
 
                 // Criar cabeçalho da tabela
                 const headerRow = document.createElement('tr');
-                Object.keys(readings[0]).forEach(key => {
+                Object.keys(chartData[0]).forEach(key => {
                     const th = document.createElement('th');
                     th.textContent = key;
+                    th.style.whiteSpace = 'nowrap';
                     headerRow.appendChild(th);
                 });
-                tableHeader.appendChild(headerRow);
+                elements.tableHeader.appendChild(headerRow);
 
                 // Criar linhas da tabela
-                readings.forEach(reading => {
+                chartData.forEach(reading => {
                     const row = document.createElement('tr');
                     Object.keys(reading).forEach(key => {
                         const td = document.createElement('td');
                         const value = reading[key];
                         td.textContent = value !== null && value !== '' ? value : '-';
+                        td.style.whiteSpace = 'nowrap';
                         row.appendChild(td);
                     });
-                    tableBody.appendChild(row);
+                    elements.tableBody.appendChild(row);
                 });
 
-                tableContainer.style.display = 'block';
+                views.table();
             } else {
-                errorMessage.style.display = 'block';
-                document.getElementById(lrgsModalConfig.errorTextId).textContent = 'Nenhuma leitura encontrada.';
+                showError('Nenhuma leitura encontrada.');
             }
         })
         .catch(error => {
-            console.error('Erro:', error);
-            loadingSpinner.style.display = 'none';
-            errorMessage.style.display = 'block';
-            document.getElementById(lrgsModalConfig.errorTextId).textContent = error.message;
+            console.error('Erro ao carregar leituras:', error);
+            elements.loading.style.display = 'none';
+            showError(error.message || error);
         });
+
+    function showError(message) {
+        elements.error.style.display = 'block';
+        elements.errorText.textContent = message;
+        controlsContainer.style.display = 'none';
+        chartContainer.style.display = 'none';
+    }
+
+    function createChartContainer() {
+        const container = document.createElement('div');
+        container.id = 'lrgsChartContainer';
+        container.style.cssText = 'display: none; width: 90%; height: 400px; margin: auto; position: relative;';
+
+        const canvas = document.createElement('canvas');
+        canvas.id = 'lrgsChart';
+        canvas.style.cssText = 'width: 90% !important; height: 90% !important;';
+        container.appendChild(canvas);
+
+        return container;
+    }
+
+    function createControlsContainer() {
+        const container = document.createElement('div');
+        container.className = 'lrgs-view-controls';
+        container.style.cssText = 'margin: 20px 0; display: flex; justify-content: center; gap: 15px; padding: 15px;';
+
+        ['TABELA', 'GRÁFICO'].forEach((text, i) => {
+            const btn = document.createElement('button');
+            btn.id = i === 0 ? 'lrgsTableViewBtn' : 'lrgsChartViewBtn';
+            btn.textContent = text;
+            btn.className = i === 0 ? 'lrgs-view-btn active' : 'lrgs-view-btn';
+            btn.style.cssText = `padding: 10px 20px; background: ${i === 0 ? '#242731' : '#ffffff'}; color: ${i === 0 ? 'white' : '#242731'}; border: ${i === 0 ? 'none' : '1px solid #79808F'}; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;`;
+            container.appendChild(btn);
+        });
+
+        return container;
+    }
+
+    function createChart(readings) {
+        if (window.lrgsChartInstance) {
+            window.lrgsChartInstance.destroy();
+            window.lrgsChartInstance = null;
+        }
+
+        const canvas = document.getElementById('lrgsChart');
+        if (!canvas) {
+            console.error('Canvas não encontrado!');
+            return;
+        }
+
+        // Analisar variáveis numéricas disponíveis para gráficos
+        const numericFields = (function extractNumericFields(readings) {
+            const numericFields = [];
+            const usedKeys = new Set();
+
+            // Ignorar campos não numéricos
+            const ignoreFields = ['id', 'dcp_station_id', 'raw_header', 'address', 'failure_code',
+                'signal_strength', 'modulation_index', 'data_quality', 'channel',
+                'spacecraft', 'reception_source', 'display_value', 'door_sensor_open',
+                'serial_number', 'program_signature', 'operating_system_version',
+                'transmitter_serial_number', 'firmware_version', 'goes_antenna_signal',
+                'program_version', 'restart_time', 'sensor_type', 'extra',
+                'created_at', 'updated_at', 'deleted_at'];
+
+            // Analisar o primeiro registro para encontrar campos numéricos
+            if (readings.length > 0) {
+                Object.keys(readings[0]).forEach(key => {
+                    // Ignorar campos não numéricos
+                    if (ignoreFields.includes(key) ||
+                        key.includes('created') || key.includes('updated') || key.includes('deleted')) {
+                        return;
+                    }
+
+                    // Verificar se o campo tem valores numéricos em pelo menos um registro
+                    for (let i = 0; i < Math.min(5, readings.length); i++) {
+                        const value = readings[i][key];
+                        if (value !== null && value !== '' && value !== '-' && !isNaN(parseFloat(value))) {
+                            const numValue = parseFloat(value);
+                            if (!isNaN(numValue)) {
+                                // Formatar nome para exibição
+                                let displayName = key.replace(/_/g, ' ');
+                                displayName = displayName.split(' ').map(word => {
+                                    if (word.length <= 3) return word.toUpperCase();
+                                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                                }).join(' ');
+
+                                numericFields.push({
+                                    key: key,
+                                    label: displayName,
+                                    unit: extractUnit(key),
+                                    values: readings.map(r => {
+                                        const val = parseFloat(r[key]);
+                                        return isNaN(val) ? null : val;
+                                    })
+                                });
+                                usedKeys.add(key);
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Filtrar campos com valores numéricos
+            return numericFields.filter(field => {
+                const validValues = field.values.filter(v => v !== null);
+                return validValues.length >= 1;
+            });
+
+            function extractUnit(fieldKey) {
+                // Extrair unidade do nome do campo
+                if (fieldKey.includes('water_level') || fieldKey.includes('level_adjustment')) {
+                    return 'm';
+                } else if (fieldKey.includes('rain')) {
+                    return 'mm';
+                } else if (fieldKey.includes('temperature')) {
+                    return '°C';
+                } else if (fieldKey.includes('battery_voltage')) {
+                    return 'V';
+                } else if (fieldKey.includes('atmospheric_pressure')) {
+                    return 'hPa';
+                } else if (fieldKey.includes('frequency_offset')) {
+                    return 'Hz';
+                }
+                return '';
+            }
+        })(readings);
+
+        // Se não houver dados numéricos suficientes
+        if (numericFields.length === 0) {
+            chartContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">Não há dados numéricos suficientes para exibir o gráfico.</div>';
+            return;
+        }
+
+        // Extrair data/hora para o eixo X (criar timestamp a partir dos campos separados)
+        const timestamps = readings.map(r => {
+            try {
+                // Usar year, julian_day, hour, minute, second para criar data
+                if (r.year && r.julian_day && r.hour !== undefined && r.minute !== undefined) {
+                    // Converter dia juliano para data normal
+                    const date = new Date(parseInt(r.year), 0); // 1º de janeiro do ano
+                    const julianDay = parseInt(r.julian_day) - 1; // Ajustar porque 1º de janeiro é dia 1
+                    date.setDate(date.getDate() + julianDay);
+                    date.setHours(parseInt(r.hour) || 0, parseInt(r.minute) || 0, parseInt(r.second) || 0);
+
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                }
+            } catch (e) {
+                console.error('Erro ao processar data:', e);
+            }
+            return '';
+        });
+
+        // Selecionar os parâmetros mais interessantes para o gráfico
+        const interestingParams = [
+            'water_level', 'rain', 'water_temperature', 'battery_voltage',
+            'atmospheric_pressure', 'internal_temperature'
+        ];
+
+        // Filtrar campos disponíveis que estão na lista de interessantes
+        const selectedFields = numericFields.filter(field =>
+            interestingParams.some(param => field.key.includes(param))
+        ).slice(0, 5); // Limitar a 5 parâmetros
+
+        // Se não encontrou parâmetros interessantes, pegar os primeiros 5
+        if (selectedFields.length === 0) {
+            selectedFields.push(...numericFields.slice(0, 5));
+        }
+
+        // Criar datasets para o gráfico
+        const datasets = selectedFields.map((field, index) => {
+            const colors = ['#3388ff', '#ff5733', '#33ff57', '#ff33a1', '#33fff6'];
+            return {
+                label: `${field.label} ${field.unit ? `(${field.unit})` : ''}`,
+                data: field.values,
+                borderColor: colors[index % colors.length],
+                backgroundColor: colors[index % colors.length].replace(')', ', 0.1)').replace('rgb', 'rgba'),
+                borderWidth: 2,
+                tension: 0.1,
+                fill: false,
+                yAxisID: `y${index}`
+            };
+        });
+
+        // Configurar escalas
+        const scales = {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Data/Hora'
+                },
+                ticks: {
+                    maxTicksLimit: 10,
+                    autoSkip: true
+                }
+            }
+        };
+
+        // Adicionar eixo Y para cada dataset
+        datasets.forEach((dataset, index) => {
+            scales[`y${index}`] = {
+                type: 'linear',
+                display: true,
+                position: index === 0 ? 'left' : 'right',
+                title: {
+                    display: true,
+                    text: dataset.label.split('(')[0].trim()
+                },
+                grid: {
+                    drawOnChartArea: index === 0 // Apenas o primeiro eixo mostra grid
+                }
+            };
+        });
+
+        window.lrgsChartInstance = new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: timestamps,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Estação ${stationCode} - Dados LRGS`,
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            title: function (context) {
+                                const index = context[0].dataIndex;
+                                const reading = readings[index];
+
+                                try {
+                                    if (reading.year && reading.julian_day && reading.hour !== undefined && reading.minute !== undefined) {
+                                        const date = new Date(parseInt(reading.year), 0);
+                                        const julianDay = parseInt(reading.julian_day) - 1;
+                                        date.setDate(date.getDate() + julianDay);
+                                        date.setHours(parseInt(reading.hour) || 0, parseInt(reading.minute) || 0, parseInt(reading.second) || 0);
+
+                                        return date.toLocaleString('pt-BR', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            second: '2-digit',
+                                            hour12: false
+                                        });
+                                    }
+                                } catch (e) {
+                                    console.error('Erro no tooltip:', e);
+                                }
+
+                                return `Registro ${index + 1}`;
+                            }
+                        }
+                    }
+                },
+                scales: scales,
+                interaction: {
+                    intersect: false,
+                    mode: 'nearest'
+                }
+            }
+        });
+    }
 }
 
 // Inicializar modal LRGS
