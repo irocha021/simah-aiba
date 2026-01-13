@@ -130,7 +130,7 @@
     }
 
     .siagas-data-container {
-        max-height: 55%;
+        max-height: 27rem;
         overflow-y: auto;
         margin: 20px 50px;
     }
