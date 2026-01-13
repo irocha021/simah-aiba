@@ -52,10 +52,9 @@
     .siagas-modal-content {
         background-color: #ffffff;
         margin: 2% auto;
-        padding-bottom: 30px;
         border: 1px solid #888;
         width: 85%;
-        height: 85%;
+        height: 90%;
         overflow-y: auto;
     }
 
@@ -131,7 +130,7 @@
     }
 
     .siagas-data-container {
-        max-height: 62%;
+        max-height: 55%;
         overflow-y: auto;
         margin: 20px 50px;
     }

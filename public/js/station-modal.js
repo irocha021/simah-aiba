@@ -135,6 +135,15 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
     dataContainer.style.display = 'none';
     errorMessage.style.display = 'none';
 
+    // Limpar gráficos anteriores
+    if (window.siagasChartInstance) {
+        window.siagasChartInstance.destroy();
+        window.siagasChartInstance = null;
+    }
+
+    // Remover elementos de gráfico e controles anteriores
+    document.querySelectorAll('.siagas-view-controls, #siagasChartContainer').forEach(el => el.remove());
+
     fetch(`/api/pocos-siagas/${idPonto}/readings`)
         .then(response => {
             if (!response.ok) throw new Error('Erro ao buscar dados');
@@ -145,9 +154,9 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
 
             if (data.success && data.data && data.data.poco) {
                 const poco = data.data.poco;
-                let html = '';
 
-                // Renderizar todos os campos
+                // 1. Primeiro renderizar a tabela
+                let html = '<div id="siagasTableContainer">';
                 Object.keys(poco).forEach(key => {
                     const value = poco[key] !== null && poco[key] !== '' ? poco[key] : '-';
                     html += `
@@ -157,9 +166,276 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                         </div>
                     `;
                 });
+                html += '</div>';
 
                 document.getElementById('siagasDataContent').innerHTML = html;
                 dataContainer.style.display = 'block';
+
+                // 2. Analisar variáveis numéricas disponíveis
+                const numericFields = (function extractNumericFields(poco) {
+                    const numericFields = [];
+                    const potentialNumericFields = [
+                        'cota_terre', 'profundi_1', 'nivel_agua', 'vazao',
+                        'nivel_dina', 'nivel_esta', 'vazao_espe', 'vazao_livr',
+                        'coeficient', 'permeabili', 'transmissi', 'vazao_esta',
+                        'condutivid', 'temperatur', 'turbidez', 'solidos_se', 'solidos_su'
+                    ];
+
+                    potentialNumericFields.forEach(field => {
+                        if (poco[field] && poco[field] !== '-' && poco[field] !== null) {
+                            const numValue = parseFloat(poco[field]);
+                            if (!isNaN(numValue)) {
+                                numericFields.push({
+                                    key: field,
+                                    label: (function formatFieldLabel(field) {
+                                        const labels = {
+                                            'cota_terre': 'Altitude do Terreno (m)',
+                                            'profundi_1': 'Profundidade Total (m)',
+                                            'nivel_agua': 'Nível d\'Água (m)',
+                                            'vazao': 'Vazão (m³/h)',
+                                            'nivel_dina': 'Nível Dinâmico (m)',
+                                            'nivel_esta': 'Nível Estático (m)',
+                                            'vazao_espe': 'Vazão Específica (m³/h/m)',
+                                            'vazao_livr': 'Vazão Livre (m³/h)',
+                                            'coeficient': 'Coeficiente de Armazenamento',
+                                            'permeabili': 'Permeabilidade (m/s)',
+                                            'transmissi': 'Transmissividade (m²/s)',
+                                            'vazao_esta': 'Vazão Estabilizada (m³/h)',
+                                            'condutivid': 'Condutividade Elétrica (µS/cm)',
+                                            'temperatur': 'Temperatura (°C)',
+                                            'turbidez': 'Turbidez (NTU)',
+                                            'solidos_se': 'Sólidos Sedimentáveis (mL/L)',
+                                            'solidos_su': 'Sólidos Suspendidos (mg/L)'
+                                        };
+                                        return labels[field] || field.replace(/_/g, ' ').toUpperCase();
+                                    })(field),
+                                    value: numValue
+                                });
+                            }
+                        }
+                    });
+
+                    return numericFields;
+                })(poco);
+
+                // 3. Criar controles e gráfico se houver dados numéricos
+                if (numericFields.length > 0) {
+                    // Criar os controles
+                    const controlsContainer = (function createSiagasControls() {
+                        const controlsContainer = document.createElement('div');
+                        controlsContainer.className = 'siagas-view-controls';
+                        controlsContainer.style.cssText = 'margin: 20px 0; display: flex; justify-content: center; gap: 15px; padding: 15px;';
+
+                        ['TABELA', 'GRÁFICO'].forEach((text, i) => {
+                            const btn = document.createElement('button');
+                            btn.id = i === 0 ? 'siagasTableViewBtn' : 'siagasChartViewBtn';
+                            btn.textContent = text;
+                            btn.className = i === 0 ? 'siagas-view-btn active' : 'siagas-view-btn';
+                            btn.style.cssText = `padding: 10px 20px; background: ${i === 0 ? '#242731' : '#ffffff'}; color: ${i === 0 ? 'white' : '#242731'}; border: ${i === 0 ? 'none' : '1px solid #79808F'}; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;`;
+                            controlsContainer.appendChild(btn);
+                        });
+
+                        // Inserir controles depois do dataContainer (fora de qualquer scroll)
+                        const dataContainerElement = document.getElementById('siagasDataContainer');
+                        if (dataContainerElement) {
+                            dataContainerElement.parentNode.insertBefore(controlsContainer, dataContainerElement.nextSibling);
+                        }
+
+                        return controlsContainer;
+                    })();
+
+                    // Depois criar o container do gráfico (DENTRO do dataContent)
+                    const chartContainer = (function createSiagasChartContainer() {
+                        const chartContainer = document.createElement('div');
+                        chartContainer.id = 'siagasChartContainer';
+                        chartContainer.style.cssText = 'display: none; width: 100%; height: 400px; margin: 20px 0; position: relative;';
+
+                        const canvas = document.createElement('canvas');
+                        canvas.id = 'siagasChart';
+                        canvas.style.cssText = 'width: 100% !important; height: 100% !important;';
+                        chartContainer.appendChild(canvas);
+
+                        // Inserir o container do gráfico DENTRO do dataContent
+                        const dataContent = document.getElementById('siagasDataContent');
+                        dataContent.appendChild(chartContainer);
+
+                        return chartContainer;
+                    })();
+
+                    // Configurar e criar o gráfico
+                    (function setupSiagasChart() {
+                        const canvas = document.getElementById('siagasChart');
+                        if (!canvas) return;
+
+                        // Se já existir um gráfico, destruí-lo
+                        if (window.siagasChartInstance) {
+                            window.siagasChartInstance.destroy();
+                        }
+
+                        // Ordenar campos por valor (do maior para o menor)
+                        const sortedFields = [...numericFields].sort((a, b) => b.value - a.value);
+
+                        const labels = sortedFields.map(field => field.label);
+                        const values = sortedFields.map(field => field.value);
+
+                        // Gerar cores para o gráfico
+                        const backgroundColors = (function generateColors(count) {
+                            const colors = [];
+                            const hueStep = 360 / count;
+
+                            for (let i = 0; i < count; i++) {
+                                const hue = (i * hueStep) % 360;
+                                colors.push(`hsla(${hue}, 70%, 60%, 0.7)`);
+                            }
+
+                            return colors;
+                        })(values.length);
+
+                        // Obter unidade de medida para cada campo
+                        const getUnit = function (fieldKey) {
+                            const units = {
+                                'cota_terre': 'm',
+                                'profundi_1': 'm',
+                                'nivel_agua': 'm',
+                                'nivel_dina': 'm',
+                                'nivel_esta': 'm',
+                                'vazao': 'm³/h',
+                                'vazao_espe': 'm³/h/m',
+                                'vazao_livr': 'm³/h',
+                                'vazao_esta': 'm³/h',
+                                'temperatur': '°C',
+                                'condutivid': 'µS/cm',
+                                'turbidez': 'NTU',
+                                'solidos_se': 'mL/L',
+                                'solidos_su': 'mg/L'
+                            };
+
+                            return units[fieldKey] || '';
+                        };
+
+                        // Escolher o tipo de gráfico baseado na quantidade de dados
+                        let chartType = 'bar';
+                        let chartOptions = {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Valores Numéricos do Poço',
+                                    font: { size: 16 }
+                                },
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            const field = sortedFields[context.dataIndex];
+                                            return `${field.label}: ${context.parsed.y.toLocaleString('pt-BR')} ${getUnit(field.key)}`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Valores'
+                                    },
+                                    ticks: {
+                                        callback: function (value) {
+                                            return value.toLocaleString('pt-BR');
+                                        }
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        autoSkip: false,
+                                        maxRotation: 45,
+                                        minRotation: 45
+                                    }
+                                }
+                            }
+                        };
+
+                        // Se tiver muitos dados, usar gráfico de linha
+                        if (sortedFields.length > 8) {
+                            chartType = 'line';
+                            chartOptions.scales.x.ticks = {
+                                autoSkip: true,
+                                maxTicksLimit: 10
+                            };
+                        }
+
+                        window.siagasChartInstance = new Chart(canvas.getContext('2d'), {
+                            type: chartType,
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    data: values,
+                                    backgroundColor: chartType === 'bar' ? backgroundColors : 'rgba(51, 136, 255, 0.5)',
+                                    borderColor: chartType === 'bar' ? backgroundColors.map(c => c.replace('0.7', '1')) : '#3388ff',
+                                    borderWidth: chartType === 'bar' ? 1 : 2,
+                                    fill: chartType === 'line',
+                                    tension: chartType === 'line' ? 0.1 : 0
+                                }]
+                            },
+                            options: chartOptions
+                        });
+                    })();
+
+                    // Função para mostrar tabela
+                    function showSiagasTableView() {
+                        const tableBtn = document.getElementById('siagasTableViewBtn');
+                        const chartBtn = document.getElementById('siagasChartViewBtn');
+                        const tableContainer = document.getElementById('siagasTableContainer');
+                        const chartContainer = document.getElementById('siagasChartContainer');
+
+                        if (tableBtn && chartBtn && tableContainer && chartContainer) {
+                            tableBtn.className = 'siagas-view-btn active';
+                            tableBtn.style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+                            chartBtn.className = 'siagas-view-btn';
+                            chartBtn.style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+                            tableContainer.style.display = 'block';
+                            chartContainer.style.display = 'none';
+                        }
+                    }
+
+                    // Função para mostrar gráfico
+                    function showSiagasChartView() {
+                        const tableBtn = document.getElementById('siagasTableViewBtn');
+                        const chartBtn = document.getElementById('siagasChartViewBtn');
+                        const tableContainer = document.getElementById('siagasTableContainer');
+                        const chartContainer = document.getElementById('siagasChartContainer');
+
+                        if (tableBtn && chartBtn && tableContainer && chartContainer) {
+                            tableBtn.className = 'siagas-view-btn';
+                            tableBtn.style.cssText = 'padding: 10px 20px; background: #ffffff; color: #333; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+                            chartBtn.className = 'siagas-view-btn active';
+                            chartBtn.style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+                            tableContainer.style.display = 'none';
+                            chartContainer.style.display = 'block';
+
+                            // Garantir que o gráfico seja renderizado
+                            if (window.siagasChartInstance) {
+                                window.siagasChartInstance.update();
+                            }
+                        }
+                    }
+
+                    // Adicionar event listeners aos botões
+                    document.getElementById('siagasTableViewBtn').onclick = showSiagasTableView;
+                    document.getElementById('siagasChartViewBtn').onclick = showSiagasChartView;
+
+                    // Mostrar tabela por padrão
+                    showSiagasTableView();
+                }
+
             } else {
                 errorMessage.style.display = 'block';
                 document.getElementById(siagasModalConfig.errorTextId).textContent = 'Nenhum dado encontrado.';
