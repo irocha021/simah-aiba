@@ -65,10 +65,9 @@
     .rimas-modal-content {
         background-color: #ffffff;
         margin: 2% auto;
-        padding-bottom: 30px;
         border: 1px solid #888;
         width: 85%;
-        height: 85%;
+        height: 90%;
         overflow-y: auto;
     }
 
@@ -144,7 +143,7 @@
     }
 
     .rimas-table-container {
-        max-height: 62%;
+        max-height: 26rem;
         width: 92%;
         overflow-x: auto;
         overflow-y: auto;

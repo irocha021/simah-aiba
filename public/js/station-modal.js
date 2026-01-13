@@ -74,28 +74,367 @@ const rimasModalConfig = {
     tableBodyId: 'rimasReadingsTableBody',
     totalReadingsId: 'rimasModalTotalReadings',
     errorTextId: 'rimasErrorText',
-    closeButtonId: 'closeRimasModal',
-    renderRow: function (reading) {
-        return `
-            <td>${reading.numero_de || '-'}</td>
-            <td>${reading.data_da_me || '-'}</td>
-            <td>${reading.hora_da_me || '-'}</td>
-            <td>${reading.nivel_da_a ? parseFloat(reading.nivel_da_a).toFixed(2) : '-'}</td>
-            <td>${reading.field_8 || '-'}</td>
-        `;
-    }
+    closeButtonId: 'closeRimasModal'
 };
 
 function openRimasReadingsModal(idPonto, stationName, latitude, longitude) {
-    openStationModal({
-        ...rimasModalConfig,
-        idPonto: idPonto,
-        stationName: stationName,
-        latitude: latitude,
-        longitude: longitude,
-        apiUrl: `/api/pocos-rimas/${idPonto}/readings`
+    const elements = {
+        loading: document.getElementById('rimasLoadingSpinner'),
+        tableContainer: document.getElementById('rimasReadingsTableContainer'),
+        error: document.getElementById('rimasErrorMessage'),
+        tableBody: document.getElementById('rimasReadingsTableBody'),
+        total: document.getElementById('rimasModalTotalReadings'),
+        errorText: document.getElementById('rimasErrorText')
+    };
+
+    const modal = document.getElementById(rimasModalConfig.modalId);
+    const modalIdPonto = document.getElementById(rimasModalConfig.idPontoId);
+
+    modal.style.display = 'block';
+    modalIdPonto.innerHTML = idPonto + ' - ' + stationName +
+        '<br><strong style="color: #ff7800;">Latitude:</strong> ' + latitude +
+        ' | <strong style="color: #ff7800;">Longitude:</strong> ' + longitude;
+
+    // Limpar estado anterior
+    if (window.rimasChartInstance) {
+        window.rimasChartInstance.destroy();
+        window.rimasChartInstance = null;
+    }
+
+    document.querySelector('.rimas-view-controls')?.remove();
+    document.getElementById('rimasChartContainer')?.remove();
+
+    // Resetar UI
+    Object.values(elements).forEach(el => {
+        if (el && el.style) {
+            if (el === elements.loading) el.style.display = 'block';
+            else if (el === elements.tableContainer) el.style.display = 'none';
+            else if (el === elements.error) el.style.display = 'none';
+            else if (el === elements.tableBody) el.innerHTML = '';
+        }
     });
+
+    // Criar elementos do gráfico e controles
+    const chartContainer = createChartContainer();
+    const controlsContainer = createControlsContainer();
+
+    // Inserir no DOM
+    const modalContent = document.querySelector('.rimas-modal-content');
+    if (modalContent) {
+        modalContent.insertBefore(chartContainer, elements.tableContainer);
+        modalContent.insertBefore(controlsContainer, elements.tableContainer.nextSibling);
+    }
+
+    let chartData = null;
+
+    // Configurar visualizações
+    const views = {
+        table: () => {
+            controlsContainer.children[0].className = 'rimas-view-btn active';
+            controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            controlsContainer.children[1].className = 'rimas-view-btn';
+            controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            elements.tableContainer.style.display = 'block';
+            chartContainer.style.display = 'none';
+        },
+        chart: () => {
+            controlsContainer.children[0].className = 'rimas-view-btn';
+            controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #333; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            controlsContainer.children[1].className = 'rimas-view-btn active';
+            controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
+            elements.tableContainer.style.display = 'none';
+            chartContainer.style.display = 'block';
+            if (chartData && (!window.rimasChartInstance || window.rimasChartInstance.canvas.id !== 'rimasChart')) {
+                createChart(chartData, idPonto, chartContainer);
+            }
+        }
+    };
+
+    controlsContainer.children[0].onclick = views.table;
+    controlsContainer.children[1].onclick = views.chart;
+
+    // Buscar dados
+    fetch(`/api/pocos-rimas/${idPonto}/readings`)
+        .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar leituras'))
+        .then(data => {
+            elements.loading.style.display = 'none';
+
+            if (data.success && data.data?.readings?.length > 0) {
+                chartData = data.data.readings;
+                elements.total.textContent = chartData.length;
+
+                // Criar linhas da tabela
+                chartData.forEach(reading => {
+                    const row = document.createElement('tr');
+
+                    // Número da medição
+                    const tdNum = document.createElement('td');
+                    tdNum.textContent = reading.numero_de || '-';
+                    row.appendChild(tdNum);
+
+                    // Data
+                    const tdDate = document.createElement('td');
+                    if (reading.data_da_me) {
+                        try {
+                            const date = new Date(reading.data_da_me);
+                            tdDate.textContent = date.toLocaleDateString('pt-BR');
+                        } catch (e) {
+                            tdDate.textContent = reading.data_da_me;
+                        }
+                    } else {
+                        tdDate.textContent = '-';
+                    }
+                    row.appendChild(tdDate);
+
+                    // Hora
+                    const tdTime = document.createElement('td');
+                    if (reading.hora_da_me) {
+                        try {
+                            const time = reading.hora_da_me.split(' ')[1] || reading.hora_da_me;
+                            tdTime.textContent = time.substring(0, 8); // HH:MM:SS
+                        } catch (e) {
+                            tdTime.textContent = reading.hora_da_me;
+                        }
+                    } else {
+                        tdTime.textContent = '-';
+                    }
+                    row.appendChild(tdTime);
+
+                    // Nível da água
+                    const tdLevel = document.createElement('td');
+                    if (reading.nivel_da_a) {
+                        const level = parseFloat(reading.nivel_da_a);
+                        tdLevel.textContent = isNaN(level) ? '-' : level.toFixed(2);
+                    } else {
+                        tdLevel.textContent = '-';
+                    }
+                    row.appendChild(tdLevel);
+
+                    // Observação
+                    const tdObs = document.createElement('td');
+                    tdObs.textContent = reading.field_8 || '-';
+                    row.appendChild(tdObs);
+
+                    elements.tableBody.appendChild(row);
+                });
+
+                views.table();
+            } else {
+                showError('Nenhuma leitura encontrada.');
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar leituras:', error);
+            elements.loading.style.display = 'none';
+            showError(error.message || error);
+        });
+
+    function showError(message) {
+        elements.error.style.display = 'block';
+        elements.errorText.textContent = message;
+        controlsContainer.style.display = 'none';
+        chartContainer.style.display = 'none';
+    }
+
+    function createChartContainer() {
+        const container = document.createElement('div');
+        container.id = 'rimasChartContainer';
+        container.style.cssText = 'display: none; width: 92%; height: 400px; margin: 20px auto; position: relative;';
+
+        const canvas = document.createElement('canvas');
+        canvas.id = 'rimasChart';
+        canvas.style.cssText = 'width: 100% !important; height: 100% !important;';
+        container.appendChild(canvas);
+
+        return container;
+    }
+
+    function createControlsContainer() {
+        const container = document.createElement('div');
+        container.className = 'rimas-view-controls';
+        container.style.cssText = 'margin: 20px auto; width: 92%; display: flex; justify-content: center; gap: 15px; padding: 15px;';
+
+        ['TABELA', 'GRÁFICO'].forEach((text, i) => {
+            const btn = document.createElement('button');
+            btn.id = i === 0 ? 'rimasTableViewBtn' : 'rimasChartViewBtn';
+            btn.textContent = text;
+            btn.className = i === 0 ? 'rimas-view-btn active' : 'rimas-view-btn';
+            btn.style.cssText = `padding: 10px 20px; background: ${i === 0 ? '#242731' : '#ffffff'}; color: ${i === 0 ? 'white' : '#242731'}; border: ${i === 0 ? 'none' : '1px solid #79808F'}; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;`;
+            container.appendChild(btn);
+        });
+
+        return container;
+    }
+
+    function createChart(readings, idPonto, chartContainer) {
+        if (window.rimasChartInstance) {
+            window.rimasChartInstance.destroy();
+            window.rimasChartInstance = null;
+        }
+
+        const canvas = document.getElementById('rimasChart');
+        if (!canvas) {
+            console.error('Canvas não encontrado!');
+            return;
+        }
+
+        // Extrair dados para o gráfico
+        const processedData = readings
+            .filter(r => r.nivel_da_a && !isNaN(parseFloat(r.nivel_da_a)))
+            .map(r => ({
+                dateTime: combineDateTime(r.data_da_me, r.hora_da_me),
+                level: parseFloat(r.nivel_da_a),
+                numero: r.numero_de
+            }))
+            .sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime)); // Ordenar por data
+
+        if (processedData.length < 2) {
+            chartContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">Dados insuficientes para gráfico.</div>';
+            return;
+        }
+
+        // Preparar labels e dados
+        const labels = processedData.map(d => {
+            try {
+                const date = new Date(d.dateTime);
+                return date.toLocaleDateString('pt-BR');
+            } catch (e) {
+                return d.numero || '';
+            }
+        });
+
+        const levels = processedData.map(d => d.level);
+
+        window.rimasChartInstance = new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Nível da Água (m)',
+                    data: levels,
+                    borderColor: '#ff7800',
+                    backgroundColor: 'rgba(255, 120, 0, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    fill: true,
+                    pointBackgroundColor: '#ff7800',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Poço RIMAS ${idPonto} - Variação do Nível da Água`,
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            title: function (context) {
+                                const index = context[0].dataIndex;
+                                const data = processedData[index];
+                                if (data && data.dateTime) {
+                                    try {
+                                        const date = new Date(data.dateTime);
+                                        return date.toLocaleString('pt-BR', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: false
+                                        });
+                                    } catch (e) {
+                                        return data.numero || `Medição ${index + 1}`;
+                                    }
+                                }
+                                return `Medição ${index + 1}`;
+                            },
+                            label: function (context) {
+                                return `Nível: ${context.parsed.y.toFixed(2)} m`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Data'
+                        },
+                        ticks: {
+                            maxTicksLimit: 15,
+                            autoSkip: true
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Nível da Água (m)'
+                        },
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function (value) {
+                                return value.toFixed(2) + ' m';
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'nearest'
+                }
+            }
+        });
+    }
+
+    function combineDateTime(dateStr, timeStr) {
+        try {
+            if (!dateStr || !timeStr) return null;
+
+            // Formatar data
+            let datePart;
+            if (dateStr.includes('/')) {
+                // Formato DD/MM/AAAA
+                const [day, month, year] = dateStr.split('/');
+                datePart = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            } else {
+                // Assumir formato ISO
+                datePart = dateStr.split('T')[0];
+            }
+
+            // Formatar hora
+            let timePart;
+            if (timeStr.includes(':')) {
+                const timeParts = timeStr.split(':');
+                timePart = `${timeParts[0].padStart(2, '0')}:${timeParts[1].padStart(2, '0')}:${(timeParts[2] || '00').padStart(2, '0')}`;
+            } else {
+                timePart = '00:00:00';
+            }
+
+            return `${datePart}T${timePart}`;
+        } catch (e) {
+            console.error('Erro ao combinar data/hora:', e);
+            return null;
+        }
+    }
 }
+
+// Event listener para fechar modal
+document.getElementById('closeRimasModal')?.addEventListener('click', function () {
+    document.getElementById('rimasReadingsModal').style.display = 'none';
+    if (window.rimasChartInstance) {
+        window.rimasChartInstance.destroy();
+        window.rimasChartInstance = null;
+    }
+});
 
 // Inicializar quando DOM estiver pronto
 if (document.readyState === 'loading') {
