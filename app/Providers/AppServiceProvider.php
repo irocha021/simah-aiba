@@ -65,6 +65,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Binding for CNARH CSV Import
         $this->app->bind(CnarhRepositoryInterface::class, CnarhRepository::class);
+
+         $this->app->bind(
+            \App\Repositories\Interfaces\HwStationFlowForecastInterface::class,
+            \App\Repositories\HwStationFlowForecastRepository::class
+        );
     }
 
     public function boot(): void

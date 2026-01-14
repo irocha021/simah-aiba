@@ -20,4 +20,7 @@ interface HwInventoryStationInterface
     public function store(array $data);
     public function paginate(array $options = [], $sort = "id", $order = 'DESC', int $page = 1, int $perPage = 15): IPagination;
     public function getAllWithCoordinates();
+    public function getTelemetryStationsWithCoordinates();
+    public function getQualityStationsWithCoordinates();
+    public function getTelemetryStationsWithForecastCoordinates();
 }
