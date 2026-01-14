@@ -63,9 +63,6 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            docker exec mhb php artisan migrate:fresh --seed
+            docker exec mhb php artisan migrate --force
             docker exec mhb php artisan optimize:clear
             docker exec mhb php artisan storage:link
-            docker exec mhb php artisan key:generate
-            docker exec mhb php artisan cache:clear
-            docker exec mhb php artisan config:clear
