@@ -152,37 +152,45 @@
     .hidroweb-qa-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 12px;
         table-layout: auto;
+    }
+
+    /* CABEÇALHO */
+    .hidroweb-qa-table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #ffffff;
+        color: black;
+        text-align: center;
+        font-weight: bold;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        padding: 10px 20px;
+        border: none;
+        white-space: nowrap;
+        box-shadow: inset 0 -2px 0 #3388ff;
     }
 
     .hidroweb-qa-table thead {
         position: sticky;
         top: 0;
-        background-color: #3388ff;
-        color: white;
         z-index: 10;
     }
 
-    .hidroweb-qa-table thead th {
-        position: sticky;
-        top: 0;
-        background-color: #3388ff;
-    }
-
-    .hidroweb-qa-table th {
-        padding: 10px 8px;
-        border: 1px solid #ddd;
-        text-align: left;
-        white-space: nowrap;
-        font-size: 11px;
-    }
-
+    /* CORPO DA TABELA */
     .hidroweb-qa-table td {
         padding: 10px 8px;
-        border: 1px solid #ddd;
-        text-align: left;
+        background: white;
+        border: none;
         white-space: nowrap;
+        text-align: center;
+        font-size: 0.8rem;
+        border-bottom: 1px solid #3388ff;
+    }
+
+    /* Remove a borda inferior da última linha */
+    .hidroweb-qa-table tbody tr:last-child td {
+        border-bottom: none;
     }
 
     .hidroweb-qa-table tbody tr:nth-child(even) {

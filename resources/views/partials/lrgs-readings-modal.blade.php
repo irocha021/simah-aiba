@@ -171,7 +171,6 @@
         white-space: nowrap;
         box-shadow: inset 0 -2px 0 #3388ff;
         height: 2rem;
-
     }
 
     .lrgs-table td {
