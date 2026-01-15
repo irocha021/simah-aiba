@@ -121,7 +121,7 @@
 
     .cnarh-spinner {
         border: 4px solid #f3f3f3;
-        border-top: 4px solid #e16ccfff;
+        border-top: 4px solid #3388ff;
         border-radius: 50%;
         width: 40px;
         height: 40px;
@@ -140,9 +140,10 @@
     }
 
     .cnarh-data-row {
-        padding: 8px;
-        border-bottom: 1px solid #eee;
+        padding: 12px 8px;
+        border-bottom: 1px solid #3388ff;
         display: flex;
+        align-items: center;
     }
 
     .cnarh-data-row:nth-child(even) {
@@ -150,17 +151,26 @@
     }
 
     .cnarh-data-row:hover {
-        background-color: #f2f7ff;
+        background-color: #e6f2ff;
+        /* Azul claro no hover */
     }
 
+    /* RÓTULOS (CHAVES) */
     .cnarh-data-label {
         font-weight: bold;
         width: 200px;
         flex-shrink: 0;
+        color: black;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
     }
 
+    /* VALORES */
     .cnarh-data-value {
         flex-grow: 1;
+        color: #333333;
+        font-size: 0.85rem;
     }
 
     .cnarh-error {
