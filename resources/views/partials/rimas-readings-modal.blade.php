@@ -193,6 +193,10 @@
         border-bottom: 1px solid #3388ff;
     }
 
+    .lrgs-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
     .rimas-table tbody tr:nth-child(even) {
         background-color: #f9f9f9;
     }
