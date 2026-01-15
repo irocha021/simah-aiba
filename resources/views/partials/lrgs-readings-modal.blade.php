@@ -133,7 +133,7 @@
 
     .lrgs-spinner {
         border: 4px solid #f3f3f3;
-        border-top: 4px solid #ff7800;
+        border-top: 4px solid #3388ff;
         border-radius: 50%;
         width: 40px;
         height: 40px;
@@ -153,37 +153,40 @@
     .lrgs-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 12px;
         table-layout: auto;
     }
 
-    .lrgs-table thead {
-        position: sticky;
-        top: 0;
-        background-color: #ff7800;
-        color: white;
-        z-index: 10;
-    }
-
+    /* CABEÇALHO */
     .lrgs-table thead th {
         position: sticky;
         top: 0;
-        background-color: #ff7800;
-    }
-
-    .lrgs-table th {
-        padding: 10px 8px;
-        border: 1px solid #ddd;
-        text-align: left;
+        background-color: #ffffff;
+        color: black;
+        text-align: center;
+        font-weight: bold;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        padding: 10px 20px;
+        border: none;
         white-space: nowrap;
-        font-size: 11px;
+        box-shadow: inset 0 -2px 0 #3388ff;
+        height: 2rem;
+
     }
 
     .lrgs-table td {
         padding: 10px 8px;
-        border: 1px solid #ddd;
-        text-align: left;
+        background: white;
+        border: none;
         white-space: nowrap;
+        text-align: center;
+        font-size: 0.8rem;
+        border-bottom: 1px solid #3388ff;
+    }
+
+    /* Remove a borda inferior da última linha */
+    .lrgs-table tbody tr:last-child td {
+        border-bottom: none;
     }
 
     .lrgs-table tbody tr:nth-child(even) {
