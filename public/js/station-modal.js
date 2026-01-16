@@ -824,7 +824,7 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
     const modalStationCode = document.getElementById(hidrowebQaModalConfig.stationCodeId);
 
     modal.style.display = 'block';
-    modalStationCode.innerHTML =  `
+    modalStationCode.innerHTML = `
         <div class="hidroweb-qa-header-content-title">
             <h2 style="margin: 0;">${stationName}</h2>
             <p style="margin: 0;">Parâmetros físico-químicos, biológicos e contaminantes medidos na estação de monitoramento.</p>
@@ -1698,18 +1698,51 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     }
 
     function renderTable(cnarhData) {
-        let html = '<div id="cnarhTableContainer">';
-        Object.entries(cnarhData).forEach(([key, value]) => {
-            if (value !== null && value !== '') {
-                html += `
-                    <div class="cnarh-data-row">
-                        <div class="cnarh-data-label">${formatKey(key)}:</div>
-                        <div class="cnarh-data-value">${value}</div>
-                    </div>
-                `;
-            }
-        });
-        html += '</div>';
+        // Filtrar apenas os itens que têm valores
+        const entries = Object.entries(cnarhData).filter(([key, value]) =>
+            value !== null && value !== '' && value !== undefined
+        );
+
+        const totalItems = entries.length;
+        const itemsPerColumn = Math.ceil(totalItems / 2);
+
+        let html = `
+            <div id="cnarhTableContainer" class="cnarh-table-container">
+                <div class="cnarh-table-column">
+        `;
+
+        // Primeira coluna
+        for (let i = 0; i < itemsPerColumn; i++) {
+            const [key, value] = entries[i];
+            html += `
+                <div class="cnarh-data-row">
+                    <div class="cnarh-data-label">${formatKey(key)}:</div>
+                    <div class="cnarh-data-value">${value}</div>
+                </div>
+            `;
+        }
+
+        html += `
+            </div>
+            <div class="cnarh-table-column">
+        `;
+
+        // Segunda coluna
+        for (let i = itemsPerColumn; i < totalItems; i++) {
+            const [key, value] = entries[i];
+            html += `
+            <div class="cnarh-data-row">
+                <div class="cnarh-data-label">${formatKey(key)}:</div>
+                <div class="cnarh-data-value">${value}</div>
+            </div>
+        `;
+        }
+
+        html += `
+            </div>
+            </div>
+        `;
+
         document.getElementById('cnarhDataContent').innerHTML = html;
     }
 

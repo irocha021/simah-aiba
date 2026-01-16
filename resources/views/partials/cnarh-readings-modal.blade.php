@@ -181,4 +181,28 @@
         border-radius: 4px;
         margin-top: 10px;
     }
+
+    /* Container para duas colunas */
+    .cnarh-table-container {
+        display: flex;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+
+    .cnarh-table-column {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    /* Para telas menores */
+    @media (max-width: 768px) {
+        .cnarh-table-container {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .cnarh-table-column {
+            min-width: 100%;
+        }
+    }
 </style>
