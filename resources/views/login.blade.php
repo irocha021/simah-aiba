@@ -77,7 +77,7 @@
                             <br>
                         @endif
                         <span style="color: #666;">Não tem uma conta? </span>
-                        <a href="#" class="signup-link">Cadastre-se</a>
+                        <a href="{{ route('register') }}" class="signup-link">Cadastre-se</a>
                     </div>
                 </form>
             </div>
