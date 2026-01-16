@@ -130,7 +130,7 @@
     }
 
     .siagas-data-container {
-        max-height: 27.5rem;
+        max-height: 26rem;
         overflow-y: auto;
         margin: 20px 50px;
     }
@@ -139,7 +139,6 @@
         font-size: 14px;
     }
 
-    /* LINHAS DA TABELA VERTICAL COM ESTILO PADRONIZADO */
     .siagas-data-row {
         padding: 12px 8px;
         border-bottom: 1px solid #3388ff;
@@ -147,20 +146,11 @@
         align-items: center;
     }
 
-    /* Remove a borda da última linha */
-    .siagas-data-row:last-child {
-        border-bottom: none;
-    }
-
-    .siagas-data-row:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-
     .siagas-data-row:hover {
         background-color: #e6f2ff;
     }
 
-    /* RÓTULOS (CHAVES) - ESTILO PADRONIZADO */
+    /* RÓTULOS (CHAVES) */
     .siagas-data-label {
         font-weight: bold;
         width: 200px;
@@ -187,13 +177,44 @@
         margin-top: 10px;
     }
 
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
+    /* Container para duas colunas */
+    .siagas-table-container {
+        display: flex;
+        gap: 40px;
+        flex-wrap: wrap;
+        position: relative;
+    }
+
+    .siagas-table-column {
+        flex: 1;
+        min-width: 300px;
+        position: relative;
+    }
+
+    /* Linha vertical entre as colunas */
+    .siagas-table-column:first-child::after {
+        content: '';
+        position: absolute;
+        right: -20px;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background-color: #d1d9e6;
+    }
+
+    /* Para telas menores - remover a linha */
+    @media (max-width: 768px) {
+        .siagas-table-container {
+            flex-direction: column;
+            gap: 20px;
         }
 
-        100% {
-            transform: rotate(360deg);
+        .siagas-table-column:first-child::after {
+            display: none;
+        }
+
+        .siagas-table-column {
+            min-width: 100%;
         }
     }
 </style>

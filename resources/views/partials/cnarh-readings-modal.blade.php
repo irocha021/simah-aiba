@@ -146,13 +146,8 @@
         align-items: center;
     }
 
-    .cnarh-data-row:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-
     .cnarh-data-row:hover {
         background-color: #e6f2ff;
-        /* Azul claro no hover */
     }
 
     /* RÓTULOS (CHAVES) */
@@ -187,18 +182,35 @@
         display: flex;
         gap: 40px;
         flex-wrap: wrap;
+        position: relative;
     }
 
     .cnarh-table-column {
         flex: 1;
         min-width: 300px;
+        position: relative;
     }
 
-    /* Para telas menores */
+    /* Linha vertical entre as colunas */
+    .cnarh-table-column:first-child::after {
+        content: '';
+        position: absolute;
+        right: -20px;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background-color: #d1d9e6;
+    }
+
+    /* Para telas menores - remover a linha */
     @media (max-width: 768px) {
         .cnarh-table-container {
             flex-direction: column;
             gap: 20px;
+        }
+
+        .cnarh-table-column:first-child::after {
+            display: none;
         }
 
         .cnarh-table-column {
