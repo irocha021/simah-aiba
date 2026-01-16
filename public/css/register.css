@@ -29,18 +29,30 @@ body {
     max-width: 50%;
     background: #ffffff;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
+    flex-direction: column;
     position: relative;
     overflow-y: auto;
     transition: all 0.3s ease;
 }
 
+/* Wrapper para conteúdo rolável */
+.form-scrollable-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    overflow-y: auto;
+    min-height: 0; /* Importante para flex scroll */
+}
+
 .form-container {
     width: 100%;
     max-width: 400px;
+    margin: auto;
     animation: fadeIn 0.8s ease-out;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 @keyframes fadeIn {
@@ -57,7 +69,8 @@ body {
 /* ===== CABEÇALHO DO FORMULÁRIO ===== */
 .form-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
+    flex-shrink: 0;
 }
 
 .form-header h1 {
@@ -76,8 +89,9 @@ body {
 
 /* ===== GRUPOS DE FORMULÁRIO ===== */
 .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     position: relative;
+    flex-shrink: 0;
 }
 
 .form-group label {
@@ -135,6 +149,48 @@ body {
     background: #f5fff7;
 }
 
+/* ===== CONTAINER DE ERRO ===== */
+.error-container {
+    min-height: 0;
+    height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-top: 0;
+    flex-shrink: 0;
+}
+
+.error-container:has(.field-error.show) {
+    min-height: 24px;
+    height: auto;
+    margin-top: 5px;
+}
+
+/* ===== MENSAGENS DE ERRO ===== */
+.field-error {
+    color: #dc3545;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    max-height: 0;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.field-error.show {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 50px;
+}
+
+.field-error i {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
 /* ===== BOTÃO DE VISUALIZAR SENHA ===== */
 .password-toggle {
     position: absolute;
@@ -155,61 +211,93 @@ body {
     color: #667eea;
 }
 
+/* ===== SUGESTÃO DE SENHA ===== */
+.password-suggestion {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    max-height: 60px;
+    opacity: 1;
+    visibility: visible;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.password-suggestion.hidden {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    opacity: 0;
+    visibility: hidden;
+    border: none;
+}
+
+.password-suggestion i {
+    color: #ffc107;
+    flex-shrink: 0;
+}
+
 /* ===== FORÇA DA SENHA ===== */
 .password-strength {
-    margin-top: 10px;
-    display: none;
+    margin-top: 8px;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .password-strength.visible {
-    display: block;
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    opacity: 1;
+    height: auto;
+    margin-top: 8px;
 }
 
 .strength-bar {
+    width: 100%;
     height: 6px;
-    background: #e0e0e0;
+    background-color: #e9ecef;
     border-radius: 3px;
     overflow: hidden;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 
 .strength-fill {
     height: 100%;
     width: 0%;
-    border-radius: 3px;
-    transition: all 0.3s ease;
+    transition:
+        width 0.3s ease,
+        background-color 0.3s ease;
 }
 
 .strength-fill.weak {
     width: 33%;
-    background: #dc3545;
+    background-color: #dc3545;
 }
 
 .strength-fill.fair {
     width: 66%;
-    background: #ffc107;
+    background-color: #ffc107;
 }
 
 .strength-fill.good {
     width: 100%;
-    background: #28a745;
+    background-color: #28a745;
 }
 
 .strength-text {
-    font-size: 0.85rem;
-    color: #666;
+    font-size: 12px;
+    color: #6c757d;
     display: block;
     text-align: right;
 }
@@ -218,6 +306,7 @@ body {
 .terms-group {
     margin-top: 25px;
     margin-bottom: 30px;
+    flex-shrink: 0;
 }
 
 .checkbox-label {
@@ -277,10 +366,6 @@ body {
     display: block;
 }
 
-.terms-text {
-    margin-left: 8px;
-}
-
 .terms-link {
     color: #165b9c;
     text-decoration: none;
@@ -289,7 +374,7 @@ body {
 }
 
 .terms-link:hover {
-    color: #764ba2;
+    color: #007952;
     text-decoration: underline;
 }
 
@@ -309,6 +394,7 @@ body {
     position: relative;
     overflow: hidden;
     text-transform: uppercase;
+    flex-shrink: 0;
 }
 
 .register-btn:hover {
@@ -350,12 +436,21 @@ body {
     display: block;
 }
 
+/* Container do botão */
+.btn-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    flex-shrink: 0;
+}
+
 /* ===== RODAPÉ DO FORMULÁRIO ===== */
 .form-footer {
-    margin-top: 30px;
+    margin-top: 20px;
     text-align: center;
     padding-top: 20px;
     border-top: 1px solid #eee;
+    flex-shrink: 0;
 }
 
 .form-footer a {
@@ -392,7 +487,8 @@ body {
 .register-image-section {
     flex: 1;
     position: relative;
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
         url("../images/backgraund-loginpng.png");
     background-size: cover;
     background-position: center;
@@ -440,33 +536,16 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* ===== MENSAGENS DE ERRO ===== */
-.field-error {
-    color: #dc3545;
-    font-size: 0.85rem;
-    margin-top: 5px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    opacity: 0;
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-}
-
-.field-error.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.field-error i {
-    font-size: 0.9rem;
-}
-
 /* ===== MENSAGENS DE ALERTA ===== */
+.alerts-container {
+    flex-shrink: 0;
+    margin-bottom: 20px;
+}
+
 .alert {
     padding: 15px 20px;
     border-radius: 10px;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
     font-size: 0.95rem;
     line-height: 1.5;
     animation: slideIn 0.5s ease-out;
@@ -510,7 +589,7 @@ body {
     color: #dc3545;
 }
 
-/* ===== RESPONSIVIDADE (MESMO DO LOGIN) ===== */
+/* ===== RESPONSIVIDADE ===== */
 @media (max-width: 1100px) {
     .form-header h1 {
         font-size: 2.2rem;
@@ -533,17 +612,17 @@ body {
     .register-form-section {
         max-width: 100%;
         min-width: 100%;
-        padding: 30px;
+        padding: 0;
         order: 2;
         min-height: 60vh;
     }
 
-    .register-image-section {
-        display: none;
+    .form-scrollable-wrapper {
+        padding: 30px 20px;
     }
 
-    .form-container {
-        padding: 20px 0;
+    .register-image-section {
+        display: none;
     }
 
     .form-header h1 {
@@ -565,8 +644,8 @@ body {
 }
 
 @media (max-width: 576px) {
-    .register-form-section {
-        padding: 20px;
+    .form-scrollable-wrapper {
+        padding: 20px 15px;
     }
 
     .form-header h1 {
@@ -585,6 +664,8 @@ body {
     .register-btn {
         padding: 14px;
         font-size: 1rem;
+        width: 100%;
+        max-width: 16.8rem;
     }
 
     .top-logo {
@@ -607,20 +688,24 @@ body {
 }
 
 @media (max-height: 700px) {
-    .form-container {
-        padding: 20px 0;
+    .form-scrollable-wrapper {
+        padding: 20px;
     }
 
     .form-header {
-        margin-bottom: 25px;
+        margin-bottom: 20px;
     }
 
     .form-group {
-        margin-bottom: 18px;
+        margin-bottom: 15px;
+    }
+
+    .btn-container {
+        margin: 15px 0;
     }
 
     .form-footer {
-        margin-top: 20px;
+        margin-top: 15px;
         padding-top: 15px;
     }
 }
@@ -710,4 +795,77 @@ body {
     100% {
         transform: scale(1);
     }
+}
+
+/* ===== INPUTS EDITÁVEIS ===== */
+.form-control {
+    background-color: #fff !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Previne estilos do navegador */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: #333 !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Estados dos inputs */
+.form-control.error {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-control.success {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Animação para quando a sugestão aparece */
+@keyframes fadeInExpand {
+    from {
+        max-height: 0;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    to {
+        max-height: 60px;
+        opacity: 1;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+}
+
+.password-suggestion:not(.hidden) {
+    animation: fadeInExpand 0.3s ease forwards;
+}
+
+/* Animação para quando o erro aparece */
+@keyframes errorSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.field-error.show {
+    animation: errorSlideIn 0.3s ease forwards;
+}
+
+/* Garante que o formulário ocupe o espaço disponível */
+.form-container form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }

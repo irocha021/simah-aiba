@@ -32,8 +32,6 @@ class RegisterController extends Controller
             'terms.accepted' => 'Você deve aceitar os termos e condições.',
         ]);
 
-        // Aqui você pode adicionar a lógica para salvar no banco depois
-        // Por enquanto, apenas redirecionamos com mensagem de sucesso
 
         return redirect('/login')->with('success', 'Cadastro realizado com sucesso! Agora você pode fazer login.');
     }

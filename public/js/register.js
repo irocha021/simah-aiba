@@ -4,6 +4,8 @@ class RegisterSystem {
         this.bindEvents();
         this.setupFormValidation();
         this.passwordStrength = 0;
+        this.validationMode = 'submit'; // Validação apenas no submit
+        this.hasSubmitted = false; // Flag para saber se já tentou submeter
     }
 
     /**
@@ -23,6 +25,9 @@ class RegisterSystem {
         this.btnText = document.getElementById('btnText');
         this.btnSpinner = document.getElementById('btnSpinner');
 
+        // Sugestão de senha
+        this.passwordSuggestion = document.getElementById('passwordSuggestion');
+
         // Elementos de força da senha
         this.passwordStrengthContainer = document.getElementById('passwordStrength');
         this.strengthFill = document.getElementById('strengthFill');
@@ -41,6 +46,39 @@ class RegisterSystem {
         this.isLoading = false;
         this.isPasswordVisible = false;
         this.isConfirmPasswordVisible = false;
+
+        // Desativa o autocomplete do navegador
+        this.disableBrowserAutocomplete();
+    }
+
+    /**
+     * Desativa autocomplete do navegador
+     */
+    disableBrowserAutocomplete() {
+        const inputs = [
+            this.nameInput,
+            this.emailInput,
+            this.passwordInput,
+            this.confirmPasswordInput
+        ];
+
+        inputs.forEach(input => {
+            if (input) {
+                input.setAttribute('autocomplete', 'off');
+                input.setAttribute('autocapitalize', 'off');
+                input.setAttribute('autocorrect', 'off');
+                input.setAttribute('spellcheck', 'false');
+            }
+        });
+
+        // Remove qualquer valor pré-preenchido pelo navegador
+        setTimeout(() => {
+            inputs.forEach(input => {
+                if (input && input.value) {
+                    input.value = '';
+                }
+            });
+        }, 100);
     }
 
     /**
@@ -56,36 +94,85 @@ class RegisterSystem {
             this.toggleConfirmPasswordBtn.addEventListener('click', () => this.togglePasswordVisibility('confirm'));
         }
 
-        // Validação em tempo real
+        // Foco no campo de senha - mostra sugestão
+        if (this.passwordInput) {
+            this.passwordInput.addEventListener('focus', () => {
+                this.togglePasswordSuggestion(true);
+            });
+
+            this.passwordInput.addEventListener('blur', () => {
+                // Se o campo estiver vazio, esconde a sugestão
+                if (!this.passwordInput.value) {
+                    this.togglePasswordSuggestion(false);
+                }
+            });
+
+            // Validação em tempo real apenas para força da senha
+            this.passwordInput.addEventListener('input', () => {
+                this.updatePasswordStrength();
+                // Se começar a digitar, mostra a sugestão
+                if (this.passwordInput.value) {
+                    this.togglePasswordSuggestion(true);
+                }
+                // Limpa erro se já foi submetido antes
+                this.clearError('password');
+            });
+        }
+
+        // Validação de confirmação de senha em tempo real (opcional)
+        if (this.confirmPasswordInput) {
+            this.confirmPasswordInput.addEventListener('input', () => {
+                if (this.passwordInput.value && this.confirmPasswordInput.value) {
+                    // Validação suave em tempo real (não impede navegação)
+                    this.validatePasswordMatchSoft();
+                }
+                // Limpa erro se já foi submetido antes
+                this.clearError('confirmPassword');
+            });
+        }
+
+        // Validação suave no blur (apenas feedback visual, não impede navegação)
         if (this.nameInput) {
-            this.nameInput.addEventListener('blur', () => this.validateName());
+            this.nameInput.addEventListener('blur', () => {
+                if (this.hasSubmitted) {
+                    this.validateNameSoft();
+                }
+            });
             this.nameInput.addEventListener('input', () => this.clearError('name'));
         }
 
         if (this.emailInput) {
-            this.emailInput.addEventListener('blur', () => this.validateEmail());
+            this.emailInput.addEventListener('blur', () => {
+                if (this.hasSubmitted) {
+                    this.validateEmailSoft();
+                }
+            });
             this.emailInput.addEventListener('input', () => this.clearError('email'));
         }
 
         if (this.passwordInput) {
-            this.passwordInput.addEventListener('blur', () => this.validatePassword());
-            this.passwordInput.addEventListener('input', () => {
-                this.clearError('password');
-                this.updatePasswordStrength();
-                this.validatePasswordMatch();
+            this.passwordInput.addEventListener('blur', () => {
+                if (this.hasSubmitted) {
+                    this.validatePasswordSoft();
+                }
             });
         }
 
         if (this.confirmPasswordInput) {
-            this.confirmPasswordInput.addEventListener('blur', () => this.validatePasswordMatch());
-            this.confirmPasswordInput.addEventListener('input', () => {
-                this.clearError('confirmPassword');
-                this.validatePasswordMatch();
+            this.confirmPasswordInput.addEventListener('blur', () => {
+                if (this.hasSubmitted) {
+                    this.validatePasswordMatchSoft();
+                }
             });
         }
 
         if (this.termsCheckbox) {
-            this.termsCheckbox.addEventListener('change', () => this.clearError('terms'));
+            this.termsCheckbox.addEventListener('change', () => {
+                if (this.hasSubmitted) {
+                    this.validateTermsSoft();
+                }
+                this.clearError('terms');
+            });
         }
 
         // Submit do formulário
@@ -93,11 +180,11 @@ class RegisterSystem {
             this.registerForm.addEventListener('submit', (e) => this.handleSubmit(e));
         }
 
-        // Prevenir envio com Enter em campos inválidos
+        // Prevenir envio com Enter
         this.registerForm?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !this.isFormValid()) {
+            if (e.key === 'Enter') {
                 e.preventDefault();
-                this.validateAllFields();
+                this.handleSubmit(e);
             }
         });
 
@@ -106,109 +193,20 @@ class RegisterSystem {
     }
 
     /**
-     * Configura validação do formulário
+     * Mostra/Esconde sugestão de senha
      */
-    setupFormValidation() {
-        // Adiciona padrão de email
-        if (this.emailInput && !this.emailInput.pattern) {
-            this.emailInput.pattern = '[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$';
-        }
-    }
-
-    /**
-     * Alterna a visibilidade da senha
-     */
-    togglePasswordVisibility(type) {
-        if (type === 'password') {
-            this.isPasswordVisible = !this.isPasswordVisible;
-            const passwordInput = this.passwordInput;
-            const toggleBtn = this.togglePasswordBtn;
-            const icon = toggleBtn.querySelector('i');
-
-            if (this.isPasswordVisible) {
-                passwordInput.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-                toggleBtn.setAttribute('aria-label', 'Ocultar senha');
+    togglePasswordSuggestion(show) {
+        if (this.passwordSuggestion) {
+            if (show) {
+                this.passwordSuggestion.classList.remove('hidden');
             } else {
-                passwordInput.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-                toggleBtn.setAttribute('aria-label', 'Mostrar senha');
+                this.passwordSuggestion.classList.add('hidden');
             }
-
-            setTimeout(() => passwordInput.focus(), 10);
-
-        } else if (type === 'confirm') {
-            this.isConfirmPasswordVisible = !this.isConfirmPasswordVisible;
-            const confirmInput = this.confirmPasswordInput;
-            const toggleBtn = this.toggleConfirmPasswordBtn;
-            const icon = toggleBtn.querySelector('i');
-
-            if (this.isConfirmPasswordVisible) {
-                confirmInput.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-                toggleBtn.setAttribute('aria-label', 'Ocultar senha de confirmação');
-            } else {
-                confirmInput.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-                toggleBtn.setAttribute('aria-label', 'Mostrar senha de confirmação');
-            }
-
-            setTimeout(() => confirmInput.focus(), 10);
         }
     }
 
     /**
-     * Valida o campo de nome
-     */
-    validateName() {
-        const name = this.nameInput.value.trim();
-
-        if (!name) {
-            this.showError('name', 'Nome é obrigatório');
-            return false;
-        }
-
-        if (name.length < 3) {
-            this.showError('name', 'Nome deve ter pelo menos 3 caracteres');
-            return false;
-        }
-
-        if (name.length > 100) {
-            this.showError('name', 'Nome muito longo (máximo 100 caracteres)');
-            return false;
-        }
-
-        this.showSuccess('name', 'Nome válido');
-        return true;
-    }
-
-    /**
-     * Valida o campo de email
-     */
-    validateEmail() {
-        const email = this.emailInput.value.trim();
-
-        if (!email) {
-            this.showError('email', 'E-mail é obrigatório');
-            return false;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            this.showError('email', 'Por favor, insira um e-mail válido');
-            return false;
-        }
-
-        this.showSuccess('email', 'E-mail válido');
-        return true;
-    }
-
-    /**
-     * Atualiza a força da senha
+     * Atualiza a força da senha (sempre ativa quando há conteúdo)
      */
     updatePasswordStrength() {
         const password = this.passwordInput.value;
@@ -253,7 +251,106 @@ class RegisterSystem {
     }
 
     /**
-     * Valida o campo de senha
+     * Validação suave do nome (feedback visual apenas)
+     */
+    validateNameSoft() {
+        const name = this.nameInput.value.trim();
+
+        if (!name) {
+            this.showErrorSoft('name', 'Nome é obrigatório');
+            return false;
+        }
+
+        if (name.length < 3) {
+            this.showErrorSoft('name', 'Nome deve ter pelo menos 3 caracteres');
+            return false;
+        }
+
+        this.clearError('name');
+        return true;
+    }
+
+    /**
+     * Validação suave do email (feedback visual apenas)
+     */
+    validateEmailSoft() {
+        const email = this.emailInput.value.trim();
+
+        if (!email) {
+            this.showErrorSoft('email', 'E-mail é obrigatório');
+            return false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            this.showErrorSoft('email', 'Por favor, insira um e-mail válido');
+            return false;
+        }
+
+        this.clearError('email');
+        return true;
+    }
+
+    /**
+     * Validação suave da senha (feedback visual apenas)
+     */
+    validatePasswordSoft() {
+        const password = this.passwordInput.value;
+
+        if (!password) {
+            this.showErrorSoft('password', 'Senha é obrigatória');
+            return false;
+        }
+
+        if (password.length < 8) {
+            this.showErrorSoft('password', 'A senha deve ter pelo menos 8 caracteres');
+            return false;
+        }
+
+        if (this.passwordStrength < 3) {
+            this.showErrorSoft('password', 'Escolha uma senha mais forte');
+            return false;
+        }
+
+        this.clearError('password');
+        return true;
+    }
+
+    /**
+     * Validação suave de correspondência de senhas
+     */
+    validatePasswordMatchSoft() {
+        const password = this.passwordInput.value;
+        const confirmPassword = this.confirmPasswordInput.value;
+
+        if (!confirmPassword) {
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            this.showErrorSoft('confirmPassword', 'As senhas não coincidem');
+            return false;
+        }
+
+        this.clearError('confirmPassword');
+        return true;
+    }
+
+    /**
+     * Validação suave dos termos
+     */
+    validateTermsSoft() {
+        if (!this.termsCheckbox.checked) {
+            this.showErrorSoft('terms', 'Você deve aceitar os termos e condições');
+            return false;
+        }
+
+        this.clearError('terms');
+        return true;
+    }
+
+    /**
+     * Validação completa da senha (apenas no submit)
      */
     validatePassword() {
         const password = this.passwordInput.value;
@@ -263,22 +360,21 @@ class RegisterSystem {
             return false;
         }
 
-        if (password.length < 6) {
-            this.showError('password', 'A senha deve ter pelo menos 6 caracteres');
+        if (password.length < 8) {
+            this.showError('password', 'A senha deve ter pelo menos 8 caracteres');
             return false;
         }
 
-        if (this.passwordStrength < 2) {
+        if (this.passwordStrength < 3) {
             this.showError('password', 'Escolha uma senha mais forte');
             return false;
         }
 
-        this.showSuccess('password', 'Senha válida');
         return true;
     }
 
     /**
-     * Valida se as senhas coincidem
+     * Valida se as senhas coincidem (validação completa)
      */
     validatePasswordMatch() {
         const password = this.passwordInput.value;
@@ -294,16 +390,11 @@ class RegisterSystem {
             return false;
         }
 
-        if (password && confirmPassword && password === confirmPassword) {
-            this.showSuccess('confirmPassword', 'Senhas coincidem');
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
-     * Valida os termos e condições
+     * Valida os termos e condições (completa)
      */
     validateTerms() {
         if (!this.termsCheckbox.checked) {
@@ -311,12 +402,11 @@ class RegisterSystem {
             return false;
         }
 
-        this.clearError('terms');
         return true;
     }
 
     /**
-     * Valida todos os campos
+     * Validação completa (apenas no submit)
      */
     validateAllFields() {
         const isNameValid = this.validateName();
@@ -329,14 +419,51 @@ class RegisterSystem {
     }
 
     /**
-     * Verifica se o formulário é válido
+     * Validação do nome (completa)
      */
-    isFormValid() {
-        return this.validateAllFields();
+    validateName() {
+        const name = this.nameInput.value.trim();
+
+        if (!name) {
+            this.showError('name', 'Nome é obrigatório');
+            return false;
+        }
+
+        if (name.length < 3) {
+            this.showError('name', 'Nome deve ter pelo menos 3 caracteres');
+            return false;
+        }
+
+        if (name.length > 100) {
+            this.showError('name', 'Nome muito longo (máximo 100 caracteres)');
+            return false;
+        }
+
+        return true;
     }
 
     /**
-     * Exibe erro em um campo específico
+     * Validação do email (completa)
+     */
+    validateEmail() {
+        const email = this.emailInput.value.trim();
+
+        if (!email) {
+            this.showError('email', 'E-mail é obrigatório');
+            return false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            this.showError('email', 'Por favor, insira um e-mail válido');
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Exibe erro em um campo específico (validação completa)
      */
     showError(field, message) {
         const input = this[field + 'Input'];
@@ -351,29 +478,22 @@ class RegisterSystem {
             errorElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
             errorElement.classList.add('show');
         }
-
-        // Foco no campo com erro
-        if (input) {
-            input.focus();
-        }
     }
 
     /**
-     * Exibe sucesso em um campo
+     * Exibe erro suave (feedback visual apenas, não impede navegação)
      */
-    showSuccess(field, message) {
+    showErrorSoft(field, message) {
         const input = this[field + 'Input'];
         const errorElement = this.errorElements[field];
 
         if (input) {
-            input.classList.remove('error');
-            input.classList.add('success');
+            input.classList.add('error');
         }
 
         if (errorElement) {
-            errorElement.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            errorElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
             errorElement.classList.add('show');
-            errorElement.style.color = '#28a745';
         }
     }
 
@@ -391,6 +511,25 @@ class RegisterSystem {
         if (errorElement) {
             errorElement.classList.remove('show');
             errorElement.innerHTML = '';
+        }
+    }
+
+    /**
+     * Habilita estado de carregamento
+     */
+    setLoadingState(isLoading) {
+        this.isLoading = isLoading;
+
+        if (isLoading) {
+            this.submitBtn.classList.add('loading');
+            this.submitBtn.disabled = true;
+            this.btnText.textContent = 'Processando...';
+            this.btnSpinner.style.display = 'inline-block';
+        } else {
+            this.submitBtn.classList.remove('loading');
+            this.submitBtn.disabled = false;
+            this.btnText.textContent = 'Criar Conta';
+            this.btnSpinner.style.display = 'none';
         }
     }
 
@@ -458,21 +597,48 @@ class RegisterSystem {
     }
 
     /**
-     * Habilita estado de carregamento
+     * Alterna a visibilidade da senha
      */
-    setLoadingState(isLoading) {
-        this.isLoading = isLoading;
+    togglePasswordVisibility(type) {
+        if (type === 'password') {
+            this.isPasswordVisible = !this.isPasswordVisible;
+            const passwordInput = this.passwordInput;
+            const toggleBtn = this.togglePasswordBtn;
+            const icon = toggleBtn.querySelector('i');
 
-        if (isLoading) {
-            this.submitBtn.classList.add('loading');
-            this.submitBtn.disabled = true;
-            this.btnText.textContent = 'Processando...';
-            this.btnSpinner.style.display = 'inline-block';
-        } else {
-            this.submitBtn.classList.remove('loading');
-            this.submitBtn.disabled = false;
-            this.btnText.textContent = 'Criar Conta';
-            this.btnSpinner.style.display = 'none';
+            if (this.isPasswordVisible) {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                toggleBtn.setAttribute('aria-label', 'Ocultar senha');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                toggleBtn.setAttribute('aria-label', 'Mostrar senha');
+            }
+
+            setTimeout(() => passwordInput.focus(), 10);
+
+        } else if (type === 'confirm') {
+            this.isConfirmPasswordVisible = !this.isConfirmPasswordVisible;
+            const confirmInput = this.confirmPasswordInput;
+            const toggleBtn = this.toggleConfirmPasswordBtn;
+            const icon = toggleBtn.querySelector('i');
+
+            if (this.isConfirmPasswordVisible) {
+                confirmInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                toggleBtn.setAttribute('aria-label', 'Ocultar senha de confirmação');
+            } else {
+                confirmInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                toggleBtn.setAttribute('aria-label', 'Mostrar senha de confirmação');
+            }
+
+            setTimeout(() => confirmInput.focus(), 10);
         }
     }
 
@@ -482,8 +648,11 @@ class RegisterSystem {
     async handleSubmit(event) {
         event.preventDefault();
 
-        // Validação inicial
-        if (!this.isFormValid()) {
+        // Marca que o usuário já tentou submeter
+        this.hasSubmitted = true;
+
+        // Validação completa no submit
+        if (!this.validateAllFields()) {
             this.showAlert('Por favor, corrija os erros no formulário');
             return;
         }
@@ -495,48 +664,14 @@ class RegisterSystem {
             // Inicia estado de carregamento
             this.setLoadingState(true);
 
-            // Animação de sucesso
-            this.submitBtn.classList.add('success-animation');
-            setTimeout(() => {
-                this.submitBtn.classList.remove('success-animation');
-            }, 600);
+            // Envia o formulário
+            this.registerForm.submit();
 
         } catch (error) {
             // Erro no cadastro
             console.error('Erro de cadastro:', error);
             this.showAlert(error.message || 'Ocorreu um erro durante o cadastro. Tente novamente.');
-
-            // Adiciona efeito visual de erro
-            this.submitBtn.classList.add('error');
-            setTimeout(() => this.submitBtn.classList.remove('error'), 500);
-
-            // Finaliza estado de carregamento em caso de erro
             this.setLoadingState(false);
-        }
-    }
-
-    /**
-     * Envia formulário via AJAX (opcional)
-     */
-    async submitFormViaAjax() {
-        const formData = new FormData(this.registerForm);
-
-        const response = await fetch(this.registerForm.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Erro no servidor');
-        }
-
-        if (data.redirect) {
-            window.location.href = data.redirect;
         }
     }
 
@@ -562,30 +697,6 @@ class RegisterSystem {
             }
         });
     }
-
-    /**
-     * Inicializa efeitos visuais
-     */
-    initVisualEffects() {
-        // Efeito de digitação no título
-        const title = document.querySelector('.form-header h1');
-        if (title) {
-            const originalText = title.textContent;
-            title.textContent = '';
-
-            let i = 0;
-            const typeWriter = () => {
-                if (i < originalText.length) {
-                    title.textContent += originalText.charAt(i);
-                    i++;
-                    setTimeout(typeWriter, 50);
-                }
-            };
-
-            // Inicia após um breve delay
-            setTimeout(typeWriter, 500);
-        }
-    }
 }
 
 /**
@@ -595,62 +706,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicia o sistema
     window.registerSystem = new RegisterSystem();
 
-    // Inicia efeitos visuais
-    window.registerSystem.initVisualEffects();
-
     // Log para debug (remova em produção)
     console.log('Sistema de cadastro inicializado');
 });
-
-/**
- * Funções auxiliares globais (para compatibilidade)
- */
-window.showRegisterAlert = function (message, type = 'error') {
-    if (window.registerSystem) {
-        window.registerSystem.showAlert(message, type);
-    }
-};
-
-window.setRegisterLoading = function (isLoading) {
-    if (window.registerSystem) {
-        window.registerSystem.setLoadingState(isLoading);
-    }
-};
-
-/**
- * Handler para mensagens do Laravel
- */
-document.addEventListener('DOMContentLoaded', () => {
-    // Verifica se há mensagens Flash do Laravel
-    const flashMessages = document.querySelectorAll('[data-flash-message]');
-    flashMessages.forEach(element => {
-        const message = element.getAttribute('data-flash-message');
-        const type = element.getAttribute('data-flash-type') || 'info';
-
-        if (window.registerSystem && message) {
-            window.registerSystem.showAlert(message, type === 'success' ? 'success' : 'error');
-            element.remove();
-        }
-    });
-
-    // Verifica erros de validação do Laravel
-    const errorElements = document.querySelectorAll('.invalid-feedback');
-    if (errorElements.length > 0 && window.registerSystem) {
-        const firstError = errorElements[0];
-        const fieldName = firstError.getAttribute('data-field');
-        const message = firstError.textContent;
-
-        if (fieldName && window.registerSystem.errorElements[fieldName]) {
-            window.registerSystem.showError(fieldName, message);
-        } else {
-            window.registerSystem.showAlert(message, 'error');
-        }
-    }
-});
-
-/**
- * Exporta a classe para uso externo (se necessário)
- */
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = RegisterSystem;
-}

@@ -98,7 +98,7 @@ body {
     left: 15px;
     top: 50%;
     transform: translateY(-50%);
-    color: #165B9C;
+    color: #165b9c;
     font-size: 1.1rem;
     z-index: 2;
 }
@@ -151,21 +151,74 @@ body {
     color: #667eea;
 }
 
-/* ===== CHECKBOX LEMBRAR-ME ===== */
-.form-group label input[type="checkbox"] {
-    margin-right: 8px;
-    width: 16px;
-    height: 16px;
-    vertical-align: middle;
-    cursor: pointer;
+/* ===== CHECKBOX PERSONALIZADO (igual ao criar conta) ===== */
+.terms-group {
+    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
-.form-group label {
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
+    position: relative;
+    padding-left: 35px;
     color: #555;
     font-size: 0.95rem;
+    line-height: 1.5;
+    min-height: 24px;
+}
+
+.checkbox-label input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 22px;
+    width: 22px;
+    background-color: #fff;
+    border: 2px solid #165b9c;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.checkbox-label:hover .checkmark {
+    background-color: #f0f8ff;
+}
+
+.checkbox-label input:checked ~ .checkmark {
+    background-color: #165b9c;
+    border-color: #165b9c;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-label input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Estilos de foco para acessibilidade */
+.checkbox-label input:focus-visible ~ .checkmark {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
 }
 
 /* ===== BOTÃO DE LOGIN ===== */
@@ -265,7 +318,8 @@ body {
 .login-image-section {
     flex: 1;
     position: relative;
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
         url("../images/login-bg.jpg");
     background-size: cover;
     background-position: center;
@@ -454,6 +508,16 @@ body {
     .alert {
         padding: 12px 15px;
         font-size: 0.9rem;
+    }
+
+    .checkbox-label {
+        font-size: 0.9rem;
+        padding-left: 30px;
+    }
+
+    .checkmark {
+        height: 20px;
+        width: 20px;
     }
 }
 
