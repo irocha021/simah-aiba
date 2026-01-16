@@ -121,7 +121,7 @@
 
     .siagas-spinner {
         border: 4px solid #f3f3f3;
-        border-top: 4px solid #e16ccfff;
+        border-top: 4px solid #3388ff;
         border-radius: 50%;
         width: 40px;
         height: 40px;
@@ -130,7 +130,7 @@
     }
 
     .siagas-data-container {
-        max-height: 27.5rem;
+        max-height: 26rem;
         overflow-y: auto;
         margin: 20px 50px;
     }
@@ -140,27 +140,32 @@
     }
 
     .siagas-data-row {
-        padding: 8px;
-        border-bottom: 1px solid #eee;
+        padding: 12px 8px;
+        border-bottom: 1px solid #3388ff;
         display: flex;
-    }
-
-    .siagas-data-row:nth-child(even) {
-        background-color: #f9f9f9;
+        align-items: center;
     }
 
     .siagas-data-row:hover {
-        background-color: #f2f7ff;
+        background-color: #e6f2ff;
     }
 
+    /* RÓTULOS (CHAVES) */
     .siagas-data-label {
         font-weight: bold;
         width: 200px;
         flex-shrink: 0;
+        color: black;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
     }
 
+    /* VALORES */
     .siagas-data-value {
         flex-grow: 1;
+        color: #333333;
+        font-size: 0.85rem;
     }
 
     .siagas-error {
@@ -170,5 +175,46 @@
         border: 1px solid #ebccd1;
         border-radius: 4px;
         margin-top: 10px;
+    }
+
+    /* Container para duas colunas */
+    .siagas-table-container {
+        display: flex;
+        gap: 40px;
+        flex-wrap: wrap;
+        position: relative;
+    }
+
+    .siagas-table-column {
+        flex: 1;
+        min-width: 300px;
+        position: relative;
+    }
+
+    /* Linha vertical entre as colunas */
+    .siagas-table-column:first-child::after {
+        content: '';
+        position: absolute;
+        right: -20px;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background-color: #d1d9e6;
+    }
+
+    /* Para telas menores - remover a linha */
+    @media (max-width: 768px) {
+        .siagas-table-container {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .siagas-table-column:first-child::after {
+            display: none;
+        }
+
+        .siagas-table-column {
+            min-width: 100%;
+        }
     }
 </style>

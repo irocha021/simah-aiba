@@ -156,37 +156,45 @@
     .rimas-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 12px;
         table-layout: auto;
-    }
-
-    .rimas-table thead {
-        position: sticky;
-        top: 0;
-        background-color: #ff7800;
-        color: white;
-        z-index: 10;
     }
 
     .rimas-table thead th {
         position: sticky;
         top: 0;
-        background-color: #ff7800;
+        background-color: #ffffff;
+        color: black;
+        text-align: center;
+        font-weight: bold;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        padding: 10px 8px;
+        border: none;
+        white-space: nowrap;
+        box-shadow: inset 0 -2px 0 #3388ff;
     }
 
     .rimas-table th {
         padding: 10px 8px;
-        border: 1px solid #ddd;
-        text-align: left;
+        border: 2px solid #3388ff;
+        border-top: none;
+        border-right: none;
+        border-left: none;
         white-space: nowrap;
-        font-size: 11px;
     }
 
     .rimas-table td {
         padding: 10px 8px;
-        border: 1px solid #ddd;
-        text-align: left;
+        background: white;
+        border: none;
         white-space: nowrap;
+        text-align: center;
+        font-size: 0.8rem;
+        border-bottom: 1px solid #3388ff;
+    }
+
+    .lrgs-table tbody tr:last-child td {
+        border-bottom: none;
     }
 
     .rimas-table tbody tr:nth-child(even) {

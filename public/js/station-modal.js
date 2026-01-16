@@ -497,19 +497,51 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
             if (data.success && data.data && data.data.poco) {
                 const poco = data.data.poco;
 
-                // 1. Primeiro renderizar a tabela
-                let html = '<div id="siagasTableContainer">';
-                Object.keys(poco).forEach(key => {
-                    const value = poco[key] !== null && poco[key] !== '' ? poco[key] : '-';
+                // 1. Primeiro renderizar a tabela EM DUAS COLUNAS
+                const entries = Object.entries(poco).filter(([key, value]) => 
+                    value !== null && value !== '' && value !== undefined
+                );
+                
+                const totalItems = entries.length;
+                const itemsPerColumn = Math.ceil(totalItems / 2);
+                
+                let html = `
+                    <div id="siagasTableContainer" class="siagas-table-container">
+                        <div class="siagas-table-column">
+                `;
+                
+                // Primeira coluna
+                for (let i = 0; i < itemsPerColumn; i++) {
+                    const [key, value] = entries[i];
                     html += `
                         <div class="siagas-data-row">
-                            <div class="siagas-data-label" style="text-transform: capitalize;">${key}:</div>
-                            <div class="siagas-data-value">${value}</div>
+                            <div class="siagas-data-label" style="text-transform: capitalize;">${formatSiagasKey(key)}:</div>
+                            <div class="siagas-data-value">${value !== null && value !== '' ? value : '-'}</div>
                         </div>
                     `;
-                });
-                html += '</div>';
-
+                }
+                
+                html += `
+                        </div>
+                        <div class="siagas-table-column">
+                `;
+                
+                // Segunda coluna
+                for (let i = itemsPerColumn; i < totalItems; i++) {
+                    const [key, value] = entries[i];
+                    html += `
+                        <div class="siagas-data-row">
+                            <div class="siagas-data-label" style="text-transform: capitalize;">${formatSiagasKey(key)}:</div>
+                            <div class="siagas-data-value">${value !== null && value !== '' ? value : '-'}</div>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+                
                 document.getElementById('siagasDataContent').innerHTML = html;
                 dataContainer.style.display = 'block';
 
@@ -549,7 +581,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                                             'solidos_se': 'Sólidos Sedimentáveis (mL/L)',
                                             'solidos_su': 'Sólidos Suspendidos (mg/L)'
                                         };
-                                        return labels[field] || field.replace(/_/g, ' ').toUpperCase();
+                                        return labels[field] || formatSiagasKey(field);
                                     })(field),
                                     value: numValue
                                 });
@@ -741,7 +773,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                             chartBtn.className = 'siagas-view-btn';
                             chartBtn.style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
 
-                            tableContainer.style.display = 'block';
+                            tableContainer.style.display = 'flex'; // Alterado para 'flex'
                             chartContainer.style.display = 'none';
                         }
                     }
@@ -789,6 +821,52 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
             errorMessage.style.display = 'block';
             document.getElementById(siagasModalConfig.errorTextId).textContent = error.message;
         });
+
+    // Função auxiliar para formatar chaves do SIAGAS
+    function formatSiagasKey(key) {
+        // Primeiro, tentar mapear para nomes mais legíveis
+        const labels = {
+            'cota_terre': 'Altitude do Terreno',
+            'profundi_1': 'Profundidade Total',
+            'nivel_agua': 'Nível d\'Água',
+            'vazao': 'Vazão',
+            'nivel_dina': 'Nível Dinâmico',
+            'nivel_esta': 'Nível Estático',
+            'vazao_espe': 'Vazão Específica',
+            'vazao_livr': 'Vazão Livre',
+            'coeficient': 'Coeficiente de Armazenamento',
+            'permeabili': 'Permeabilidade',
+            'transmissi': 'Transmissividade',
+            'vazao_esta': 'Vazão Estabilizada',
+            'condutivid': 'Condutividade Elétrica',
+            'temperatur': 'Temperatura',
+            'turbidez': 'Turbidez',
+            'solidos_se': 'Sólidos Sedimentáveis',
+            'solidos_su': 'Sólidos Suspendidos',
+            'cod_siagas': 'Código SIAGAS',
+            'data_perfu': 'Data de Perfuração',
+            'tipo_poço': 'Tipo de Poço',
+            'tipologia': 'Tipologia',
+            'cod_orgao': 'Código Órgão',
+            'nome_orgao': 'Nome Órgão',
+            'aquifero': 'Aquífero',
+            'municipio': 'Município',
+            'uf': 'UF',
+            'latitude': 'Latitude',
+            'longitude': 'Longitude'
+        };
+        
+        if (labels[key]) {
+            return labels[key];
+        }
+        
+        // Se não estiver no mapeamento, formatação padrão
+        return key
+            .replace(/_/g, ' ')
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+    }
 }
 
 // Inicializar modal SIAGAS
@@ -824,7 +902,7 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
     const modalStationCode = document.getElementById(hidrowebQaModalConfig.stationCodeId);
 
     modal.style.display = 'block';
-    modalStationCode.innerHTML =  `
+    modalStationCode.innerHTML = `
         <div class="hidroweb-qa-header-content-title">
             <h2 style="margin: 0;">${stationName}</h2>
             <p style="margin: 0;">Parâmetros físico-químicos, biológicos e contaminantes medidos na estação de monitoramento.</p>
@@ -1698,18 +1776,51 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     }
 
     function renderTable(cnarhData) {
-        let html = '<div id="cnarhTableContainer">';
-        Object.entries(cnarhData).forEach(([key, value]) => {
-            if (value !== null && value !== '') {
-                html += `
-                    <div class="cnarh-data-row">
-                        <div class="cnarh-data-label">${formatKey(key)}:</div>
-                        <div class="cnarh-data-value">${value}</div>
-                    </div>
-                `;
-            }
-        });
-        html += '</div>';
+        // Filtrar apenas os itens que têm valores
+        const entries = Object.entries(cnarhData).filter(([key, value]) =>
+            value !== null && value !== '' && value !== undefined
+        );
+
+        const totalItems = entries.length;
+        const itemsPerColumn = Math.ceil(totalItems / 2);
+
+        let html = `
+            <div id="cnarhTableContainer" class="cnarh-table-container">
+                <div class="cnarh-table-column">
+        `;
+
+        // Primeira coluna
+        for (let i = 0; i < itemsPerColumn; i++) {
+            const [key, value] = entries[i];
+            html += `
+                <div class="cnarh-data-row">
+                    <div class="cnarh-data-label">${formatKey(key)}:</div>
+                    <div class="cnarh-data-value">${value}</div>
+                </div>
+            `;
+        }
+
+        html += `
+            </div>
+            <div class="cnarh-table-column">
+        `;
+
+        // Segunda coluna
+        for (let i = itemsPerColumn; i < totalItems; i++) {
+            const [key, value] = entries[i];
+            html += `
+            <div class="cnarh-data-row">
+                <div class="cnarh-data-label">${formatKey(key)}:</div>
+                <div class="cnarh-data-value">${value}</div>
+            </div>
+        `;
+        }
+
+        html += `
+            </div>
+            </div>
+        `;
+
         document.getElementById('cnarhDataContent').innerHTML = html;
     }
 

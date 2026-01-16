@@ -206,7 +206,6 @@
         gap: 5px;
         position: relative;
         z-index: 2;
-        /* Fica acima da linha cinza */
     }
 
     .hidroweb-data-tab-btn {
@@ -226,7 +225,6 @@
         color: #242731;
     }
 
-    /* Barra azul indicadora - ajuste as porcentagens para controlar o tamanho */
     .hidroweb-data-tab-btn.active::after {
         content: '';
         position: absolute;
@@ -254,7 +252,7 @@
 
     .hidroweb-data-spinner {
         border: 4px solid #f3f3f3;
-        border-top: 4px solid #00cc66;
+        border-top: 4px solid #3388ff;
         border-radius: 50%;
         width: 40px;
         height: 40px;
@@ -266,27 +264,52 @@
         max-height: 23.5rem;
         overflow-y: auto;
         margin: auto;
+        position: relative;
     }
 
     .hidroweb-data-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 14px;
+        table-layout: auto;
+    }
+
+    /* CABEÇALHO */
+    .hidroweb-data-table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #ffffff;
+        color: black;
+        text-align: center;
+        font-weight: bold;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        padding: 10px 8px;
+        border: none;
+        white-space: nowrap;
+        box-shadow: inset 0 -2px 0 #3388ff;
+        z-index: 1;
     }
 
     .hidroweb-data-table thead {
         position: sticky;
         top: 0;
-        background-color: #00cc66;
-        color: white;
         z-index: 1;
     }
 
-    .hidroweb-data-table th,
+    /* CORPO DA TABELA */
     .hidroweb-data-table td {
-        padding: 12px;
-        border: 1px solid #ddd;
-        text-align: left;
+        padding: 10px 8px;
+        background: white;
+        border: none;
+        white-space: nowrap;
+        text-align: center;
+        font-size: 0.8rem;
+        border-bottom: 1px solid #3388ff;
+    }
+
+    /* Remove a borda inferior da última linha */
+    .hidroweb-data-table tbody tr:last-child td {
+        border-bottom: none;
     }
 
     .hidroweb-data-table tbody tr:nth-child(even) {
@@ -294,7 +317,7 @@
     }
 
     .hidroweb-data-table tbody tr:hover {
-        background-color: #e6ffe6;
+        background-color: #fff4e6;
     }
 
     .hidroweb-data-error {
@@ -313,5 +336,15 @@
         border: 1px solid #ffc107;
         border-radius: 4px;
         color: #856404;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
 </style>
