@@ -149,7 +149,7 @@
                                     class="user-menu-icon">
                                 <span class="user-option-name">Alterar senha</span>
                             </a>
-                            <a href="/logout" class="user-menu-option user-logout-link">
+                            <a href="/" class="user-menu-option user-logout-link">
                                 <img src="{{ asset('images/icons/Log-out.svg') }}" alt="Logo"
                                     class="user-menu-icon">
                                 <span class="user-option-name">Sair</span>
