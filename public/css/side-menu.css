@@ -72,7 +72,8 @@
 
 .logo-icon-closed,
 .logo-icon-open {
-    transition: opacity var(--transition-speed) ease,
+    transition:
+        opacity var(--transition-speed) ease,
         visibility var(--transition-speed) ease,
         transform var(--transition-speed) ease;
 }
@@ -272,31 +273,23 @@
     margin: 10px 15px;
 }
 
+/* ===== ESTILOS PARA A ÁREA DE TOGGLE (CONTAINER BASE) ===== */
 .sidebar-toggle {
-    height: var(--toggle-height);
+    height: auto;
+    min-height: 6rem;
     background-color: #fafafa;
     border-top: 1px solid #d9d9d9;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: flex-start;
-    padding: 0 20px;
+    padding: 0;
     flex-shrink: 0;
     transition: all var(--transition-speed);
-    height: 6rem;
-}
-
-.toggle-content {
-    display: flex;
-    align-items: center;
-    width: 100%;
+    overflow: visible;
     position: relative;
 }
 
 .sidebar:not(.collapsed) .sidebar-toggle {
-    justify-content: flex-start;
-}
-
-.sidebar:not(.collapsed) .toggle-content {
     justify-content: flex-start;
 }
 
@@ -305,8 +298,26 @@
     padding: 0;
 }
 
-.sidebar.collapsed .toggle-content {
+/* ===== ESTILOS ESPECÍFICOS PARA #login-state ===== */
+#login-state {
+    width: 100%;
+}
+
+.user-login-link {
+    display: flex;
+    align-items: center;
     justify-content: center;
+    height: 6rem;
+    width: 100%;
+    text-decoration: none;
+    color: #333;
+}
+
+.user-toggle-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .user-icon {
@@ -314,19 +325,298 @@
     height: 3.5rem;
 }
 
-.login-text {
-    font-size: 1.2rem;
+.user-login-text {
+    font-size: 1.4rem;
     color: #5c5e64;
     margin-left: 12px;
-    transition: opacity var(--transition-speed) ease,
+    white-space: nowrap;
+    transition:
+        opacity var(--transition-speed) ease,
         visibility var(--transition-speed) ease,
         transform var(--transition-speed) ease;
-    white-space: nowrap;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
 }
 
-.sidebar.collapsed .login-text {
+.sidebar.collapsed .user-login-text {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px);
+    width: 0;
+    overflow: hidden;
+    display: inline-block;
     margin-left: 0;
 }
+
+/* Ajuste do ícone quando colapsado */
+.sidebar.collapsed .user-toggle-content {
+    justify-content: center;
+}
+
+/* ===== ESTILOS ESPECÍFICOS PARA #user-menu-container ===== */
+#user-menu-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* Container do menu do usuário */
+.user-menu {
+    width: 100%;
+    height: auto;
+    position: relative;
+    margin: 0;
+}
+
+/* Header do menu do usuário */
+.user-menu-header {
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    border: none;
+    background: #fafafa;
+    border-radius: 0;
+    cursor: pointer;
+    padding: 0 20px;
+    position: relative;
+    width: 100%;
+    transition: background-color 0.2s ease;
+}
+
+/* Menu colapsado - ajuste do header */
+.sidebar.collapsed .user-menu-header {
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    height: 6rem;
+}
+
+/* Avatar com iniciais - CENTRALIZADO quando colapsado */
+.user-avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+    min-width: 3.5rem;
+    border-radius: 50%;
+    background: #165b9c;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 1.7rem;
+    margin-right: 12px;
+    flex-shrink: 0;
+    transition: all var(--transition-speed);
+}
+
+/* Menu colapsado - avatar fica centralizado */
+.sidebar.collapsed .user-avatar {
+    margin-right: 0;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Informações do usuário (nome + ícone) */
+.user-menu-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+    opacity: 1;
+    visibility: visible;
+    transition: all var(--transition-speed);
+}
+
+/* Menu colapsado - esconde informações */
+.sidebar.collapsed .user-menu-info {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+    overflow: hidden;
+    position: absolute;
+}
+
+/* Nome do usuário */
+.user-menu-name {
+    font-size: 1.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    color: #5c5e64;
+}
+
+/* Ícone dropdown do usuário */
+.user-dropdown-icon {
+    margin-left: auto;
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+    color: #5c5e64;
+}
+
+/* Rotaciona ícone quando menu está aberto */
+.user-menu.active .user-dropdown-icon {
+    transform: rotate(180deg);
+}
+
+/* Dropdown do menu do usuário - MODIFICADO para fazer sidebar-toggle crescer */
+.user-menu-dropdown {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    z-index: 1000;
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    margin: 0;
+    background: #fafafa;
+    transform: translateY(0);
+}
+
+/* Quando dropdown está aberto - AUMENTA O sidebar-toggle */
+.user-menu.active .user-menu-dropdown {
+    max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+    padding-bottom: 15px;
+    padding-left: 15px;
+}
+
+/* Container das opções com linha lateral contínua */
+.user-menu-options {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-left: 20px;
+}
+
+/* Linha vertical contínua CINZA */
+.user-menu-options::before {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #d9d9d9;
+}
+
+/* Cada opção do menu */
+.user-menu-option {
+    display: flex;
+    align-items: center;
+    background: #fafafa;
+    color: #5c5e64;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    text-decoration: none;
+    border: none;
+    position: relative;
+    margin: 15px;
+}
+
+/* Ícones das opções */
+.user-menu-icon {
+    width: 20px;
+    margin-right: 12px;
+    font-size: 1rem;
+    text-align: center;
+    color: #5c5e64;
+}
+
+/* Nome das opções */
+.user-option-name {
+    font-weight: 500;
+}
+
+/* Opção de logout específico */
+.user-logout-link {
+    color: #d55f5a;
+}
+
+.user-logout-link .user-menu-icon {
+    color: #d55f5a;
+}
+
+/* Para menu colapsado */
+.sidebar.collapsed .user-menu-header {
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Ajustes para menu colapsado - LINHA CONTÍNUA */
+.sidebar.collapsed .user-menu-options {
+    padding-left: 15px;
+}
+
+.sidebar.collapsed .user-menu-options::before {
+    left: 15px;
+}
+
+/* Menu colapsado - dropdown fica sobreposto */
+.sidebar.collapsed .user-menu-dropdown {
+    position: absolute;
+    bottom: auto;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    background: #fafafa;
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.sidebar.collapsed .user-menu.active .user-menu-dropdown {
+    max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Animação para as opções aparecerem com delay */
+@keyframes fadeInUserOption {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-menu.active .user-menu-option {
+    animation: fadeInUserOption 0.3s ease forwards;
+    opacity: 0;
+}
+
+.user-menu.active .user-menu-option:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.user-menu.active .user-menu-option:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.user-menu.active .user-menu-option:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+/* ===== FIM ESTILOS ESPECÍFICOS PARA MENU DE USUÁRIO ===== */
 
 .sidebar-content::-webkit-scrollbar {
     width: 6px;
@@ -549,7 +839,9 @@
     opacity: 1;
     visibility: visible;
     padding-top: 8px;
-    transition: max-height 0.3s ease-out, opacity 0.2s ease 0.1s;
+    transition:
+        max-height 0.3s ease-out,
+        opacity 0.2s ease 0.1s;
 }
 
 .sidebar.collapsed .select-dropdown {
@@ -563,7 +855,9 @@
     padding: 0px 0px 0px 15px;
     opacity: 0;
     transform: translateY(-10px);
-    transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+    transition:
+        opacity 0.3s ease 0.1s,
+        transform 0.3s ease 0.1s;
 }
 
 .sidebar:not(.collapsed) .select-control.active .select-content {
@@ -811,4 +1105,19 @@ a.select-link.active {
     background: white;
     color: #333;
     font-weight: normal;
+}
+
+/* Ajustes responsivos para mobile */
+@media (max-width: 768px) {
+    .sidebar.collapsed .user-menu-dropdown {
+        position: fixed;
+        left: 20px;
+        transform: none;
+        width: auto;
+        min-width: 200px;
+    }
+
+    .sidebar.collapsed .user-menu.active .user-menu-dropdown {
+        transform: none;
+    }
 }
