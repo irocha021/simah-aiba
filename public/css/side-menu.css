@@ -521,7 +521,13 @@
     text-decoration: none;
     border: none;
     position: relative;
-    margin: 15px;
+    margin: 0 15px;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.user-menu-option:hover {
+    background: #f0f0f0;
 }
 
 /* Ícones das opções */
