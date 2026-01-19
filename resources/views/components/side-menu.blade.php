@@ -139,12 +139,12 @@
 
                     <div class="user-menu-dropdown" id="user-menu-dropdown">
                         <div class="user-menu-options">
-                            <a href="/perfil" class="user-menu-option">
+                            <a href="user/profile" class="user-menu-option">
                                 <img src="{{ asset('images/icons/account-circle.svg') }}" alt="Logo"
                                     class="user-menu-icon">
                                 <span class="user-option-name">Perfil</span>
                             </a>
-                            <a href="/alterar-senha" class="user-menu-option">
+                            <a href="user/password" class="user-menu-option">
                                 <img src="{{ asset('images/icons/key-vertical.svg') }}" alt="Logo"
                                     class="user-menu-icon">
                                 <span class="user-option-name">Alterar senha</span>
