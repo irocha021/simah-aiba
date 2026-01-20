@@ -56,10 +56,11 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>
+                    <div class="form-group terms-group">
+                        <label class="checkbox-label">
                             <input type="checkbox" id="remember" name="remember">
-                            Lembrar-me
+                            <span class="checkmark"></span>
+                            <span>Lembrar-me</span>
                         </label>
                     </div>
                     <div style="display: flex; justify-content: center;">
@@ -77,7 +78,7 @@
                             <br>
                         @endif
                         <span style="color: #666;">Não tem uma conta? </span>
-                        <a href="#" class="signup-link">Cadastre-se</a>
+                        <a href="{{ route('register') }}" class="signup-link">Cadastre-se</a>
                     </div>
                 </form>
             </div>

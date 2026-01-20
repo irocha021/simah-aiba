@@ -5,6 +5,8 @@ use App\Http\Controllers\DbfImportController;
 use App\Http\Controllers\CnarhUploadController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroFlowForecastController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroInfoAnaAdoptedTelemetricSeriesReadingController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroInventoryStationManagerController;
@@ -63,7 +65,15 @@ Route::get('/', function () {
 // ROTA DE LOGIN
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 
+// ROTAS DE CADASTRO
+Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
-//Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dashboard2', [DashboardController::class, 'index'])->name('dashboard2');
-
+// ROTAS DE PERFIL DO USUÁRIO (PROTEGIDAS POR AUTH)
+Route::prefix('user')->group(function () {
+    Route::get('/profile', [UserProfileController::class, 'showProfile'])->name('user.profile');
+    Route::post('/profile', [UserProfileController::class, 'updateProfile'])->name('user.profile.update');
+    
+    Route::get('/password', [UserProfileController::class, 'showPassword'])->name('user.password');
+    Route::post('/password', [UserProfileController::class, 'updatePassword'])->name('user.password.update');
+});

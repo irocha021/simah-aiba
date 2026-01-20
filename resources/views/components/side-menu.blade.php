@@ -110,16 +110,59 @@
 
         <!-- Toggle button fixo na base -->
         <div class="sidebar-toggle">
-            <a href="/login">
-                <div class="toggle-content">
-                    <img src="{{ asset('images/icons/user-menu.svg') }}" alt="Logo" class="user-icon">
-                    <span class="login-text">Login Privativo</span>
+
+            <!-- Estado de não logado (mostrar link de login) -->
+            <div id="login-state" style="display: none;">
+                <a href="/login" class="user-login-link">
+                    <div class="user-toggle-content">
+                        <img src="{{ asset('images/icons/user-menu.svg') }}" alt="Logo" class="user-icon">
+                        <span class="user-login-text">Login Privativo</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Estado logado (mostrar menu do usuário) -->
+            <div id="user-menu-container" style="display: none;">
+                <div class="user-menu" id="user-menu-control">
+                    <div class="user-menu-header" id="user-menu-toggle">
+                        <!-- Avatar com iniciais (sempre visível) -->
+                        <div class="user-avatar">
+                            <span class="user-avatar-initials">AS</span>
+                        </div>
+
+                        <!-- Nome completo (menu expandido) -->
+                        <div class="user-menu-info">
+                            <span class="user-menu-name">Andre Silva</span>
+                            <i class="fas fa-chevron-down user-dropdown-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="user-menu-dropdown" id="user-menu-dropdown">
+                        <div class="user-menu-options">
+                            <a href="user/profile" class="user-menu-option">
+                                <img src="{{ asset('images/icons/account-circle.svg') }}" alt="Logo"
+                                    class="user-menu-icon">
+                                <span class="user-option-name">Perfil</span>
+                            </a>
+                            <a href="user/password" class="user-menu-option">
+                                <img src="{{ asset('images/icons/key-vertical.svg') }}" alt="Logo"
+                                    class="user-menu-icon">
+                                <span class="user-option-name">Alterar senha</span>
+                            </a>
+                            <a href="/" class="user-menu-option user-logout-link">
+                                <img src="{{ asset('images/icons/Log-out.svg') }}" alt="Logo"
+                                    class="user-menu-icon">
+                                <span class="user-option-name">Sair</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </a>
+            </div>
+
         </div>
-    </div>
 </nav>
 
 <script src="{{ asset('js/side-menu.js') }}"></script>
 <script src="{{ asset('js/select-controls.js') }}"></script>
 <script src="{{ asset('js/layer-control.js') }}"></script>
+<script src="{{ asset('js/user-menu.js') }}"></script>
