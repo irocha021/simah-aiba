@@ -1,6 +1,6 @@
 // Configurações
 const USER_MENU_CONFIG = {
-    isLoggedIn: true,
+    isLoggedIn: false,
     currentUser: {
         firstName: "Andre",
         lastName: "Silva"

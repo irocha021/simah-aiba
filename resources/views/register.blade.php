@@ -117,8 +117,14 @@
                                 <span class="checkmark"></span>
                                 <span>
                                     Eu concordo com os
-                                    <a href="#" class="terms-link">Termos de Serviço</a> e
-                                    <a href="#" class="terms-link">Política de Privacidade</a>
+                                    <button type="button" class="terms-link-btn"
+                                        onclick="openModalFake('modal-termos', 'termos-uso')">
+                                        Termos de Serviço
+                                    </button> e
+                                    <button type="button" class="terms-link-btn"
+                                        onclick="openModalFake('modal-politicas', 'politicas-privacidade')">
+                                        Política de Privacidade
+                                    </button>
                                 </span>
                             </label>
                             <div class="error-container">
@@ -152,6 +158,53 @@
             </div>
         </div>
     </div>
+
+    <!-- CHAMA O COMPONENTE DO MODAL TERMOS -->
+    @component('components.modal-termos', [
+        'modalId' => 'modal-termos',
+        'title' => 'Termos de Uso',
+        'subtitle' => 'Leia atentamente os termos e condições de uso do sistema',
+        'showLogo' => true,
+        'logoUrl' => asset('images/logo-top-sigmah.svg'),
+        'logoAlt' => 'Logo SIGMAH',
+    ])
+    @endcomponent
+
+    <!-- CHAMA O COMPONENTE DO MODAL POLÍTICAS -->
+    @component('components.modal-termos', [
+        'modalId' => 'modal-politicas',
+        'title' => 'Política de Privacidade',
+        'subtitle' => 'Saiba como protegemos seus dados pessoais',
+        'showLogo' => true,
+        'logoUrl' => asset('images/logo-top-sigmah.svg'),
+        'logoAlt' => 'Logo SIGMAH',
+    ])
+    @endcomponent
+
+    <!-- Adicione CSS para os botões -->
+    <style>
+        .terms-link-btn {
+            background: none;
+            border: none;
+            color: #3388ff;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: inherit;
+            font-family: inherit;
+            padding: 0;
+            margin: 0;
+            display: inline;
+        }
+
+        .terms-link-btn:hover {
+            color: #1a6fd8;
+            text-decoration: none;
+        }
+
+        .terms-link-btn:focus {
+            outline: none;
+        }
+    </style>
 
     <script src="{{ asset('js/register.js') }}"></script>
 </body>
