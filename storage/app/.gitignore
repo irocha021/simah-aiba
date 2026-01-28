@@ -4,4 +4,5 @@
 !public/
 !shapefiles/
 shapefiles/*
+!shapefiles/.gitkeep
 !shapefiles/*.zip
