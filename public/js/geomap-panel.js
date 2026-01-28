@@ -1,0 +1,292 @@
+/**
+ * GEOMAP Panel - Gerenciamento de camadas do mapa
+ *
+ * Funções:
+ * - Toggle do painel (expandir/colapsar)
+ * - Popular lista de camadas
+ * - Drag and drop para reordenar
+ * - Controle de z-index das camadas
+ * - Toggle de visibilidade das camadas
+ * - Painel de legenda
+ */
+
+// Variáveis globais (serão setadas pelo dashboard)
+var mapLayersData = window.mapLayersData || [];
+var geoMapLayers = window.geoMapLayers || {};
+var map = window.map || null;
+
+// ========== TOGGLE DO PAINEL ==========
+function toggleGeomapPanel() {
+    var content = document.getElementById('geomapPanelContent');
+    var icon = document.getElementById('geomapToggleIcon');
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        icon.textContent = '▼';
+    } else {
+        content.style.display = 'none';
+        icon.textContent = '▶';
+    }
+}
+
+// ========== POPULAR O PAINEL ==========
+function populateGeomapPanel() {
+    var container = document.getElementById('geomapPanelContent');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    mapLayersData.forEach(function(layerData) {
+        var item = document.createElement('div');
+        item.className = 'geomap-layer-item';
+        item.setAttribute('draggable', 'true');
+        item.setAttribute('data-slug', layerData.slug);
+
+        // Ícone de arrastar
+        var dragHandle = document.createElement('span');
+        dragHandle.className = 'drag-handle';
+        dragHandle.innerHTML = '≡';
+
+        // Checkbox
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = 'layer-' + layerData.slug;
+        checkbox.onchange = function() {
+            toggleLayer(layerData.slug, this.checked);
+        };
+
+        // Nome da camada
+        var name = document.createElement('span');
+        name.className = 'layer-name';
+        name.textContent = layerData.name;
+
+        item.appendChild(dragHandle);
+        item.appendChild(checkbox);
+        item.appendChild(name);
+
+        // Ícone de info (só se tiver legenda)
+        if (layerData.has_legend && layerData.legends && layerData.legends.length > 0) {
+            var infoIcon = document.createElement('span');
+            infoIcon.className = 'layer-info';
+            infoIcon.innerHTML = 'ℹ';
+            infoIcon.title = 'Ver legenda';
+            infoIcon.onclick = function(e) {
+                e.stopPropagation();
+                showLegendPanel(layerData);
+            };
+            item.appendChild(infoIcon);
+        }
+
+        container.appendChild(item);
+    });
+}
+
+// ========== DRAG AND DROP ==========
+var draggedItem = null;
+
+function initDragAndDrop() {
+    var container = document.getElementById('geomapPanelContent');
+    if (!container) return;
+
+    container.addEventListener('dragstart', function(e) {
+        if (e.target.classList.contains('geomap-layer-item')) {
+            draggedItem = e.target;
+            e.target.classList.add('dragging');
+        }
+    });
+
+    container.addEventListener('dragend', function(e) {
+        if (e.target.classList.contains('geomap-layer-item')) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+            updateLayersZIndex();
+        }
+    });
+
+    container.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        var afterElement = getDragAfterElement(container, e.clientY);
+        if (draggedItem) {
+            if (afterElement == null) {
+                container.appendChild(draggedItem);
+            } else {
+                container.insertBefore(draggedItem, afterElement);
+            }
+        }
+    });
+}
+
+function getDragAfterElement(container, y) {
+    var draggableElements = [...container.querySelectorAll('.geomap-layer-item:not(.dragging)')];
+
+    return draggableElements.reduce(function(closest, child) {
+        var box = child.getBoundingClientRect();
+        var offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+// ========== Z-INDEX DAS CAMADAS ==========
+function updateLayersZIndex() {
+    var items = document.querySelectorAll('.geomap-layer-item');
+    var totalItems = items.length;
+
+    items.forEach(function(item, index) {
+        var slug = item.getAttribute('data-slug');
+        var layerObj = geoMapLayers[slug];
+
+        if (layerObj && layerObj.layer) {
+            // Primeiro da lista = maior z-index (fica por cima)
+            var zIndex = (totalItems - index) * 100;
+
+            if (layerObj.layer.setZIndex) {
+                layerObj.layer.setZIndex(zIndex);
+            }
+            // Para layerGroups (GeoJSON), precisa setar em cada layer interno
+            if (layerObj.layer.eachLayer) {
+                layerObj.layer.eachLayer(function(subLayer) {
+                    if (subLayer.setZIndex) {
+                        subLayer.setZIndex(zIndex);
+                    }
+                });
+            }
+        }
+    });
+
+    console.log('Z-index atualizado pela ordem do painel');
+}
+
+// ========== TOGGLE DE CAMADAS ==========
+function toggleLayer(slug, visible) {
+    var layerObj = geoMapLayers[slug];
+    if (layerObj && layerObj.layer && map) {
+        if (visible) {
+            layerObj.layer.addTo(map);
+        } else {
+            map.removeLayer(layerObj.layer);
+        }
+    }
+}
+
+// ========== PAINEL DE LEGENDA ==========
+function showLegendPanel(layerData) {
+    var panel = document.getElementById('legendPanel');
+    var title = document.getElementById('legendPanelTitle');
+    var content = document.getElementById('legendPanelContent');
+
+    if (!panel || !title || !content) return;
+
+    // Setar título
+    title.textContent = 'Legenda';
+
+    // Popular conteúdo com as cores da legenda
+    content.innerHTML = '';
+
+    if (layerData.legends && layerData.legends.length > 0) {
+        layerData.legends.forEach(function(legend) {
+            var item = document.createElement('div');
+            item.className = 'legend-item';
+
+            var colorBox = document.createElement('div');
+            colorBox.className = 'legend-color';
+            colorBox.style.backgroundColor = legend.color_hex;
+
+            var label = document.createElement('span');
+            label.className = 'legend-label';
+            label.textContent = legend.label;
+
+            item.appendChild(colorBox);
+            item.appendChild(label);
+            content.appendChild(item);
+        });
+    } else {
+        content.innerHTML = '<p>Nenhuma legenda disponível.</p>';
+    }
+
+    // Mostrar painel
+    panel.classList.add('active');
+}
+
+function closeLegendPanel() {
+    var panel = document.getElementById('legendPanel');
+    if (panel) {
+        panel.classList.remove('active');
+    }
+}
+
+// ========== CRIAR LAYER A PARTIR DOS DADOS ==========
+function createLayerFromData(layerData) {
+    if (layerData.type === 'tile') {
+        return L.tileLayer(layerData.url_pattern, {
+            attribution: layerData.attribution || '',
+            maxZoom: 18,
+            maxNativeZoom: layerData.max_zoom,
+            minZoom: layerData.min_zoom,
+            opacity: layerData.opacity,
+            tms: layerData.tms,
+        });
+    } else if (layerData.type === 'geojson') {
+        var layer = L.layerGroup();
+        fetch(layerData.url_pattern)
+            .then(response => response.json())
+            .then(data => {
+                L.geoJSON(data, {
+                    pointToLayer: function(feature, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: layerData.marker_radius || 6,
+                            fillColor: layerData.marker_color || "#ff6600",
+                            color: "#fff",
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: layerData.opacity || 0.8
+                        });
+                    },
+                    onEachFeature: function(feature, layer) {
+                        if (feature.properties) {
+                            var popupContent = '<b>' + layerData.name + '</b><br>';
+                            for (var key in feature.properties) {
+                                popupContent += key + ': ' + feature.properties[key] + '<br>';
+                            }
+                            layer.bindPopup(popupContent);
+                        }
+                    }
+                }).addTo(layer);
+            });
+        return layer;
+    }
+}
+
+// ========== INICIALIZAÇÃO ==========
+function initGeoMapLayers(layersData) {
+    mapLayersData = layersData;
+    window.mapLayersData = layersData;
+
+    // Criar objeto para armazenar os layers
+    geoMapLayers = {};
+    layersData.forEach(function(layerData) {
+        geoMapLayers[layerData.slug] = {
+            layer: createLayerFromData(layerData),
+            data: layerData
+        };
+    });
+    window.geoMapLayers = geoMapLayers;
+
+    console.log('GeoMap Layers criados:', geoMapLayers);
+
+    // Popular o painel
+    populateGeomapPanel();
+
+    // Inicializar drag-and-drop
+    initDragAndDrop();
+
+    return geoMapLayers;
+}
+
+// Função para setar referência do mapa
+function setMapReference(mapInstance) {
+    map = mapInstance;
+    window.map = mapInstance;
+}

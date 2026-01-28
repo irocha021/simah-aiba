@@ -167,14 +167,29 @@
     {{-- Side Menu --}}
     @include('components.side-menu')
 
+    <!-- Painel GEOMAP -->
+    @include('partials.geomap-panel')
+
+    <!-- Painel de Legenda -->
+    @include('partials.legend-panel')
+
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
+    <!-- GEOMAP Panel JS -->
+    <script src="{{ asset('js/geomap-panel.js') }}"></script>
+
     <script>
+        // Inicializar layers do GEOMAP com dados do banco
+        var geoMapLayers = initGeoMapLayers(@json($mapLayers));
+
         // Criar o mapa
-        var map = L.map('map').setView([-12.5, -41.5], 8);
+        var map = L.map('map').setView([-13.0, -41.5], 6);
         map.zoomControl.setPosition('bottomright');
+
+        // Setar referência do mapa para o GEOMAP panel
+        setMapReference(map);
 
         // Adicionar o tile layer (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -296,153 +311,97 @@
             return styles[source] || styles['hidroweb_qualidade_agua'];
         }
 
-        // Buscar os dados da API
-        fetch('/api/stations')
-            .then(response => response.json())
-            .then(data => {
-                console.log('Total de estações:', data.data.stations.length);
+        // Função global para criar marcadores (usada pelo layer-control.js)
+        window.createMarker = function(station) {
+            var style = getMarkerStyle(station.source);
+            var marker = L.circleMarker([station.latitude, station.longitude], style);
 
-                var stations = data.data.stations;
-                var bounds = [];
+            // Criar popup com botão para ver leituras/dados - ESTILIZADO
+            var popupContent = `
+                <div class="map-popup-content">
+                    <div class="popup-header">
+                        <div class="popup-title">${station.name}</div>
+                        <div style="color: #666; font-size: 0.85rem;">Fonte: ${station.source}</div>
+                    </div>
+                    
+                    <div class="popup-info">
+                        <div class="popup-info-row"><strong>Código:</strong> ${station.code}</div>
+                        <div class="popup-info-row"><strong>Latitude:</strong> ${station.latitude}</div>
+                        <div class="popup-info-row"><strong>Longitude:</strong> ${station.longitude}</div>
+                    </div>
+                    
+                    <div class="popup-buttons">
+            `;
 
-                stations.forEach(function(station) {
-                    if (station.latitude && station.longitude) {
-                        var style = getMarkerStyle(station.source);
-                        var marker = L.circleMarker([station.latitude, station.longitude], style);
+            // Botões específicos por tipo
+            if (station.source === 'pocos_rimas') {
+                popupContent += `
+                    <button onclick="openRimasReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
+                            class="popup-button rimas">
+                        Ver Leituras (Últimas 50)
+                    </button>
+                `;
+            }
 
-                        // Adicionar ao cluster group específico ao invés de um único cluster
-                        if (clusterGroups[station.source]) {
-                            clusterGroups[station.source].addLayer(marker);
-                        }
+            if (station.source === 'pocos_siagas') {
+                popupContent += `
+                    <button onclick="openSiagasReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
+                            class="popup-button siagas">
+                        Ver Dados do Poço
+                    </button>
+                `;
+            }
 
-                        // Criar popup com botão para ver leituras/dados - ESTILIZADO
-                        var popupContent = `
-                            <div class="map-popup-content">
-                                <div class="popup-header">
-                                    <div class="popup-title">${station.name}</div>
-                                    <div style="color: #666; font-size: 0.85rem;">Fonte: ${station.source}</div>
-                                </div>
-                                
-                                <div class="popup-info">
-                                    <div class="popup-info-row"><strong>Código:</strong> ${station.code}</div>
-                                    <div class="popup-info-row"><strong>Lat:</strong> ${station.latitude}</div>
-                                    <div class="popup-info-row"><strong>Lng:</strong> ${station.longitude}</div>
-                                </div>
-                                
-                                <div class="popup-buttons">
-                        `;
+            if (station.source === 'hidroweb_qualidade_agua') {
+                popupContent += `
+                    <button onclick="openHidrowebQaReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
+                            class="popup-button hidroweb-qa">
+                        Ver Leituras (Últimas 50)
+                    </button>
+                `;
+            }
 
-                        // Se for poço RIMAS, adicionar botão para ver leituras
-                        if (station.source === 'pocos_rimas') {
-                            popupContent += `
-                                <button onclick="openRimasReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
-                                        class="popup-button rimas">
-                                    📊 Ver Leituras (Últimas 50)
-                                </button>
-                            `;
-                        }
+            if (station.source === 'lrgs_client') {
+                popupContent += `
+                    <button onclick="openLrgsReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
+                            class="popup-button lrgs">
+                        Ver Leituras (Últimas 50)
+                    </button>
+                `;
+            }
 
-                        // Se for poço SIAGAS, adicionar botão para ver dados
-                        if (station.source === 'pocos_siagas') {
-                            popupContent += `
-                                <button onclick="openSiagasReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
-                                        class="popup-button siagas">
-                                    📊 Ver Dados do Poço
-                                </button>
-                            `;
-                        }
+            if (station.source === 'hidroweb_telemetria' || station.source === 'hidroweb_telemetria_com_previsao') {
+                var buttonClass = station.source === 'hidroweb_telemetria_com_previsao' ?
+                    'hidroweb-telemetria-previsao' : 'hidroweb-telemetria';
+                popupContent += `
+                    <button onclick="openHidrowebTelemetryDataModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
+                            class="popup-button ${buttonClass}">
+                        Ver Dados
+                    </button>
+                `;
+            }
 
-                        // Se for HidroWeb Qualidade da Água, adicionar botão para ver leituras
-                        if (station.source === 'hidroweb_qualidade_agua') {
-                            popupContent += `
-                                <button onclick="openHidrowebQaReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
-                                        class="popup-button hidroweb-qa">
-                                    📊 Ver Leituras (Últimas 50)
-                                </button>
-                            `;
-                        }
+            if (station.source === 'cnarh') {
+                popupContent += `
+                    <button onclick="openCnarhReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
+                            class="popup-button cnarh">
+                        Ver Dados CNARH
+                    </button>
+                `;
+            }
 
-                        if (station.source === 'lrgs_client') {
-                            popupContent += `
-                                <button onclick="openLrgsReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
-                                        class="popup-button lrgs">
-                                    📊 Ver Leituras (Últimas 50)
-                                </button>
-                            `;
-                        }
+            popupContent += `
+                    </div>
+                </div>
+            `;
 
-                        // Se for HidroWeb Telemetria OU Telemetria com Previsão
-                        if (station.source === 'hidroweb_telemetria' || station.source ===
-                            'hidroweb_telemetria_com_previsao') {
-                            var buttonClass = station.source === 'hidroweb_telemetria_com_previsao' ?
-                                'hidroweb-telemetria-previsao' : 'hidroweb-telemetria';
-                            popupContent += `
-                                <button onclick="openHidrowebTelemetryDataModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
-                                        class="popup-button ${buttonClass}">
-                                    📊 Ver Dados
-                                </button>
-                            `;
-                        }
+            marker.bindPopup(popupContent);
+            return marker;
+        };
 
-                        // Se for CNARH, adicionar botão para ver dados
-                        if (station.source === 'cnarh') {
-                            popupContent += `
-                                <button onclick="openCnarhReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
-                                        class="popup-button cnarh">
-                                    📊 Ver Dados CNARH
-                                </button>
-                            `;
-                        }
+        // Camadas serão carregadas sob demanda pelo layer-control.js
+        console.log('Mapa inicializado. Camadas serão carregadas sob demanda.');
 
-                        popupContent += `
-                                </div>
-                            </div>
-                        `;
-
-                        marker.bindPopup(popupContent);
-
-                        bounds.push([station.latitude, station.longitude]);
-                    }
-                });
-
-                // Adicionar todos os cluster groups ao mapa por padrão
-                Object.values(clusterGroups).forEach(function(cluster) {
-                    cluster.addTo(map);
-                });
-
-                // Criar controle de camadas com legendas coloridas
-                var overlayMaps = {
-                    '<span style="color: #A47864;">●</span> CNARH': clusterGroups['cnarh'],
-                    '<span style="color: #3388ff;">●</span> HidroWeb - Qualidade da Água': clusterGroups[
-                        'hidroweb_qualidade_agua'],
-                    '<span style="color: #00cc66;">●</span> HidroWeb - Telemetria': clusterGroups[
-                        'hidroweb_telemetria'],
-                    '<span style="color: #9933ff;">●</span> HidroWeb - Telemetria c/ Previsão': clusterGroups[
-                        'hidroweb_telemetria_com_previsao'],
-                    '<span style="color: #ff7800;">●</span> LRGS Client (DCP)': clusterGroups['lrgs_client'],
-                    '<span style="color: #ff0000;">●</span> Poços RIMAS': clusterGroups['pocos_rimas'],
-                    '<span style="color: #e16ccfff;">●</span> Poços SIAGAS': clusterGroups['pocos_siagas']
-                };
-
-                /* // Adicionar controle ao mapa - MANTIDO COMENTADO COMO ORIGINAL
-                L.control.layers(null, overlayMaps, {
-                    collapsed: true,
-                    position: 'topright'
-                }).addTo(map); */
-
-                // Ajustar zoom para mostrar todos os pontos
-                if (bounds.length > 0) {
-                    map.fitBounds(bounds, {
-                        padding: [30, 30],
-                        maxZoom: 12
-                    });
-                }
-
-                console.log('Total de marcadores adicionados:', bounds.length);
-            })
-            .catch(error => {
-                console.error('Erro ao buscar estações:', error);
-            });
     </script>
 
     <!-- Modal JS -->

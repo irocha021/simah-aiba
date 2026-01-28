@@ -125,4 +125,110 @@ class StationService
             'statistics' => $statistics
         ];
     }
+
+    public function getCnarhStations(): array
+    {
+        $stations = [];
+        foreach ($this->cnarhRepository->getAllWithCoordinates() as $station) {
+            $stations[] = [
+                'code' => (string) $station->int_cd_cnarh40,
+                'name' => $station->emp_nm_empreendimento ?? 'CNARH #' . $station->int_nu_cnarh,
+                'latitude' => (float) $station->int_nu_latitude,
+                'longitude' => (float) $station->int_nu_longitude,
+                'source' => 'cnarh',
+            ];
+        }
+        return $stations;
+    }
+
+    public function getPocosRimasStations(): array
+    {
+        $stations = [];
+        foreach ($this->pocoRimasRepository->getAllWithCoordinates() as $station) {
+            $stations[] = [
+                'code' => (string) $station->id_ponto,
+                'name' => $station->id_ponto ? 'Poço RIMAS #' . $station->id_ponto : 'Poço RIMAS',
+                'latitude' => (float) $station->latitude_d,
+                'longitude' => (float) $station->longitude,
+                'source' => 'pocos_rimas',
+            ];
+        }
+        return $stations;
+    }
+
+    public function getPocosSiagasStations(): array
+    {
+        $stations = [];
+        foreach ($this->pocoSiagasRepository->getAllWithCoordinates() as $station) {
+            $stations[] = [
+                'code' => (string) $station->ponto,
+                'name' => $station->localizaca ?? ($station->ponto ? 'Poço SIAGAS #' . $station->ponto : 'Poço SIAGAS'),
+                'latitude' => (float) $station->latitude_d,
+                'longitude' => (float) $station->longitude_,
+                'source' => 'pocos_siagas',
+            ];
+        }
+        return $stations;
+    }
+
+    public function getHidrowebTelemetriaStations(): array
+    {
+        $stations = [];
+        foreach ($this->hwInventoryStationRepository->getTelemetryStationsWithCoordinates() as $station) {
+            $stations[] = [
+                'code' => (string) $station->station_code,
+                'name' => $station->station_name,
+                'latitude' => (float) $station->latitude,
+                'longitude' => (float) $station->longitude,
+                'source' => 'hidroweb_telemetria',
+            ];
+        }
+        return $stations;
+    }
+
+    public function getHidrowebQualidadeAguaStations(): array
+    {
+        $stations = [];
+        foreach ($this->hwInventoryStationRepository->getQualityStationsWithCoordinates() as $station) {
+            $stations[] = [
+                'code' => (string) $station->station_code,
+                'name' => $station->station_name,
+                'latitude' => (float) $station->latitude,
+                'longitude' => (float) $station->longitude,
+                'source' => 'hidroweb_qualidade_agua',
+            ];
+        }
+        return $stations;
+    }
+
+    public function getHidrowebTelemetriaPrevisaoStations(): array
+    {
+        $stations = [];
+        foreach ($this->hwInventoryStationRepository->getTelemetryStationsWithForecastCoordinates() as $station) {
+            $stations[] = [
+                'code' => (string) $station->station_code,
+                'name' => $station->station_name,
+                'latitude' => (float) $station->latitude,
+                'longitude' => (float) $station->longitude,
+                'source' => 'hidroweb_telemetria_com_previsao',
+            ];
+        }
+        return $stations;
+    }
+
+    public function getLrgsClientStations(): array
+    {
+        $stations = [];
+        foreach ($this->dcpStationRepository->getAllWithCoordinates() as $station) {
+            $stations[] = [
+                'code' => $station->dcp_address,
+                'name' => $station->station_label ?? $station->station_name,
+                'latitude' => (float) $station->latitude,
+                'longitude' => (float) $station->longitude,
+                'source' => 'lrgs_client',
+            ];
+        }
+        return $stations;
+    }
+
 }

@@ -15,6 +15,23 @@ Route::prefix('stations')->group(function () {
         ->name('api.stations.index');
 });
 
+// Stations por fonte (lazy loading no mapa)
+Route::get('/stations/cnarh', [StationController::class, 'getCnarh'])
+    ->name('api.stations.cnarh');
+Route::get('/stations/pocos-rimas', [StationController::class, 'getPocosRimas'])
+    ->name('api.stations.pocos-rimas');
+Route::get('/stations/pocos-siagas', [StationController::class, 'getPocosSiagas'])
+    ->name('api.stations.pocos-siagas');
+Route::get('/stations/hidroweb-telemetria', [StationController::class, 'getHidrowebTelemetria'])
+    ->name('api.stations.hidroweb-telemetria');
+Route::get('/stations/hidroweb-qualidade-agua', [StationController::class, 'getHidrowebQualidadeAgua'])
+    ->name('api.stations.hidroweb-qualidade-agua');
+Route::get('/stations/hidroweb-telemetria-previsao', [StationController::class, 'getHidrowebTelemetriaPrevisao'])
+    ->name('api.stations.hidroweb-telemetria-previsao');
+Route::get('/stations/lrgs-client', [StationController::class, 'getLrgsClient'])
+    ->name('api.stations.lrgs-client');
+
+
 Route::get('/pocos-rimas/{id_ponto}/readings', [App\Http\Controllers\Api\PocoRimasController::class, 'getReadings']);
 Route::get('/pocos-siagas/{id_ponto}/readings', [App\Http\Controllers\Api\PocoSiagasController::class, 'getReadings']);
 Route::get('/hidroweb-qualidade-agua/{station_code}/readings', [App\Http\Controllers\Api\HwStationReadingQaController::class, 'getReadings']);

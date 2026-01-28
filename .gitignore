@@ -22,3 +22,8 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+# Pastas geradas
+/public/geojson/*
+!/public/geojson/.gitkeep
+/public/tiles/*
+!/public/tiles/.gitkeep

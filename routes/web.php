@@ -6,6 +6,7 @@ use App\Http\Controllers\CnarhUploadController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\GeobahiaImportController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroFlowForecastController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroInfoAnaAdoptedTelemetricSeriesReadingController;
@@ -34,6 +35,11 @@ Route::prefix('jobs')->group(function () {
     });
 });
 
+Route::prefix('geobahia')->group(function(){
+    Route::get('/import/{layer}/{minZoom?}/{maxZoom?}/{opacity?}', [GeobahiaImportController::class, 'import']);
+    Route::get('/import-all', [GeobahiaImportController::class, 'importAll']);
+});
+
 // Grupo de rotas para importação de DBF (SIAGAS e RIMAS)
 Route::prefix('dbf-import')->group(function () {
     // Página de upload (GET)
@@ -58,9 +64,8 @@ Route::prefix('cnarh')->group(function () {
     Route::post('/upload', [CnarhUploadController::class, 'store'])->name('cnarh.upload');
 });
 
-Route::get('/', function () {
-    return view('dashboard2');
-});
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dash2', [DashboardController::class, 'index2'])->name('dashboard2');
 
 // ROTA DE LOGIN
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

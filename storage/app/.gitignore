@@ -1,4 +1,7 @@
 *
+!.gitignore
 !private/
 !public/
-!.gitignore
+!shapefiles/
+shapefiles/*
+!shapefiles/*.zip

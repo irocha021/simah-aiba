@@ -35,6 +35,8 @@ use App\Repositories\Interfaces\CnarhRepositoryInterface;
 use App\Repositories\CnarhRepository;
 use App\Repositories\HwStationTelemetryImportRepository;
 use App\Repositories\Interfaces\HwStationTelemetryImportInterface;
+use App\Repositories\Interfaces\MapLayerRepositoryInterface;
+use App\Repositories\MapLayerRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -70,6 +72,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Interfaces\HwStationFlowForecastInterface::class,
             \App\Repositories\HwStationFlowForecastRepository::class
         );
+
+        // Binding for Map Layers
+        $this->app->bind(MapLayerRepositoryInterface::class, MapLayerRepository::class);
+
     }
 
     public function boot(): void
