@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ImportLayerJob;
 use App\Services\MapLayerService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Artisan;
 
 class GeobahiaImportController extends Controller
@@ -122,63 +122,16 @@ class GeobahiaImportController extends Controller
 
     public function importAll(): JsonResponse
     {
-
-        ignore_user_abort();
-        ini_set('max_execution_time', 0);
-        ini_set("memory_limit",-1);
-
         $layers = $this->mapLayerService->getAllLayers();
-        $resultados = [];
-        $erros = 0;
-        $sucessos = 0;
 
         foreach ($layers as $layer) {
-            $layerArray = $layer->toArray();
-            
-            try {
-                if ($layerArray['type'] === 'tile') {
-                    $response = $this->importTile($layerArray);
-                } elseif ($layerArray['type'] === 'geojson') {
-                    $response = $this->importGeojson($layerArray);
-                } else {
-                    $resultados[] = [
-                        'slug' => $layerArray['slug'],
-                        'status' => 'ignorado',
-                        'mensagem' => 'Tipo não suportado: ' . $layerArray['type']
-                    ];
-                    continue;
-                }
-
-                $resultado = json_decode($response->getContent(), true);
-                $resultados[] = [
-                    'slug' => $layerArray['slug'],
-                    'status' => $resultado['status'],
-                    'mensagem' => $resultado['mensagem']
-                ];
-
-                if ($resultado['status'] === 'sucesso') {
-                    $sucessos++;
-                } else {
-                    $erros++;
-                }
-
-            } catch (Exception $e) {
-                $erros++;
-                $resultados[] = [
-                    'slug' => $layerArray['slug'],
-                    'status' => 'erro',
-                    'mensagem' => $e->getMessage()
-                ];
-            }
+            ImportLayerJob::dispatch($layer->toArray());
         }
 
         return response()->json([
-            'status' => $erros === 0 ? 'sucesso' : 'parcial',
-            'mensagem' => "Importação concluída: {$sucessos} sucesso(s), {$erros} erro(s).",
-            'total' => count($layers),
-            'sucessos' => $sucessos,
-            'erros' => $erros,
-            'detalhes' => $resultados
+            'status' => 'sucesso',
+            'mensagem' => count($layers) . ' camadas foram enviadas para processamento em segundo plano.'
         ]);
     }
+
 }

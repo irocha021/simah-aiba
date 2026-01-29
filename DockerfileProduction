@@ -5,6 +5,7 @@ LABEL maintainer="pedro.nascimento@lepoti.tech"
 ENV TZ="America/Cuiaba"
 
 COPY ./docker/php.ini /usr/local/etc/php/php.ini
+COPY ./docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
 COPY ./docker/apache2.conf /etc/apache2/apache2.conf
 COPY ./docker/000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY ./docker/production/crontab /etc/cron.d/crontab
