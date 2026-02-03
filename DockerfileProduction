@@ -37,4 +37,4 @@ RUN chmod -R 775 /var/www/html/storage \
 RUN chmod 0644 /etc/cron.d/crontab \
     && crontab /etc/cron.d/crontab
 
-CMD chown -R www-data:www-data /var/www/html/storage && chmod -R 775 /var/www/html/storage && cron && apache2-foreground
+CMD chown -R www-data:www-data /var/www/html/storage /var/www/html/lrgs && chmod -R 775 /var/www/html/storage /var/www/html/lrgs && cron && apache2-foreground
