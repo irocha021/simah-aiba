@@ -36,3 +36,5 @@ RUN chmod -R 775 /var/www/html/storage \
 
 RUN chmod 0644 /etc/cron.d/crontab \
     && crontab /etc/cron.d/crontab
+
+CMD cron && apache2-foreground
