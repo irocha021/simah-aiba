@@ -1,23 +1,21 @@
-{{-- login.blade.php --}}
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | SIMAH</title>
+    <title>Esqueci a Senha | SIMAH</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 </head>
 
 <body>
     <div class="login-container">
-        <!-- Lado esquerdo - Formulário -->
         <div class="login-form-section">
             <div class="form-container">
                 <div class="form-header">
-                    <h1>Bem-vindo(a)</h1>
-                    <p>Faça login para gerenciar o sistema</p>
+                    <h1>Esqueceu a Senha?</h1>
+                    <p>Informe seu e-mail para receber o link de recuperação</p>
                 </div>
 
                 @if (session('status'))
@@ -32,7 +30,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('login') }}" id="loginForm">
+                <form method="POST" action="{{ route('password.email') }}" id="forgotForm">
                     @csrf
 
                     <div class="form-group">
@@ -44,38 +42,22 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="password">Senha</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-key"></i>
-                            <input type="password" id="password" name="password" class="form-control"
-                                placeholder="••••••••" required>
-                            <button type="button" class="password-toggle" id="togglePassword">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-
                     <div style="display: flex; justify-content: center;">
                         <button type="submit" class="login-btn" id="submitBtn">
-                            <span id="btnText">Entrar</span>
+                            <span id="btnText">Enviar Link de Recuperação</span>
                             <i class="fas fa-spinner fa-spin" id="btnSpinner" style="display: none;"></i>
                         </button>
                     </div>
 
                     <div class="form-footer">
-                        @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" class="forgot-password">
-                                Esqueceu sua senha?
-                            </a>
-                            <br>
-                        @endif
+                        <a href="{{ route('login') }}" class="forgot-password">
+                            <i class="fas fa-arrow-left"></i> Voltar ao Login
+                        </a>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Lado direito - Imagem com logo -->
         <div class="login-image-section"
             style="background: url('{{ asset('images/backgraund-loginpng.png') }}');
                     background-size: cover;
@@ -86,7 +68,22 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/login.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('forgotForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+
+            if (form) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    btnText.textContent = 'Enviando...';
+                    btnSpinner.style.display = 'inline-block';
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

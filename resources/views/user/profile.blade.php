@@ -57,8 +57,6 @@
                     <form method="POST" action="{{ route('user.profile.update') }}" id="profileForm"
                         autocomplete="off">
                         @csrf
-                        @method('PUT')
-
                         <!-- Informações Pessoais -->
                         <div class="form-section-header">
                             <h3><i class="fas fa-user-circle"></i> Informações Pessoais</h3>
@@ -105,7 +103,7 @@
                                 <label for="email">E-mail *</label>
                                 <div class="input-with-icon">
                                     <i class="fas fa-envelope"></i>
-                                    <input type="email" id="email" name="email" class="form-control"
+                                    <input type="email" id="email" name="email" class="form-control" readonly style="background-color: #f0f0f0; cursor: not-allowed;"
                                         value="{{ old('email', $user->email) }}" placeholder="seu@email.com" required
                                         autocomplete="email">
                                 </div>
@@ -818,11 +816,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Elementos DOM
-        const profileForm = document.getElementById('profileForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const btnSpinner = document.getElementById('btnSpinner');
         const phoneInput = document.getElementById('phone');
 
         // Mostrar erros do Laravel
@@ -849,277 +842,36 @@
             });
         });
 
-        // Máscara para telefone
-        phoneInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-
-            if (value.length > 10) {
-                value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-            } else if (value.length > 6) {
-                value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
-            } else if (value.length > 2) {
-                value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
-            } else if (value.length > 0) {
-                value = value.replace(/^(\d*)/, '($1');
-            }
-
-            e.target.value = value;
-        });
-
-        // Validação em tempo real
-        function validateField(input, errorDiv) {
-            const value = input.value.trim();
-            let isValid = true;
-            let message = '';
-
-            // Remover mensagens de erro anteriores
-            errorDiv.classList.remove('show');
-            input.classList.remove('error');
-            errorDiv.closest('.error-container').style.minHeight = '0';
-
-            // Validações específicas por campo
-            switch (input.id) {
-                case 'first_name':
-                case 'last_name':
-                    if (!value) {
-                        isValid = false;
-                        message = 'Este campo é obrigatório';
-                    } else if (value.length < 2) {
-                        isValid = false;
-                        message = 'Mínimo 2 caracteres';
-                    } else if (value.length > 100) {
-                        isValid = false;
-                        message = 'Máximo 100 caracteres';
-                    }
-                    break;
-
-                case 'email':
-                    if (!value) {
-                        isValid = false;
-                        message = 'Este campo é obrigatório';
-                    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                        isValid = false;
-                        message = 'Digite um e-mail válido';
-                    } else if (value.length > 255) {
-                        isValid = false;
-                        message = 'E-mail muito longo';
-                    }
-                    break;
-
-                case 'phone':
-                    const cleanPhone = value.replace(/\D/g, '');
-                    if (cleanPhone && cleanPhone.length < 10) {
-                        isValid = false;
-                        message = 'Digite um telefone válido (com DDD)';
-                    } else if (cleanPhone.length > 11) {
-                        isValid = false;
-                        message = 'Telefone muito longo';
-                    }
-                    break;
-            }
-
-            // Mostrar erro se houver
-            if (!isValid && message) {
-                errorDiv.textContent = message;
-                errorDiv.classList.add('show');
-                input.classList.add('error');
-                errorDiv.closest('.error-container').style.minHeight = '24px';
-            } else if (isValid) {
-                // Se válido, marcar como sucesso
-                input.classList.add('success');
-            }
-
-            return isValid;
+        // Mascara para telefone
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 10) {
+                    value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+                } else if (value.length > 6) {
+                    value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+                } else if (value.length > 2) {
+                    value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+                } else if (value.length > 0) {
+                    value = value.replace(/^(\d*)/, '($1');
+                }
+                e.target.value = value;
+            });
         }
 
-        // Validar ao sair do campo
-        document.querySelectorAll('.form-control').forEach(input => {
-            input.addEventListener('blur', function() {
-                const errorDiv = document.getElementById(this.id + 'Error');
-                if (errorDiv) {
-                    validateField(this, errorDiv);
-                }
-            });
+        // Loading no submit
+        const profileForm = document.getElementById('profileForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
 
-            input.addEventListener('input', function() {
-                const errorDiv = document.getElementById(this.id + 'Error');
-                if (errorDiv && this.classList.contains('success')) {
-                    this.classList.remove('success');
-                }
-            });
-        });
-
-        // Simular salvamento bem-sucedido
-        function simulateSuccessSave() {
-            // Limpar todos os alerts existentes
-            const alertsContainer = document.querySelector('.alerts-container');
-            alertsContainer.innerHTML = '';
-
-            // Mostrar mensagem de sucesso
-            const successAlert = document.createElement('div');
-            successAlert.className = 'alert alert-success';
-            successAlert.innerHTML = `
-            <i class="fas fa-check-circle"></i>
-            Perfil atualizado com sucesso! Redirecionando para o dashboard...
-        `;
-            alertsContainer.appendChild(successAlert);
-
-            // Animar o alert
-            successAlert.style.animation = 'slideIn 0.5s ease-out';
-
-            // Resetar classes de sucesso
-            document.querySelectorAll('.form-control.success').forEach(input => {
-                input.classList.remove('success');
-            });
-
-            // Simular redirecionamento após 2 segundos
-            setTimeout(() => {
-                window.location.href = "/";
-            }, 1000);
-        }
-
-        // Função para verificar se todos os campos obrigatórios estão preenchidos
-        function checkAllRequiredFields() {
-            const requiredFields = ['first_name', 'last_name', 'email'];
-            let allValid = true;
-
-            requiredFields.forEach(fieldId => {
-                const input = document.getElementById(fieldId);
-                const errorDiv = document.getElementById(fieldId + 'Error');
-
-                if (input && errorDiv) {
-                    if (!validateField(input, errorDiv)) {
-                        allValid = false;
-                    }
-                }
-            });
-
-            // Validar telefone (não obrigatório)
-            const phoneErrorDiv = document.getElementById('phoneError');
-            if (phoneInput && phoneErrorDiv && phoneInput.value.trim() !== '') {
-                validateField(phoneInput, phoneErrorDiv);
-            }
-
-            return allValid;
-        }
-
-        // Submit do formulário
-        profileForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            console.log('Formulário submetido - Modo de simulação ativado');
-
-            // Validar todos os campos
-            if (!checkAllRequiredFields()) {
-                showAlert('Por favor, corrija os erros no formulário.', 'error');
-                return;
-            }
-
-            // Enviar formulário (SIMULAÇÃO)
-            try {
-                // Mostrar loading
+        if (profileForm) {
+            profileForm.addEventListener('submit', function() {
                 submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
                 btnSpinner.style.display = 'block';
                 btnText.style.opacity = '0';
-                submitBtn.disabled = true;
-
-                // Simular delay de rede (1-2 segundos)
-                const delay = Math.random() * 1000 + 1000;
-
-                await new Promise(resolve => setTimeout(resolve, delay));
-
-                // Simular resposta de sucesso
-                const success = true; // Sempre simular sucesso
-
-                if (success) {
-                    // Simular salvamento bem-sucedido
-                    simulateSuccessSave();
-                } else {
-                    // Isso não deve acontecer no modo de simulação
-                    showAlert('Erro ao atualizar perfil.', 'error');
-                }
-            } catch (error) {
-                console.error('Erro na simulação:', error);
-                showAlert('Erro na simulação. Tente novamente.', 'error');
-            } finally {
-                // Não remover loading imediatamente - a mensagem de sucesso vai cuidar disso
-                // O timeout no simulateSuccessSave vai redirecionar
-            }
-        });
-
-        // Função para mostrar alertas temporários
-        function showAlert(message, type) {
-            // Limpar alerts existentes
-            const alertsContainer = document.querySelector('.alerts-container');
-            const tempAlerts = alertsContainer.querySelectorAll('.alert:not(.alert-success):not(.alert-error)');
-            tempAlerts.forEach(alert => alert.remove());
-
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.innerHTML = `
-            <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
-            ${message}
-        `;
-
-            alertsContainer.appendChild(alertDiv);
-
-            // Animar entrada
-            alertDiv.style.animation = 'slideIn 0.5s ease-out';
-
-            // Remover após 5 segundos
-            setTimeout(() => {
-                alertDiv.style.opacity = '0';
-                alertDiv.style.transform = 'translateX(100%)';
-                alertDiv.style.transition = 'all 0.3s ease';
-                setTimeout(() => {
-                    if (alertDiv.parentNode) {
-                        alertDiv.remove();
-                    }
-                }, 300);
-            }, 5000);
+            });
         }
-
-        // Validação inicial ao carregar a página
-        document.querySelectorAll('.form-control').forEach(input => {
-            if (input.value.trim() !== '') {
-                const errorDiv = document.getElementById(input.id + 'Error');
-                if (errorDiv) {
-                    validateField(input, errorDiv);
-                }
-            }
-        });
-
-        // Focar no primeiro campo com erro
-        const firstError = document.querySelector('.field-error.show');
-        if (firstError) {
-            const inputId = firstError.id.replace('Error', '');
-            const input = document.getElementById(inputId);
-            if (input) {
-                input.focus();
-            }
-        }
-
-        // Adicionar validação ao pressionar Enter
-        profileForm.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-
-                // Encontrar próximo campo
-                const fields = Array.from(document.querySelectorAll('.form-control'));
-                const currentIndex = fields.indexOf(e.target);
-
-                if (currentIndex < fields.length - 1) {
-                    fields[currentIndex + 1].focus();
-                } else {
-                    // Último campo, submeter formulário
-                    submitBtn.click();
-                }
-            }
-        });
-
-        // Log para debug
-        console.log('Perfil do usuário - Modo de simulação ativado');
-        console.log('Todos os dados serão processados localmente');
-        console.log('Ao preencher corretamente, será simulado um salvamento bem-sucedido');
     });
 </script>

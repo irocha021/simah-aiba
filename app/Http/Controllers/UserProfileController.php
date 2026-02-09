@@ -1,71 +1,69 @@
 <?php
-// app/Http\Controllers\UserProfileController.php
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class UserProfileController extends Controller
 {
-    /**
-     * Exibir página de perfil do usuário
-     */
     public function showProfile()
     {
-        // Dados mock para estilização
-        $user = (object) [
-            'first_name' => 'João',
-            'last_name' => 'Silva',
-            'email' => 'joao.silva@exemplo.com',
-            'phone' => '(11) 99999-9999'
-        ];
-
+        $user = Auth::user();
         return view('user.profile', compact('user'));
     }
 
-    /**
-     * Atualizar perfil do usuário
-     */
     public function updateProfile(Request $request)
     {
-        // Validação básica para estilização
+        $user = Auth::user();
+
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'string', 'email', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'phone' => ['nullable', 'string', 'max:20'],
         ]);
 
-        // Para estilização, apenas redireciona com mensagem de sucesso
+        $user->update([
+            'name' => trim($validated['first_name'] . ' ' . $validated['last_name']),
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+        ]);
+
         return redirect()->route('user.profile')
-            ->with('success', 'Perfil atualizado com sucesso! (Modo estilização)');
+            ->with('success', 'Perfil atualizado com sucesso!');
     }
 
-    /**
-     * Exibir página de alteração de senha
-     */
     public function showPassword()
     {
         return view('user.password');
     }
 
-    /**
-     * Atualizar senha do usuário
-     */
-    public function updatePassword(Request $request)
-    {
-        // Validação básica para estilização
-        $validated = $request->validate([
-            'current_password' => ['required', 'string'],
-            'new_password' => ['required', 'string', 'min:6', 'confirmed'],
-            'new_password_confirmation' => ['required', 'string', 'min:6'],
-        ]);
+        public function updatePassword(Request $request)
+        {
+            $user = Auth::user();
 
-        // Para estilização, apenas redireciona com mensagem de sucesso
-        return redirect()->route('user.password')
-            ->with('success', 'Senha alterada com sucesso! (Modo estilização)');
-    }
+            $rules = [
+                'new_password' => ['required', 'string', 'min:6', 'confirmed'],
+            ];
+
+            // So exige senha atual se NAO for primeiro login
+            if (!$user->must_change_password) {
+                $rules['current_password'] = ['required', 'string', 'current_password'];
+            }
+
+            $validated = $request->validate($rules);
+
+            $user->update([
+                'password' => $validated['new_password'],
+                'must_change_password' => false,
+                'email_verified_at' => $user->email_verified_at ?? now(),
+            ]);
+
+
+            return redirect()->route('user.password')
+            ->with('success', 'Senha alterada com sucesso! Redirecionando...');
+
+        }
+
 }

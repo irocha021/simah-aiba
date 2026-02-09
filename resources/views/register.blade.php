@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro | SIMAH</title>
+    <title>Cadastrar Administrador | SIMAH</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
 </head>
@@ -13,19 +13,18 @@
     <div class="register-container">
         <!-- Lado esquerdo - Formulário -->
         <div class="register-form-section">
-            <!-- Área rolável que contém TUDO -->
             <div class="form-scrollable-wrapper">
                 <div class="form-container">
                     <div class="form-header">
-                        <h1>Criar Conta</h1>
-                        <p>Preencha os dados abaixo para se cadastrar</p>
+                        <h1>Cadastrar Administrador</h1>
+                        <p>Preencha o nome e e-mail do novo administrador</p>
                     </div>
 
                     <div class="alerts-container">
-                        @if (session('status'))
+                        @if (session('success'))
                             <div class="alert alert-success">
                                 <i class="fas fa-check-circle"></i>
-                                {{ session('status') }}
+                                {{ session('success') }}
                             </div>
                         @endif
 
@@ -45,7 +44,7 @@
                             <div class="input-with-icon">
                                 <i class="fas fa-user"></i>
                                 <input type="text" id="name" name="name" class="form-control"
-                                    value="{{ old('name') }}" placeholder="Digite seu nome completo" required
+                                    value="{{ old('name') }}" placeholder="Digite o nome completo" required
                                     autocomplete="name">
                             </div>
                             <div class="error-container">
@@ -58,7 +57,7 @@
                             <div class="input-with-icon">
                                 <i class="fas fa-envelope"></i>
                                 <input type="email" id="email" name="email" class="form-control"
-                                    value="{{ old('email') }}" placeholder="seu@email.com" required
+                                    value="{{ old('email') }}" placeholder="email@exemplo.com" required
                                     autocomplete="email">
                             </div>
                             <div class="error-container">
@@ -66,82 +65,17 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="password">Senha</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-key"></i>
-                                <input type="password" id="password" name="password" class="form-control"
-                                    placeholder="••••••••" required autocomplete="new-password">
-                                <button type="button" class="password-toggle" id="togglePassword">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-
-                            <!-- Sugestão de senha - Inicia oculta -->
-                            <div class="password-suggestion hidden" id="passwordSuggestion">
-                                <i class="fas fa-lightbulb"></i>
-                                <span>Sugestão: use pelo menos 8 caracteres, incluindo maiúsculas, minúsculas, números e
-                                    símbolos</span>
-                            </div>
-
-                            <div class="password-strength" id="passwordStrength">
-                                <div class="strength-bar">
-                                    <div class="strength-fill" id="strengthFill"></div>
-                                </div>
-                                <span class="strength-text" id="strengthText">Força da senha</span>
-                            </div>
-
-                            <div class="error-container">
-                                <div class="field-error" id="passwordError"></div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password_confirmation">Confirmar Senha</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-key"></i>
-                                <input type="password" id="password_confirmation" name="password_confirmation"
-                                    class="form-control" placeholder="••••••••" required autocomplete="new-password">
-                                <button type="button" class="password-toggle" id="toggleConfirmPassword">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                            <div class="error-container">
-                                <div class="field-error" id="confirmPasswordError"></div>
-                            </div>
-                        </div>
-
-                        <div class="form-group terms-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="terms" name="terms" required>
-                                <span class="checkmark"></span>
-                                <span>
-                                    Eu concordo com os
-                                    <button type="button" class="terms-link-btn"
-                                        onclick="openModalFake('modal-termos', 'termos-uso')">
-                                        Termos de Serviço
-                                    </button> e
-                                    <button type="button" class="terms-link-btn"
-                                        onclick="openModalFake('modal-politicas', 'politicas-privacidade')">
-                                        Política de Privacidade
-                                    </button>
-                                </span>
-                            </label>
-                            <div class="error-container">
-                                <div class="field-error" id="termsError"></div>
-                            </div>
-                        </div>
-
                         <div class="btn-container">
                             <button type="submit" class="register-btn" id="submitBtn">
-                                <span id="btnText">Criar Conta</span>
+                                <span id="btnText">Cadastrar Administrador</span>
                                 <i class="fas fa-spinner fa-spin" id="btnSpinner" style="display: none;"></i>
                             </button>
                         </div>
 
                         <div class="form-footer">
-                            <span style="color: #666;">Já tem uma conta? </span>
-                            <a href="{{ route('login') }}" class="login-link">Clique para entrar.</a>
+                            <a href="{{ route('dashboard') }}" class="login-link">
+                                <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -159,54 +93,23 @@
         </div>
     </div>
 
-    <!-- CHAMA O COMPONENTE DO MODAL TERMOS -->
-    @component('components.modal-termos', [
-        'modalId' => 'modal-termos',
-        'title' => 'Termos de Uso',
-        'subtitle' => 'Leia atentamente os termos e condições de uso do sistema',
-        'showLogo' => true,
-        'logoUrl' => asset('images/logo-top-sigmah.svg'),
-        'logoAlt' => 'Logo SIGMAH',
-    ])
-    @endcomponent
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.getElementById('registerForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
 
-    <!-- CHAMA O COMPONENTE DO MODAL POLÍTICAS -->
-    @component('components.modal-termos', [
-        'modalId' => 'modal-politicas',
-        'title' => 'Política de Privacidade',
-        'subtitle' => 'Saiba como protegemos seus dados pessoais',
-        'showLogo' => true,
-        'logoUrl' => asset('images/logo-top-sigmah.svg'),
-        'logoAlt' => 'Logo SIGMAH',
-    ])
-    @endcomponent
-
-    <!-- Adicione CSS para os botões -->
-    <style>
-        .terms-link-btn {
-            background: none;
-            border: none;
-            color: #3388ff;
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: inherit;
-            font-family: inherit;
-            padding: 0;
-            margin: 0;
-            display: inline;
-        }
-
-        .terms-link-btn:hover {
-            color: #1a6fd8;
-            text-decoration: none;
-        }
-
-        .terms-link-btn:focus {
-            outline: none;
-        }
-    </style>
-
-    <script src="{{ asset('js/register.js') }}"></script>
+            if (registerForm) {
+                registerForm.addEventListener('submit', function() {
+                    submitBtn.classList.add('loading');
+                    submitBtn.disabled = true;
+                    btnSpinner.style.display = 'inline-block';
+                    btnText.textContent = 'Cadastrando...';
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

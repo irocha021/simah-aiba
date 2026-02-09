@@ -30,12 +30,24 @@
                     </div>
 
                     <div class="alerts-container">
-                        @if (session('success'))
-                            <div class="alert alert-success">
-                                <i class="fas fa-check-circle"></i>
-                                {{ session('success') }}
+                        @if (session('info'))
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info"></i>
+                                {{ session('info') }}
                             </div>
                         @endif
+
+                        @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                            <script>
+                                setTimeout(function() {
+                                    window.location.href = '/';
+                                }, 2000);
+                            </script>
+                        @endif
+
 
                         @if (session('error'))
                             <div class="alert alert-error">
@@ -63,6 +75,7 @@
                             <h3><i class="fas fa-lock"></i> Segurança da Conta</h3>
                         </div>
 
+                        @if (!Auth::user()->must_change_password)
                         <div class="form-group">
                             <label for="current_password">Senha Atual *</label>
                             <div class="input-with-icon">
@@ -82,6 +95,8 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
+
 
                         <div class="form-group">
                             <label for="new_password">Nova Senha *</label>
@@ -755,6 +770,17 @@
         z-index: 10;
     }
 
+    .alert-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+    }
+
+
     .back-btn {
         display: flex;
         align-items: center;
@@ -955,14 +981,12 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Elementos DOM
         const passwordForm = document.getElementById('passwordForm');
         const submitBtn = document.getElementById('submitBtn');
         const btnText = document.getElementById('btnText');
         const btnSpinner = document.getElementById('btnSpinner');
         const newPasswordInput = document.getElementById('new_password');
         const confirmPasswordInput = document.getElementById('new_password_confirmation');
-        const currentPasswordInput = document.getElementById('current_password');
 
         // Mostrar erros do Laravel
         document.querySelectorAll('.field-error').forEach(errorDiv => {
@@ -999,13 +1023,6 @@
         if (newPasswordInput) {
             newPasswordInput.addEventListener('input', function() {
                 checkPasswordStrength(this.value);
-                validatePasswordMatch();
-            });
-        }
-
-        if (confirmPasswordInput) {
-            confirmPasswordInput.addEventListener('input', function() {
-                validatePasswordMatch();
             });
         }
 
@@ -1018,7 +1035,6 @@
                 number: /[0-9]/.test(password)
             };
 
-            // Update requirement indicators
             Object.keys(requirements).forEach(key => {
                 const element = document.getElementById(`req-${key}`);
                 if (element) {
@@ -1031,7 +1047,6 @@
                 }
             });
 
-            // Update strength bar
             const strengthFill = document.getElementById('strengthFill');
             const strengthText = document.getElementById('strengthText');
 
@@ -1057,222 +1072,14 @@
             }
         }
 
-        function validatePasswordMatch() {
-            const password = newPasswordInput.value;
-            const confirm = confirmPasswordInput.value;
-            const errorDiv = document.getElementById('new_password_confirmationError');
-
-            if (confirm && password !== confirm) {
-                errorDiv.textContent = 'As senhas não coincidem';
-                errorDiv.classList.add('show');
-                confirmPasswordInput.classList.add('error');
-                errorDiv.closest('.error-container').style.minHeight = '24px';
-                return false;
-            } else if (confirm) {
-                errorDiv.classList.remove('show');
-                confirmPasswordInput.classList.remove('error');
-                errorDiv.closest('.error-container').style.minHeight = '0';
-                return true;
-            }
-            return true;
-        }
-
-        function validateCurrentPassword() {
-            const currentPassword = currentPasswordInput.value;
-            const errorDiv = document.getElementById('current_passwordError');
-
-            // Simulação: qualquer senha com pelo menos 1 caractere é válida
-            if (!currentPassword || currentPassword.length < 1) {
-                errorDiv.textContent = 'A senha atual é obrigatória';
-                errorDiv.classList.add('show');
-                currentPasswordInput.classList.add('error');
-                errorDiv.closest('.error-container').style.minHeight = '24px';
-                return false;
-            } else {
-                errorDiv.classList.remove('show');
-                currentPasswordInput.classList.remove('error');
-                errorDiv.closest('.error-container').style.minHeight = '0';
-                return true;
-            }
-        }
-
-        function validatePasswordStrength() {
-            const password = newPasswordInput.value;
-            const requirements = {
-                length: password.length >= 6,
-                uppercase: /[A-Z]/.test(password),
-                lowercase: /[a-z]/.test(password),
-                number: /[0-9]/.test(password)
-            };
-
-            // Verifica se todos os requisitos foram atendidos
-            const allRequirementsMet = Object.values(requirements).every(req => req);
-
-            if (!allRequirementsMet) {
-                showAlert('A nova senha não atende a todos os requisitos de segurança.', 'error');
-                return false;
-            }
-            return true;
-        }
-
-        // Submit do formulário - ENVIO FAKE
-        passwordForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            console.log('Formulário de senha submetido - Modo de simulação ativado');
-
-            // Validar senha atual (simulação)
-            if (!validateCurrentPassword()) {
-                showAlert('Por favor, informe sua senha atual.', 'error');
-                return;
-            }
-
-            // Validar força da senha
-            if (!validatePasswordStrength()) {
-                return;
-            }
-
-            // Validar se as senhas coincidem
-            if (!validatePasswordMatch()) {
-                showAlert('As senhas não coincidem.', 'error');
-                return;
-            }
-
-            try {
-                // Mostrar loading
+        // Loading no submit - form submete normalmente ao servidor
+        if (passwordForm) {
+            passwordForm.addEventListener('submit', function() {
                 submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
                 btnSpinner.style.display = 'block';
                 btnText.style.opacity = '0';
-                submitBtn.disabled = true;
-
-                // Simular delay de rede (1-2 segundos)
-                const delay = Math.random() * 1000 + 1000;
-                console.log(`Simulando envio... aguarde ${Math.round(delay/1000)} segundos`);
-
-                await new Promise(resolve => setTimeout(resolve, delay));
-
-                // Simular resposta de sucesso
-                const success = true; // Sempre simular sucesso para fins de demonstração
-
-                if (success) {
-                    // Simular salvamento bem-sucedido
-                    simulateSuccessSave();
-                } else {
-                    // Isso não deve acontecer no modo de simulação
-                    showAlert('Erro ao alterar senha.', 'error');
-                    submitBtn.classList.remove('loading');
-                    btnSpinner.style.display = 'none';
-                    btnText.style.opacity = '1';
-                    submitBtn.disabled = false;
-                }
-            } catch (error) {
-                console.error('Erro na simulação:', error);
-                showAlert('Erro na simulação. Tente novamente.', 'error');
-                submitBtn.classList.remove('loading');
-                btnSpinner.style.display = 'none';
-                btnText.style.opacity = '1';
-                submitBtn.disabled = false;
-            }
-        });
-
-        function simulateSuccessSave() {
-            // Limpar todos os alerts existentes
-            const alertsContainer = document.querySelector('.alerts-container');
-            alertsContainer.innerHTML = '';
-
-            // Mostrar mensagem de sucesso
-            const successAlert = document.createElement('div');
-            successAlert.className = 'alert alert-success';
-            successAlert.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                Senha alterada com sucesso! Redirecionando para o dashboard...
-            `;
-            alertsContainer.appendChild(successAlert);
-
-            // Animar o alert
-            successAlert.style.animation = 'slideIn 0.5s ease-out';
-
-            // Resetar todos os campos
-            document.querySelectorAll('.form-control').forEach(input => {
-                input.value = '';
-                input.classList.remove('error', 'success');
             });
-
-            // Resetar barra de força
-            const strengthFill = document.getElementById('strengthFill');
-            const strengthText = document.getElementById('strengthText');
-            if (strengthFill && strengthText) {
-                strengthFill.className = 'strength-fill';
-                strengthText.textContent = 'Força da senha';
-                strengthText.style.color = '#666';
-            }
-
-            // Resetar indicadores de requisitos
-            document.querySelectorAll('#req-length, #req-uppercase, #req-lowercase, #req-number').forEach(
-                el => {
-                    el.style.color = '#666';
-                });
-
-            // Resetar botão
-            submitBtn.classList.remove('loading');
-            btnSpinner.style.display = 'none';
-            btnText.style.opacity = '1';
-            submitBtn.disabled = false;
-
-            // Simular redirecionamento após 2 segundos
-            setTimeout(() => {
-                window.location.href = "/";
-            }, 2000);
         }
-
-        function showAlert(message, type) {
-            // Limpar alerts existentes (exceto os do Laravel)
-            const alertsContainer = document.querySelector('.alerts-container');
-            const laravelAlerts = alertsContainer.querySelectorAll('.alert-success, .alert-error');
-            const tempAlerts = Array.from(alertsContainer.querySelectorAll('.alert')).filter(
-                alert => !Array.from(laravelAlerts).includes(alert)
-            );
-            tempAlerts.forEach(alert => alert.remove());
-
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.innerHTML = `
-                <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
-                ${message}
-            `;
-
-            alertsContainer.appendChild(alertDiv);
-
-            // Animar entrada
-            alertDiv.style.animation = 'slideIn 0.5s ease-out';
-
-            // Remover após 5 segundos
-            setTimeout(() => {
-                alertDiv.style.opacity = '0';
-                alertDiv.style.transform = 'translateX(100%)';
-                alertDiv.style.transition = 'all 0.3s ease';
-                setTimeout(() => {
-                    if (alertDiv.parentNode) {
-                        alertDiv.remove();
-                    }
-                }, 300);
-            }, 5000);
-        }
-
-        // Validação inicial
-        if (newPasswordInput.value) {
-            checkPasswordStrength(newPasswordInput.value);
-            validatePasswordMatch();
-        }
-
-        // Adicionar validação em tempo real para senha atual
-        currentPasswordInput.addEventListener('input', function() {
-            validateCurrentPassword();
-        });
-
-        // Log para debug
-        console.log('Alteração de senha - Modo de simulação ativado');
-        console.log('Ao preencher corretamente, será simulado um salvamento bem-sucedido');
-        console.log('Senha atual: qualquer senha com pelo menos 1 caractere');
-        console.log('Nova senha: deve atender a todos os requisitos');
     });
 </script>

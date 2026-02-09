@@ -3,36 +3,41 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WelcomeNewAdmin;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
-    /**
-     * Exibir formulário de cadastro
-     */
     public function showRegisterForm()
     {
         return view('register');
     }
 
-    /**
-     * Processar tentativa de cadastro
-     */
     public function register(Request $request)
     {
-        // Validação dos campos (você pode adicionar lógica de banco depois)
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
-            'password_confirmation' => ['required', 'string', 'min:6'],
-            'terms' => ['required', 'accepted'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
         ], [
-            'terms.required' => 'Você deve aceitar os termos e condições.',
-            'terms.accepted' => 'Você deve aceitar os termos e condições.',
+            'email.unique' => 'Este e-mail já está cadastrado no sistema.',
         ]);
 
+        $plainPassword = Str::random(12);
 
-        return redirect('/login')->with('success', 'Cadastro realizado com sucesso! Agora você pode fazer login.');
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => $plainPassword,
+            'role' => 'admin',
+            'must_change_password' => true,
+        ]);
+
+        Mail::to($user->email)->send(new WelcomeNewAdmin($user, $plainPassword));
+
+        return redirect()->route('register')
+            ->with('success', 'Administrador cadastrado com sucesso! Um e-mail com as credenciais foi enviado para ' . $user->email);
     }
 }

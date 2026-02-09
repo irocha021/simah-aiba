@@ -5,6 +5,7 @@ use App\Http\Controllers\DbfImportController;
 use App\Http\Controllers\CnarhUploadController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\GeobahiaImportController;
 use App\Http\Controllers\UserProfileController;
@@ -14,7 +15,30 @@ use App\Http\Controllers\Jobs\HidroWeb\HidroInventoryStationManagerController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroMonthlyTelemetricReadingController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroSerieQaReadingController;
 use App\Http\Controllers\Jobs\Lrgs\ReadDcpMessagesController;
+use App\Http\Controllers\UserManagementController;
 
+// ============================
+// ROTAS PUBLICAS (sem auth)
+// ============================
+
+//Auth
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+Route::get('/password/forgot', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
+Route::post('/password/forgot', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+
+// Dashboard
+Route::middleware(['force.password.change'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dash2', [DashboardController::class, 'index2'])->name('dashboard2');
+});
+
+
+// ============================
+// ROTAS DE JOBS (sem auth - usadas por cron)
+// ============================
 Route::prefix('jobs')->group(function () {
     //Grupo de rotas para a Hidroweb Anna
     Route::prefix('hidroweb')->group(function() {
@@ -40,45 +64,43 @@ Route::prefix('geobahia')->group(function(){
     Route::get('/import-all', [GeobahiaImportController::class, 'importAll']);
 });
 
-// Grupo de rotas para importação de DBF (SIAGAS e RIMAS)
-Route::prefix('dbf-import')->group(function () {
-    // Página de upload (GET)
-    Route::get('/', [DbfImportController::class, 'index'])->name('dbf-import.index');
+// ============================
+// ROTAS AUTENTICADAS
+// ============================
+Route::middleware(['auth'])->group(function () {
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    // Upload e importação (recebe source como parâmetro)
-    Route::post('/upload', [DbfImportController::class, 'upload'])->name('dbf-import.upload');
+    // Perfil e senha (sem force.password.change para nao criar loop)
+    Route::get('/user/password', [UserProfileController::class, 'showPassword'])->name('user.password');
+    Route::post('/user/password', [UserProfileController::class, 'updatePassword'])->name('user.password.update');
 
-    // Listagem genérica (recebe source como query param)
-    Route::get('/list', [DbfImportController::class, 'list'])->name('dbf-import.list');
+    // Rotas protegidas com force.password.change
+    Route::middleware(['force.password.change'])->group(function () {
 
-    // Detalhes de um registro (recebe source como query param)
-    Route::get('/show/{id}', [DbfImportController::class, 'show'])->name('dbf-import.show');
+        Route::get('/users/list', [UserManagementController::class, 'list'])->name('users.list');
+        Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
 
-    // Deletar registro (recebe source como query param)
-    Route::delete('/delete/{id}', [DbfImportController::class, 'delete'])->name('dbf-import.delete');
-});
 
-// Grupo de rotas para importação de CSV CNARH
-Route::prefix('cnarh')->group(function () {
-    Route::get('/', [CnarhUploadController::class, 'index'])->name('cnarh.index');
-    Route::post('/upload', [CnarhUploadController::class, 'store'])->name('cnarh.upload');
-});
+        // Perfil
+        Route::get('/user/profile', [UserProfileController::class, 'showProfile'])->name('user.profile');
+        Route::post('/user/profile', [UserProfileController::class, 'updateProfile'])->name('user.profile.update');
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dash2', [DashboardController::class, 'index2'])->name('dashboard2');
+        // Cadastro de admins
+        Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
+        Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
-// ROTA DE LOGIN
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+        // Importacoes
+        Route::prefix('dbf-import')->group(function () {
+            Route::get('/', [DbfImportController::class, 'index'])->name('dbf-import.index');
+            Route::post('/upload', [DbfImportController::class, 'upload'])->name('dbf-import.upload');
+            Route::get('/list', [DbfImportController::class, 'list'])->name('dbf-import.list');
+            Route::get('/show/{id}', [DbfImportController::class, 'show'])->name('dbf-import.show');
+            Route::delete('/delete/{id}', [DbfImportController::class, 'delete'])->name('dbf-import.delete');
+        });
 
-// ROTAS DE CADASTRO
-Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
-
-// ROTAS DE PERFIL DO USUÁRIO (PROTEGIDAS POR AUTH)
-Route::prefix('user')->group(function () {
-    Route::get('/profile', [UserProfileController::class, 'showProfile'])->name('user.profile');
-    Route::post('/profile', [UserProfileController::class, 'updateProfile'])->name('user.profile.update');
-    
-    Route::get('/password', [UserProfileController::class, 'showPassword'])->name('user.password');
-    Route::post('/password', [UserProfileController::class, 'updatePassword'])->name('user.password.update');
+        Route::prefix('cnarh')->group(function () {
+            Route::get('/', [CnarhUploadController::class, 'index'])->name('cnarh.index');
+            Route::post('/upload', [CnarhUploadController::class, 'store'])->name('cnarh.upload');
+        });
+    });
 });
