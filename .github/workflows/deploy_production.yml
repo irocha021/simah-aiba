@@ -53,6 +53,7 @@ jobs:
             cd /root/system/mhb
             chmod -R 777 storage
             rm -rf storage/logs/*
+            chmod -R 777 lrgs
             docker compose -f docker-compose.production.yml -p mhb up -d --build
 
       - name: Update Database and Link File Storage
