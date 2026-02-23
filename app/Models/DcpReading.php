@@ -68,6 +68,9 @@ class DcpReading extends Model
         'restart_time',
         'sensor_type',
         'extra',
+        'reading_datetime',
+        'recovered_at',
+
     ];
 
     protected $casts = [
@@ -102,6 +105,8 @@ class DcpReading extends Model
         'longitude' => 'decimal:6',
         'door_sensor_open' => 'boolean',
         'skipped_scan' => 'integer',
+        'reading_datetime' => 'datetime',
+        'recovered_at' => 'datetime',
     ];
 
     /**

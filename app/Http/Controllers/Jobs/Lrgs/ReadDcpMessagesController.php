@@ -35,7 +35,8 @@ class ReadDcpMessagesController extends Controller
      * Retrieve messages for current period (last full hour)
      */
     public function retrieveMessages(): JsonResponse
-    {
+    {      
+      
         try {
             // Busca estações ativas
             $stations = (object) $this->dcpStationService->getActiveStations();
@@ -184,8 +185,6 @@ class ReadDcpMessagesController extends Controller
             // Após processar período corrente, tenta reprocessar logs pendentes/stuck
             $this->reprocessStuckJobs();
 
-            
-
             return response()->json([
                 'success' => true,
                 'interval' => [
@@ -226,6 +225,7 @@ class ReadDcpMessagesController extends Controller
         try {
             $pendingForRetry = (object) $this->dcpSyncLogService->findPendingForRetry();
 
+          
             if ($pendingForRetry->isEmpty()) {
                 Log::info('Nenhum job pendente/stuck para reprocessar');
                 return;
@@ -346,6 +346,9 @@ class ReadDcpMessagesController extends Controller
 
     /**
      * Manual reprocessing for specific station and time period
+     * 
+     * Sample usage: http://{domain}/jobs/lrgs/readings/dcp-messages/manual?station_id=1&start_time=2026-02-17+00:00:00&end_time=2026-02-18+23:59:59
+     * http://{domain}/jobs/lrgs/readings/dcp-messages/manual?station_id=1&start_time=2026-02-01+00:00:00&end_time=2026-02-18+23:59:59
      */
     public function retrieveMessagesManual(Request $request): JsonResponse
     {
@@ -423,6 +426,8 @@ class ReadDcpMessagesController extends Controller
                     !str_contains($line, 'Wrong channel') &&          // NOVO
                     !str_contains($line, 'TESTE DE TRANSMISSAO');     // NOVO (opcional)
             });
+
+            $filteredMessages = array_reverse(array_values($filteredMessages));
 
             // Processa e insere
             $stats = $this->dcpReadingService->processAndInsertMessages(array_values($filteredMessages));

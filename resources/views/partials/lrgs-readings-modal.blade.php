@@ -21,6 +21,9 @@
                 <span style="font-size:12px; color: #575F6E;">Total de Leituras:</span>
                 <span style="font-size:12px; color: #575F6E;" id="lrgsModalTotalReadings"></span>
             </div>
+            <div style="margin: 10px">
+                <span style="font-size:12px; color: #575F6E;" id="lrgsStationLocation"></span>
+            </div>
         </div>
 
         <!-- Loading -->
@@ -44,6 +47,19 @@
         <!-- Erro -->
         <div id="lrgsErrorMessage" class="lrgs-error" style="display: none;">
             <strong>Erro:</strong> <span id="lrgsErrorText"></span>
+        </div>
+    </div>
+</div>
+
+<!-- Sub-modal Dados Completos (apenas admin) -->
+<div id="lrgsFullDataModal" class="lrgs-full-modal">
+    <div class="lrgs-full-modal-content">
+        <div class="lrgs-full-modal-header">
+            <h3>Dados Completos da Leitura</h3>
+            <span id="closeLrgsFullModal" class="lrgs-modal-close" style="font-size: 40px;">&times;</span>
+        </div>
+        <div id="lrgsFullDataBody" class="lrgs-full-data-body">
+            <!-- preenchido via JavaScript -->
         </div>
     </div>
 </div>
@@ -214,4 +230,83 @@
             transform: rotate(360deg);
         }
     }
+
+        /* Botão Ver completo (apenas admin) */
+    .lrgs-full-data-btn {
+        padding: 4px 10px;
+        background: #242731;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.75rem;
+    }
+
+    .lrgs-full-data-btn:hover {
+        background: #3a3f4e;
+    }
+
+    /* Sub-modal dados completos */
+    .lrgs-full-modal {
+        display: none;
+        position: fixed;
+        z-index: 10000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .lrgs-full-modal-content {
+        background: #fff;
+        margin: 5% auto;
+        width: 580px;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-radius: 8px;
+        padding: 28px;
+        position: relative;
+    }
+
+    .lrgs-full-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #3388ff;
+    }
+
+    .lrgs-full-modal-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: #242731;
+    }
+
+    .lrgs-full-data-body dl {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 20px;
+        margin: 0;
+    }
+
+    .lrgs-full-data-body dt {
+        font-weight: bold;
+        font-size: 0.75rem;
+        color: #575F6E;
+        text-transform: uppercase;
+        padding: 4px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .lrgs-full-data-body dd {
+        font-size: 0.85rem;
+        margin: 0;
+        color: #242731;
+        padding: 4px 0;
+        border-bottom: 1px solid #f0f0f0;
+        word-break: break-all;
+    }
+
 </style>

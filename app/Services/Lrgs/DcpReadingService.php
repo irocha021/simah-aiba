@@ -33,7 +33,6 @@ class DcpReadingService
             $result = $this->messageProcessor->processMessage($message);
 
             if ($result === null) {
-                // Extract just the header part (first 200 chars) for logging
                 $parts = explode(";", $message);
                 if (!empty($parts[0])) {
                     $corruptedHeaders[] = substr(trim($parts[0]), 0, 200);
@@ -44,11 +43,35 @@ class DcpReadingService
             $validReadings[] = $result;
         }
 
-        // Inserção em lote
         $insertedCount = 0;
+
         if (!empty($validReadings)) {
             $this->dcpReadingRepository->bulkInsert($validReadings);
             $insertedCount = count($validReadings);
+
+            // Após inserir, verifica e preenche NULLs do registro anterior
+            foreach ($validReadings as $reading) {
+                $previous = $this->dcpReadingRepository->findPreviousReading(
+                    $reading['address'],
+                    (string) $reading['reading_datetime']
+                );
+
+                if (!$previous) {
+                    continue;
+                }
+
+                $this->dcpReadingRepository->updateNullReadings($previous->id, [
+                    'water_level_60min' => is_null($previous->water_level_60min) ? $reading['water_level_120min'] : null,
+                    'water_level_45min' => is_null($previous->water_level_45min) ? $reading['water_level_105min'] : null,
+                    'water_level_30min' => is_null($previous->water_level_30min) ? $reading['water_level_90min'] : null,
+                    'water_level_15min' => is_null($previous->water_level_15min) ? $reading['water_level_75min'] : null,
+                    'rain_60min'        => is_null($previous->rain_60min) ? $reading['rain_120min'] : null,
+                    'rain_45min'        => is_null($previous->rain_45min) ? $reading['rain_105min'] : null,
+                    'rain_30min'        => is_null($previous->rain_30min) ? $reading['rain_90min'] : null,
+                    'rain_15min'        => is_null($previous->rain_15min) ? $reading['rain_75min'] : null,
+                ]);
+
+            }
         }
 
         return [
@@ -58,6 +81,7 @@ class DcpReadingService
             'corrupted_headers' => $corruptedHeaders,
         ];
     }
+
 
     /**
      * Busca leituras por estação

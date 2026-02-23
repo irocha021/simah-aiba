@@ -20,9 +20,12 @@ class LrgsClientController extends Controller
     {
         $readings = $this->service->getReadingsByAddress($stationCode, 50);
 
+        $isAdmin = auth()->check() && auth()->user()->isAdmin();
+
         return (new DcpReadingResource($readings))
             ->additional([
                 'success' => true,
+                'is_admin' => $isAdmin,
                 'meta' => [
                     'station_code' => $stationCode,
                     'total' => $readings->count()

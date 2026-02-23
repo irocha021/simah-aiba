@@ -32,7 +32,7 @@ class DcpMessageProcessor
             $parts = array_map('trim', explode(";", $message));
 
             // Valida se mensagem está corrompida
-            if ($this->isCorrupted($parts)) {
+            if ($this->isCorrupted($message, $parts)) {
                 // Log::warning('Mensagem DCP corrompida ignorada', [
                 //     'message_preview' => substr($message, 0, 200)
                 // ]);
@@ -71,8 +71,12 @@ class DcpMessageProcessor
      * @param array $parts
      * @return bool
      */
-    private function isCorrupted(array $parts): bool
+    private function isCorrupted(string $message, array $parts): bool
     {
+        if (substr_count($message, '$') > 4) {
+            return true;
+        }
+
         if (empty($parts) || empty($parts[0])) {
             return true;
         }
@@ -144,6 +148,10 @@ class DcpMessageProcessor
     {
         $now = now();
 
+        $fullYear = $header->year < 100 ? 2000 + $header->year : $header->year;
+        $readingDatetime = \Carbon\Carbon::create($fullYear, 1, 1, $header->hour, $header->minute, 0, 'UTC')
+            ->addDays($header->julianDay - 1);
+
         return [
             // Foreign key
             'dcp_station_id' => $stationId,
@@ -153,6 +161,7 @@ class DcpMessageProcessor
 
             // Header data
             'address' => $header->address,
+            'reading_datetime' => $readingDatetime,
             'year' => $header->year,
             'julian_day' => $header->julianDay,
             'hour' => $header->hour,

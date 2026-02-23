@@ -26,5 +26,8 @@ interface DcpReadingRepositoryInterface
 
     public function softDeleteByStationAndPeriod(int $stationId, $startTime, $endTime): int;
 
+    public function findPreviousReading(string $address, string $readingDatetime): ?DcpReading;
+
+    public function updateNullReadings(int $id, array $data): void;
     
 }

@@ -1292,15 +1292,17 @@ const lrgsModalConfig = {
 };
 
 function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
-    const elements = {
+        const elements = {
         loading: document.getElementById('lrgsLoadingSpinner'),
         tableContainer: document.getElementById('lrgsTableContainer'),
         error: document.getElementById('lrgsErrorMessage'),
         tableHeader: document.getElementById('lrgsTableHeader'),
         tableBody: document.getElementById('lrgsTableBody'),
         total: document.getElementById('lrgsModalTotalReadings'),
-        errorText: document.getElementById('lrgsErrorText')
+        errorText: document.getElementById('lrgsErrorText'),
+        stationLocation: document.getElementById('lrgsStationLocation')
     };
+
 
     const modal = document.getElementById(lrgsModalConfig.modalId);
     const modalStationCode = document.getElementById(lrgsModalConfig.stationCodeId);
@@ -1312,6 +1314,10 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             <p style="margin: 0;">Dados de transmissão via satélite, níveis d'água em tempo quase-real e parâmetros operacionais das estações.</p>
         </div>
     `;
+
+    if (elements.stationLocation) {
+        elements.stationLocation.textContent = `Latitude: ${latitude} | Longitude: ${longitude}`;
+    }
 
     // Limpar estado anterior
     if (window.lrgsChartInstance) {
@@ -1371,33 +1377,59 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
     // Buscar dados
     fetch(`/api/lrgs-client/${stationCode}/readings`)
         .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar leituras'))
-        .then(data => {
+                .then(data => {
             elements.loading.style.display = 'none';
 
             if (data.success && data.data?.readings?.length > 0) {
                 chartData = data.data.readings;
+                const isAdmin = data.is_admin === true;
+
                 elements.total.textContent = data.data.readings.length;
+
+                const BASIC_FIELDS = [
+                    'year', 'hour', 'minute',
+                    'water_level_60min', 'water_level_45min', 'water_level_30min', 'water_level_15min',
+                    'rain_60min', 'rain_45min', 'rain_30min', 'rain_15min',
+                    'water_temperature', 'atmospheric_pressure'
+                ];
+
+                const fieldsToShow = BASIC_FIELDS.filter(f => chartData[0].hasOwnProperty(f));
 
                 // Criar cabeçalho da tabela
                 const headerRow = document.createElement('tr');
-                Object.keys(chartData[0]).forEach(key => {
+                fieldsToShow.forEach(key => {
                     const th = document.createElement('th');
                     th.textContent = key;
                     th.style.whiteSpace = 'nowrap';
                     headerRow.appendChild(th);
                 });
+                if (isAdmin) {
+                    const th = document.createElement('th');
+                    th.textContent = 'Ações';
+                    th.style.whiteSpace = 'nowrap';
+                    headerRow.appendChild(th);
+                }
                 elements.tableHeader.appendChild(headerRow);
 
                 // Criar linhas da tabela
                 chartData.forEach(reading => {
                     const row = document.createElement('tr');
-                    Object.keys(reading).forEach(key => {
+                    fieldsToShow.forEach(key => {
                         const td = document.createElement('td');
                         const value = reading[key];
                         td.textContent = value !== null && value !== '' ? value : '-';
                         td.style.whiteSpace = 'nowrap';
                         row.appendChild(td);
                     });
+                    if (isAdmin) {
+                        const td = document.createElement('td');
+                        const btn = document.createElement('button');
+                        btn.textContent = 'Ver completo';
+                        btn.className = 'lrgs-full-data-btn';
+                        btn.onclick = () => openLrgsFullDataModal(reading);
+                        td.appendChild(btn);
+                        row.appendChild(td);
+                    }
                     elements.tableBody.appendChild(row);
                 });
 
@@ -1688,6 +1720,44 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
         });
     }
 }
+
+// Função para abrir sub-modal de dados completos (admin)
+function openLrgsFullDataModal(reading) {
+    const fullModal = document.getElementById('lrgsFullDataModal');
+    const fullBody = document.getElementById('lrgsFullDataBody');
+    const closeBtn = document.getElementById('closeLrgsFullModal');
+
+    if (!fullModal || !fullBody) return;
+
+    const dl = document.createElement('dl');
+    Object.entries(reading).forEach(([key, value]) => {
+        if (value === null || value === '' || value === undefined) return;
+
+        const dt = document.createElement('dt');
+        dt.textContent = key;
+
+        const dd = document.createElement('dd');
+        dd.textContent = value;
+
+        dl.appendChild(dt);
+        dl.appendChild(dd);
+    });
+
+    fullBody.innerHTML = '';
+    fullBody.appendChild(dl);
+    fullModal.style.display = 'block';
+
+    if (closeBtn) {
+        closeBtn.onclick = () => { fullModal.style.display = 'none'; };
+    }
+
+    fullModal.onclick = (e) => {
+        if (e.target === fullModal) {
+            fullModal.style.display = 'none';
+        }
+    };
+}
+
 
 // Inicializar modal LRGS
 if (document.readyState === 'loading') {

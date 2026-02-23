@@ -70,4 +70,49 @@ class DcpReadingRepository implements DcpReadingRepositoryInterface
             })
             ->delete(); // SoftDeletes trait makes this a soft delete
     }
+
+    public function findPreviousReading(string $address, string $readingDatetime): ?DcpReading
+    {
+        $expectedPrevious = \Carbon\Carbon::parse($readingDatetime)->subHour();
+
+        return DcpReading::where('address', $address)
+            ->where('reading_datetime', $expectedPrevious)
+            ->first();
+    }
+
+    public function updateNullReadings(int $id, array $data): void
+    {
+        $update = [];
+
+        $waterFields = [
+            'water_level_60min',
+            'water_level_45min',
+            'water_level_30min',
+            'water_level_15min',
+        ];
+
+        $rainFields = [
+            'rain_60min',
+            'rain_45min',
+            'rain_30min',
+            'rain_15min',
+        ];
+
+        foreach ($waterFields as $field) {
+            if (isset($data[$field]) && $data[$field] !== null) {
+                $update[$field] = $data[$field];
+            }
+        }
+
+        foreach ($rainFields as $field) {
+            if (isset($data[$field]) && $data[$field] !== null) {
+                $update[$field] = $data[$field];
+            }
+        }
+
+        if (!empty($update)) {
+            $update['recovered_at'] = now();
+            DcpReading::where('id', $id)->update($update);
+        }
+    }
 }
