@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Log;
 
 class CnarhImportService
 {
-    public function import(string $filePath): array
+    public function import(string $filePath): \Generator
     {
         if (!file_exists($filePath)) {
             throw new \Exception("Arquivo CSV não encontrado: {$filePath}");
@@ -55,17 +55,10 @@ class CnarhImportService
             $normalizedRecord['created_at'] = now();
             $normalizedRecord['updated_at'] = now();
 
-            $data[] = $normalizedRecord;
+            yield $normalizedRecord;
         }
 
         fclose($file);
-
-        Log::info("CSV CNARH processado", [
-            'total_records' => count($data),
-            'file' => $filePath
-        ]);
-
-        return $data;
     }
 
     private function normalizeRecord(array $record): array
@@ -104,17 +97,27 @@ class CnarhImportService
 
         $date = trim($date);
 
+        // 1. DD/MM/YYYY (sem hora) — já existe
         if (preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $date, $matches)) {
             return "{$matches[3]}-{$matches[2]}-{$matches[1]}";
         }
 
+        // 2. YYYY-MM-DD — já existe
         if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $date)) {
             return $date;
         }
 
+        // 3. DD/MM/YYYY HH:MM ou DD/MM/YYYY HH:MM:SS — ADICIONA AQUI
+        if (preg_match('/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}:\d{2})(:\d{2})?$/', $date, $matches)) {
+            $time = $matches[4] . (isset($matches[5]) ? $matches[5] : ':00');
+            return "{$matches[3]}-{$matches[2]}-{$matches[1]} {$time}";
+        }
+
+        // 4. Log::warning — já existe
         Log::warning("Formato de data inválido", ['date' => $date]);
         return null;
     }
+
 
     private function parseDecimal(?string $value): ?float
     {

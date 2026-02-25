@@ -28,30 +28,43 @@ class CnarhService
 
             Log::info("Iniciando importação CNARH", ['file' => $filePath]);
 
-            $data = $this->importService->import($filePath);
-
-            if (empty($data)) {
-                throw new \Exception("Nenhum registro encontrado no arquivo CSV");
-            }
-
             Log::info("Deletando registros existentes");
             $this->repository->deleteAll();
 
-            Log::info("Inserindo novos registros", ['total' => count($data)]);
-            $this->repository->insertBatch($data);
+            $chunk = [];
+            $total = 0;
+            $generator = $this->importService->import($filePath);
+
+            if (!$generator->valid()) {
+                throw new \Exception("Nenhum registro encontrado no arquivo CSV");
+            }
+
+            foreach ($generator as $record) {
+                $chunk[] = $record;
+                if (count($chunk) >= 500) {
+                    $this->repository->insertBatch($chunk);
+                    $total += count($chunk);
+                    $chunk = [];
+                }
+            }
+
+            if (!empty($chunk)) {
+                $this->repository->insertBatch($chunk);
+                $total += count($chunk);
+            }
 
             DB::commit();
 
             $duration = round(microtime(true) - $startTime, 2);
 
             Log::info("Importação CNARH concluída", [
-                'total_imported' => count($data),
+                'total_imported' => $total,
                 'duration_seconds' => $duration
             ]);
 
             return [
                 'success' => true,
-                'total_imported' => count($data),
+                'total_imported' => $total,
                 'duration_seconds' => $duration,
                 'message' => "Importação concluída com sucesso"
             ];
@@ -71,6 +84,7 @@ class CnarhService
                 'message' => "Erro na importação: " . $e->getMessage()
             ];
         }
+
     }
 
     public function getByCnarh(string $intCdCnarh40)

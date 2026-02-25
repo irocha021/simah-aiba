@@ -32,8 +32,11 @@ class StationController extends Controller
 
     public function getCnarh(): JsonResponse
     {
+
+        
         try {
             $stations = $this->stationService->getCnarhStations();
+
             return response()->json([
                 'data' => ['stations' => $stations, 'count' => count($stations)]
             ]);

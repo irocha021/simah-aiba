@@ -43,7 +43,8 @@ class CnarhRepository implements CnarhRepositoryInterface
     {
         return Cnarh::whereNotNull('int_nu_latitude')
             ->whereNotNull('int_nu_longitude')
-            ->get();
+            ->select(['int_cd_cnarh40', 'int_nu_cnarh', 'emp_nm_empreendimento', 'int_nu_latitude', 'int_nu_longitude'])
+            ->cursor();
     }
 
     public function getByCnarh(string $intCdCnarh40)
