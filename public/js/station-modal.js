@@ -1454,7 +1454,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
     function createChartContainer() {
         const container = document.createElement('div');
         container.id = 'lrgsChartContainer';
-        container.style.cssText = 'display: none; width: 90%; height: 400px; margin: auto; position: relative;';
+        container.style.cssText = 'display: none; width: 90%; height: 42%; margin: auto; position: relative;';
 
         const canvas = document.createElement('canvas');
         canvas.id = 'lrgsChart';
