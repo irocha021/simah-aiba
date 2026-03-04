@@ -1,5 +1,4 @@
 (function () {
-    // Aguarda o DOM estar pronto
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initSidebar);
     } else {
@@ -13,27 +12,94 @@
         // Cria botão toggle para mobile
         createMobileToggle();
 
-        // Estado inicial: collapsed (só ícones)
-        setTimeout(() => {
-            sidebar.classList.add('collapsed');
-        }, 100);
+        // Define estado inicial aberto
+        sidebar.classList.remove('collapsed');
+        sidebar.classList.add('expanded');
 
-        // Hover para expandir
-        sidebar.addEventListener('mouseenter', handleMouseEnter);
-        sidebar.addEventListener('mouseleave', handleMouseLeave);
-
-        // Submenus
-        const submenuItems = sidebar.querySelectorAll('.has-submenu > a');
-        submenuItems.forEach(item => {
-            item.addEventListener('click', handleSubmenuClick);
-        });
+        // Configura o botão de toggle com seta
+        setupToggleButton(sidebar);
 
         // Fecha submenus quando sidebar colapsa
         sidebar.addEventListener('transitionend', handleTransitionEnd);
+    }
 
+    function setupToggleButton(sidebar) {
+        // Procura pelo botão de toggle existente
+        let toggleBtn = document.getElementById('sidebarToggle');
+        
+        if (!toggleBtn) {
+            // Se não existir, cria um novo
+            toggleBtn = document.createElement('button');
+            toggleBtn.className = 'sidebar-toggle-btn';
+            toggleBtn.id = 'sidebarToggle';
+            toggleBtn.setAttribute('aria-label', 'Toggle menu');
+            toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            
+            // Adiciona o botão ao sidebar (após o header)
+            const header = sidebar.querySelector('.sidebar-header');
+            if (header) {
+                header.after(toggleBtn);
+            } else {
+                sidebar.prepend(toggleBtn);
+            }
+        }
+
+        // Remove listeners antigos e adiciona novo
+        toggleBtn.removeEventListener('click', handleToggleClick);
+        toggleBtn.addEventListener('click', handleToggleClick);
+    }
+
+    function handleToggleClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const sidebar = document.getElementById('sidebar');
+        
+        // Alterna entre collapsed e expanded
+        if (sidebar.classList.contains('collapsed')) {
+            sidebar.classList.remove('collapsed');
+            sidebar.classList.add('expanded');
+        } else {
+            sidebar.classList.remove('expanded');
+            sidebar.classList.add('collapsed');
+            
+            closeAllDropdowns();
+        }
+    }
+
+    function closeAllDropdowns() {
+        // Fecha todos os selects ativos
+        document.querySelectorAll('.select-control.active').forEach(select => {
+            select.classList.remove('active');
+        });
+        
+        // Fecha todos os submenus ativos
+        document.querySelectorAll('.has-submenu.active').forEach(submenu => {
+            submenu.classList.remove('active');
+        });
+        
+        // Fecha menu do usuário se estiver aberto
+        const userMenu = document.querySelector('.user-menu.active');
+        if (userMenu) {
+            userMenu.classList.remove('active');
+        }
+    }
+
+    function handleTransitionEnd(e) {
+        if (e.propertyName === 'width' && 
+            e.target.classList.contains('sidebar') &&
+            e.target.classList.contains('collapsed')) {
+            
+            // Quando o sidebar termina de colapsar, fecha todos os dropdowns
+            closeAllDropdowns();
+        }
     }
 
     function createMobileToggle() {
+        // Remove toggle antigo se existir
+        const oldToggle = document.querySelector('.mobile-toggle');
+        if (oldToggle) oldToggle.remove();
+
         if (window.innerWidth > 768) return;
 
         const toggleBtn = document.createElement('button');
@@ -52,60 +118,6 @@
         document.body.appendChild(toggleBtn);
     }
 
-    function handleMouseEnter() {
-        if (this.classList.contains('collapsed')) {
-            this.classList.remove('collapsed');
-            this.classList.add('expanded');
-        }
-    }
-
-    function handleMouseLeave() {
-        if (this.classList.contains('expanded') &&
-            !this.classList.contains('pinned')) {
-            this.classList.remove('expanded');
-            this.classList.add('collapsed');
-            closeAllSubmenus();
-        }
-    }
-
-    function handleSubmenuClick(e) {
-        if (this.parentElement.querySelector('.submenu')) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const isActive = this.parentElement.classList.contains('active');
-            const sidebar = this.closest('.sidebar');
-
-            // Fecha outros submenus
-            if (!isActive && !sidebar.classList.contains('expanded')) {
-                closeAllSubmenus();
-            }
-
-            // Alterna estado
-            this.parentElement.classList.toggle('active');
-
-            // Se sidebar está collapsed e abriu submenu, expande
-            if (sidebar.classList.contains('collapsed') &&
-                this.parentElement.classList.contains('active')) {
-                sidebar.classList.remove('collapsed');
-                sidebar.classList.add('expanded');
-            }
-        }
-    }
-
-    function handleTransitionEnd(e) {
-        if (e.propertyName === 'width' &&
-            this.classList.contains('collapsed')) {
-            closeAllSubmenus();
-        }
-    }
-
-    function closeAllSubmenus() {
-        document.querySelectorAll('.has-submenu.active').forEach(active => {
-            active.classList.remove('active');
-        });
-    }
-
     // Resize handler para mobile
     window.addEventListener('resize', function () {
         const sidebar = document.getElementById('sidebar');
@@ -116,8 +128,11 @@
             sidebar.classList.remove('active');
         } else {
             createMobileToggle();
-            sidebar.classList.add('collapsed');
-            sidebar.classList.remove('expanded', 'pinned');
+            // No mobile, começa colapsado se não estiver ativo
+            if (!sidebar.classList.contains('active')) {
+                sidebar.classList.add('collapsed');
+                sidebar.classList.remove('expanded');
+            }
         }
     });
 
@@ -125,6 +140,22 @@
     document.addEventListener('click', function (e) {
         const sidebar = document.getElementById('sidebar');
         const mobileToggle = document.querySelector('.mobile-toggle');
+        const toggleBtn = document.getElementById('sidebarToggle');
+
+        // Ignora cliques no botão de toggle do desktop
+        if (toggleBtn && toggleBtn.contains(e.target)) {
+            return;
+        }
+
+        // Ignora cliques em elementos de select (para não fechar quando clicar neles)
+        if (e.target.closest('.select-header') || e.target.closest('.select-dropdown')) {
+            return;
+        }
+
+        // Ignora cliques no menu do usuário
+        if (e.target.closest('.user-menu')) {
+            return;
+        }
 
         if (window.innerWidth <= 768 &&
             sidebar.classList.contains('active') &&
@@ -137,4 +168,24 @@
             }
         }
     });
+
+    // Inicializa o estado baseado no tamanho da tela
+    function initializeSidebarState() {
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+
+        if (window.innerWidth <= 768) {
+            // Mobile: começa colapsado
+            sidebar.classList.add('collapsed');
+            sidebar.classList.remove('expanded');
+            createMobileToggle();
+        } else {
+            // Desktop: começa expandido (aberto)
+            sidebar.classList.remove('collapsed');
+            sidebar.classList.add('expanded');
+        }
+    }
+
+    // Chama a inicialização do estado
+    initializeSidebarState();
 })();
