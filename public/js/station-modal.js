@@ -1387,11 +1387,12 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 elements.total.textContent = data.data.readings.length;
 
                 const BASIC_FIELDS = [
-                    'year', 'hour', 'minute',
-                    'water_level_60min', 'water_level_45min', 'water_level_30min', 'water_level_15min',
+                    'reading_datetime',
+                    'water_level_60min', 'water_level_45min', 'water_level_30min', 'water_level_15min', 'flow_15min',
                     'rain_60min', 'rain_45min', 'rain_30min', 'rain_15min',
                     'water_temperature', 'atmospheric_pressure'
                 ];
+
 
                 const fieldsToShow = BASIC_FIELDS.filter(f => chartData[0].hasOwnProperty(f));
 
@@ -1417,7 +1418,13 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                     fieldsToShow.forEach(key => {
                         const td = document.createElement('td');
                         const value = reading[key];
-                        td.textContent = value !== null && value !== '' ? value : '-';
+                        if (key === 'reading_datetime' && value) {
+                            const d = new Date(value);
+                            td.textContent = d.toLocaleString('pt-BR');
+                        } else {
+                            td.textContent = value !== null && value !== '' ? value : '-';
+                        }
+
                         td.style.whiteSpace = 'nowrap';
                         row.appendChild(td);
                     });

@@ -191,10 +191,33 @@
         // Setar referência do mapa para o GEOMAP panel
         setMapReference(map);
 
-        // Adicionar o tile layer (OpenStreetMap)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // Tile layers
+        var tileSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        });
+        var tileStreet = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+        });
+
+        // Satélite como padrão
+        tileSatellite.addTo(map);
+        var activeBaseTile = tileSatellite;
+
+        // Seletor de camada base
+        document.getElementById('btn-satellite').addEventListener('click', function() {
+            map.removeLayer(activeBaseTile);
+            tileSatellite.addTo(map);
+            activeBaseTile = tileSatellite;
+            this.classList.add('active');
+            document.getElementById('btn-street').classList.remove('active');
+        });
+        document.getElementById('btn-street').addEventListener('click', function() {
+            map.removeLayer(activeBaseTile);
+            tileStreet.addTo(map);
+            activeBaseTile = tileStreet;
+            this.classList.add('active');
+            document.getElementById('btn-satellite').classList.remove('active');
+        });
 
         // Criar MarkerClusterGroups para cada tipo
         var clusterGroups = {

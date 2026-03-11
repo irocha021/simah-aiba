@@ -146,7 +146,7 @@ class LrgsService
      */
     public function getLastFullHourInterval(): array
     {
-        $now = Carbon::now();
+        $now = Carbon::now('UTC');
 
         // Hora cheia atual (trunca minutos e segundos)
         $endHour = $now->copy()->startOfHour();

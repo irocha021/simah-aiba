@@ -80,6 +80,40 @@
     margin-right: 10px;
     cursor: grab;
 }
+
+.basemap-switcher-bar {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    background: #f8f9fa;
+}
+
+.basemap-btn {
+    flex: 1;
+    padding: 7px 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: background 0.2s, color 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.basemap-btn:hover {
+    background: #e8f0fa;
+    color: #165b9c;
+}
+
+.basemap-btn.active {
+    color: #165b9c;
+    font-weight: 600;
+    border-bottom: 2px solid #165b9c;
+    background: white;
+}
 </style>
 
 <!-- Painel GEOMAP -->
@@ -87,6 +121,14 @@
     <div class="geomap-panel-header" onclick="toggleGeomapPanel()">
         <span>GEOMAP - Camadas</span>
         <span id="geomapToggleIcon">▼</span>
+    </div>
+    <div class="basemap-switcher-bar">
+        <button id="btn-satellite" class="basemap-btn active" title="Satélite">
+            <i class="fas fa-satellite"></i> Satélite
+        </button>
+        <button id="btn-street" class="basemap-btn" title="Mapa de ruas">
+            <i class="fas fa-map"></i> Mapa
+        </button>
     </div>
     <div class="geomap-panel-content" id="geomapPanelContent">
         <!-- Items serão inseridos via JavaScript -->

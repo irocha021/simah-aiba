@@ -52,8 +52,21 @@ class DcpMessageProcessor
                 return null;
             }
 
+            // Atualiza lat/long da estação se ainda não preenchidos
+            if (is_null($station->latitude) || is_null($station->longitude)) {
+                $lat = $this->parseNumericValue($parts[23] ?? null);
+                $lng = $this->parseNumericValue($parts[24] ?? null);
+
+             
+                if ($lat !== null && $lng !== null) {
+                    $station->update(['latitude' => $lat, 'longitude' => $lng]);
+                    $station->latitude = $lat;
+                    $station->longitude = $lng;
+                }
+            }
+
             // Monta o array de dados para inserção
-            return $this->mapToDatabase($parts, $header, $station->id);
+            return $this->mapToDatabase($parts, $header, $station);
 
         } catch (\Exception $e) {
             Log::error('Erro ao processar mensagem DCP', [
@@ -144,17 +157,19 @@ class DcpMessageProcessor
      * @param int $stationId
      * @return array
      */
-    private function mapToDatabase(array $parts, DcpHeaderDto $header, int $stationId): array
+    private function mapToDatabase(array $parts, DcpHeaderDto $header, $station): array
     {
         $now = now();
 
         $fullYear = $header->year < 100 ? 2000 + $header->year : $header->year;
-        $readingDatetime = \Carbon\Carbon::create($fullYear, 1, 1, $header->hour, $header->minute, 0, 'UTC')
-            ->addDays($header->julianDay - 1);
+        $readingDatetime = \Carbon\Carbon::create($fullYear, 1, 1, $header->hour, $header->minute, $header->second, 'UTC')
+            ->addDays($header->julianDay - 1)
+            ->subHours(3);
 
         return [
             // Foreign key
-            'dcp_station_id' => $stationId,
+            'dcp_station_id' => $station->id,
+
 
             // Raw header
             'raw_header' => $parts[0] ?? null,
@@ -185,7 +200,9 @@ class DcpMessageProcessor
             'water_level_60min' => $this->parseNumericValue($parts[5] ?? null),
             'water_level_45min' => $this->parseNumericValue($parts[6] ?? null),
             'water_level_30min' => $this->parseNumericValue($parts[7] ?? null),
-            'water_level_15min' => $this->parseNumericValue($parts[8] ?? null),
+            'water_level_15min' => $waterLevel15 = $this->parseNumericValue($parts[8] ?? null),
+            'flow_15min' => $this->calculateFlow($station, $waterLevel15),
+
 
             // Rain readings (indices 9-16)
             'rain_120min' => $this->parseNumericValue($parts[9] ?? null),
@@ -230,6 +247,34 @@ class DcpMessageProcessor
             'updated_at' => $now,
         ];
     }
+
+    private function calculateFlow($station, ?float $waterLevel): ?float
+    {
+        if ($waterLevel === null || !$station->curva_chave) {
+            return null;
+        }
+
+        if ($station->curva_chave == 1) {
+            return \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioPrimeira(
+                (float) $station->a,
+                (float) $station->b,
+                $waterLevel,
+                (float) $station->h0
+            );
+        }
+
+        if ($station->curva_chave == 2) {
+            return \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioSegunda(
+                (float) $station->a,
+                (float) $station->b,
+                (float) $station->c,
+                $waterLevel
+            );
+        }
+
+        return null;
+    }
+
 
     /**
      * Parse de valor numérico (converte NAN e vazios para null)

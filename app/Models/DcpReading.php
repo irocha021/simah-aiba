@@ -37,6 +37,7 @@ class DcpReading extends Model
         'water_level_45min',
         'water_level_30min',
         'water_level_15min',
+        'flow_15min',
         // Rain readings
         'rain_120min',
         'rain_105min',
@@ -88,6 +89,7 @@ class DcpReading extends Model
         'water_level_45min' => 'decimal:0',
         'water_level_30min' => 'decimal:0',
         'water_level_15min' => 'decimal:0',
+        'flow_15min' => 'decimal:3',
         'rain_120min' => 'decimal:1',
         'rain_105min' => 'decimal:1',
         'rain_90min' => 'decimal:1',
@@ -105,8 +107,9 @@ class DcpReading extends Model
         'longitude' => 'decimal:6',
         'door_sensor_open' => 'boolean',
         'skipped_scan' => 'integer',
-        'reading_datetime' => 'datetime',
-        'recovered_at' => 'datetime',
+        'reading_datetime' => 'datetime:Y-m-d H:i:s',
+        'recovered_at'     => 'datetime:Y-m-d H:i:s',
+
     ];
 
     /**

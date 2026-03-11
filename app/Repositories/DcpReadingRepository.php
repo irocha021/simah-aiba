@@ -21,7 +21,7 @@ class DcpReadingRepository implements DcpReadingRepositoryInterface
     public function findByAddress(string $address, int $limit = 50)
     {
         return DcpReading::where('address', $address)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('reading_datetime', 'desc')
             ->limit($limit)
             ->get();
     }
@@ -112,7 +112,36 @@ class DcpReadingRepository implements DcpReadingRepositoryInterface
 
         if (!empty($update)) {
             $update['recovered_at'] = now();
+
+            // Recalcula flow_15min se water_level_15min foi recuperado
+            if (isset($update['water_level_15min'])) {
+                $reading = DcpReading::with('dcpStation')->find($id);
+                if ($reading && $reading->dcpStation) {
+                    $station = $reading->dcpStation;
+
+                    if ($station->curva_chave && !is_null($station->a) && !is_null($station->b)) {
+                        $h = (float) $update['water_level_15min'];
+                        if ($station->curva_chave == 1) {
+                            $update['flow_15min'] = \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioPrimeira(
+                                (float) $station->a,
+                                (float) $station->b,
+                                $h,
+                                (float) $station->h0
+                            );
+                        } elseif ($station->curva_chave == 2) {
+                            $update['flow_15min'] = \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioSegunda(
+                                (float) $station->a,
+                                (float) $station->b,
+                                (float) $station->c,
+                                $h
+                            );
+                        }
+                    }
+                }
+            }
+
             DcpReading::where('id', $id)->update($update);
         }
+
     }
 }

@@ -16,6 +16,8 @@ use App\Http\Controllers\Jobs\HidroWeb\HidroMonthlyTelemetricReadingController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroSerieQaReadingController;
 use App\Http\Controllers\Jobs\Lrgs\ReadDcpMessagesController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\LrgsStationController;
+
 
 // ============================
 // ROTAS PUBLICAS (sem auth)
@@ -102,5 +104,15 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/', [CnarhUploadController::class, 'index'])->name('cnarh.index');
             Route::post('/upload', [CnarhUploadController::class, 'store'])->name('cnarh.upload');
         });
+
+        Route::prefix('lrgs-stations')->group(function () {
+            Route::get('/',           [LrgsStationController::class, 'index'])->name('lrgs-stations.index');
+            Route::get('/create',     [LrgsStationController::class, 'create'])->name('lrgs-stations.create');
+            Route::post('/',          [LrgsStationController::class, 'store'])->name('lrgs-stations.store');
+            Route::get('/{id}/edit',  [LrgsStationController::class, 'edit'])->name('lrgs-stations.edit');
+            Route::post('/{id}',      [LrgsStationController::class, 'update'])->name('lrgs-stations.update');
+            Route::delete('/{id}',    [LrgsStationController::class, 'destroy'])->name('lrgs-stations.destroy');
+        });
+
     });
 });
