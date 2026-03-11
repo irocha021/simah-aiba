@@ -101,20 +101,6 @@ function initSelectControls() {
         updateSelectIcons(control);
     });
 
-    // Fechar controles ao clicar fora e atualizar ícones
-    document.addEventListener('click', function (e) {
-        const isSelectControl = e.target.closest('.select-control') ||
-            e.target.closest('.select-header') ||
-            e.target.closest('.select-dropdown');
-
-        if (!isSelectControl) {
-            selectControls.forEach(control => {
-                control.classList.remove('active');
-                updateSelectIcons(control);
-            });
-        }
-    });
-
     // Observar mudanças no menu para manter estado dos controles
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
@@ -154,7 +140,7 @@ if (document.readyState === 'loading') {
 }
 
 // Funções públicas para manipulação dos controles
-window.selectControls = {
+window.initSelectControls = {
     // Abrir um controle específico
     open: function (controlId) {
         const control = document.getElementById(controlId);

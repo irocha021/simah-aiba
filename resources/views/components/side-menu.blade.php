@@ -96,8 +96,10 @@
                     <!-- ===== LRGS CLIENT ===== -->
                     <li class="menu-item select-control" id="lrgs-control">
                         <div class="select-header" onclick="window.location='{{ route('lrgs-stations.index') }}'">
-                            <i class="fas fa-satellite-dish select-icon-open" style="width:24px;text-align:center;font-size:1.2rem;"></i>
-                            <i class="fas fa-satellite-dish select-icon-closed" style="width:24px;text-align:center;font-size:1.2rem;"></i>
+                            <img src="{{ asset('images/icons/satellite-dish-bold.svg') }}" alt="Usuarios"
+                                class="select-icon-open">
+                            <img src="{{ asset('images/icons/satellite-dish.svg') }}" alt="Usuarios"
+                                class="select-icon-closed">
                             <span class="select-text">LRGS Client</span>
                         </div>
                     </li>
