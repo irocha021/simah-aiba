@@ -21,10 +21,14 @@ function toggleGeomapPanel() {
     var icon = document.getElementById('geomapToggleIcon');
     if (content.style.display === 'none') {
         content.style.display = 'block';
-        icon.textContent = '▼';
+        icon.innerHTML = `
+           <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#FFFFFF"><path d="M480-528 324-372q-11 11-28 11t-28-11q-11-11-11-28t11-28l184-184q12-12 28-12t28 12l184 184q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-528Z"/></svg>
+        `;
     } else {
         content.style.display = 'none';
-        icon.textContent = '▶';
+        icon.innerHTML = `
+           <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#FFFFFF"><path d="M465-363.5q-7-2.5-13-8.5L268-556q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-372q-6 6-13 8.5t-15 2.5q-8 0-15-2.5Z"/></svg>
+        `;
     }
 }
 
@@ -35,7 +39,7 @@ function populateGeomapPanel() {
 
     container.innerHTML = '';
 
-    mapLayersData.forEach(function(layerData) {
+    mapLayersData.forEach(function (layerData) {
         var item = document.createElement('div');
         item.className = 'geomap-layer-item';
         item.setAttribute('draggable', 'true');
@@ -50,7 +54,7 @@ function populateGeomapPanel() {
         var checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.id = 'layer-' + layerData.slug;
-        checkbox.onchange = function() {
+        checkbox.onchange = function () {
             toggleLayer(layerData.slug, this.checked);
         };
 
@@ -69,7 +73,7 @@ function populateGeomapPanel() {
             infoIcon.className = 'layer-info';
             infoIcon.innerHTML = 'ℹ';
             infoIcon.title = 'Ver legenda';
-            infoIcon.onclick = function(e) {
+            infoIcon.onclick = function (e) {
                 e.stopPropagation();
                 showLegendPanel(layerData);
             };
@@ -87,14 +91,14 @@ function initDragAndDrop() {
     var container = document.getElementById('geomapPanelContent');
     if (!container) return;
 
-    container.addEventListener('dragstart', function(e) {
+    container.addEventListener('dragstart', function (e) {
         if (e.target.classList.contains('geomap-layer-item')) {
             draggedItem = e.target;
             e.target.classList.add('dragging');
         }
     });
 
-    container.addEventListener('dragend', function(e) {
+    container.addEventListener('dragend', function (e) {
         if (e.target.classList.contains('geomap-layer-item')) {
             e.target.classList.remove('dragging');
             draggedItem = null;
@@ -102,7 +106,7 @@ function initDragAndDrop() {
         }
     });
 
-    container.addEventListener('dragover', function(e) {
+    container.addEventListener('dragover', function (e) {
         e.preventDefault();
         var afterElement = getDragAfterElement(container, e.clientY);
         if (draggedItem) {
@@ -118,7 +122,7 @@ function initDragAndDrop() {
 function getDragAfterElement(container, y) {
     var draggableElements = [...container.querySelectorAll('.geomap-layer-item:not(.dragging)')];
 
-    return draggableElements.reduce(function(closest, child) {
+    return draggableElements.reduce(function (closest, child) {
         var box = child.getBoundingClientRect();
         var offset = y - box.top - box.height / 2;
         if (offset < 0 && offset > closest.offset) {
@@ -134,7 +138,7 @@ function updateLayersZIndex() {
     var items = document.querySelectorAll('.geomap-layer-item');
     var totalItems = items.length;
 
-    items.forEach(function(item, index) {
+    items.forEach(function (item, index) {
         var slug = item.getAttribute('data-slug');
         var layerObj = geoMapLayers[slug];
 
@@ -147,7 +151,7 @@ function updateLayersZIndex() {
             }
             // Para layerGroups (GeoJSON), precisa setar em cada layer interno
             if (layerObj.layer.eachLayer) {
-                layerObj.layer.eachLayer(function(subLayer) {
+                layerObj.layer.eachLayer(function (subLayer) {
                     if (subLayer.setZIndex) {
                         subLayer.setZIndex(zIndex);
                     }
@@ -186,7 +190,7 @@ function showLegendPanel(layerData) {
     content.innerHTML = '';
 
     if (layerData.legends && layerData.legends.length > 0) {
-        layerData.legends.forEach(function(legend) {
+        layerData.legends.forEach(function (legend) {
             var item = document.createElement('div');
             item.className = 'legend-item';
 
@@ -234,7 +238,7 @@ function createLayerFromData(layerData) {
             .then(response => response.json())
             .then(data => {
                 L.geoJSON(data, {
-                    pointToLayer: function(feature, latlng) {
+                    pointToLayer: function (feature, latlng) {
                         return L.circleMarker(latlng, {
                             radius: layerData.marker_radius || 6,
                             fillColor: layerData.marker_color || "#ff6600",
@@ -244,7 +248,7 @@ function createLayerFromData(layerData) {
                             fillOpacity: layerData.opacity || 0.8
                         });
                     },
-                    onEachFeature: function(feature, layer) {
+                    onEachFeature: function (feature, layer) {
                         if (feature.properties) {
                             var popupContent = '<b>' + layerData.name + '</b><br>';
                             for (var key in feature.properties) {
@@ -266,7 +270,7 @@ function initGeoMapLayers(layersData) {
 
     // Criar objeto para armazenar os layers
     geoMapLayers = {};
-    layersData.forEach(function(layerData) {
+    layersData.forEach(function (layerData) {
         geoMapLayers[layerData.slug] = {
             layer: createLayerFromData(layerData),
             data: layerData

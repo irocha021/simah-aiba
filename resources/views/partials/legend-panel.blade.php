@@ -60,8 +60,7 @@
 }
 
 .legend-color {
-    width: 18px;
-    height: 18px;
+    padding: 10px;
     margin-right: 10px;
     border: 1px solid #ccc;
 }

@@ -158,7 +158,7 @@
     }
 
     .lrgs-table-container {
-        max-height: 62%;
+        max-height: 42%;
         width: 92%;
         overflow-x: auto;
         overflow-y: auto;

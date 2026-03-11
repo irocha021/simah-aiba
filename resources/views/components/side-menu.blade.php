@@ -10,14 +10,18 @@
         </div>
     </div>
 
+    <!-- Botão de toggle -->
+    <button class="sidebar-toggle-btn" id="sidebarToggle" aria-label="Toggle menu">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+
     <!-- Container principal com flex layout -->
     <div class="sidebar-container">
         <!-- Conteúdo com scroll -->
         <div class="sidebar-content">
             <ul class="sidebar-menu">
-
                 <!-- ===== CONTROLE DE CAMADAS ===== -->
-                <li class="menu-item select-control" id="layer-control">
+                <li class="menu-item select-control active" id="layer-control">{{-- active para camadas(aberto) --}}
                     <div class="select-header">
                         <img src="{{ asset('images/icons/gota-camada-bold.svg') }}" alt="Camadas"
                             class="select-icon-open">
@@ -38,7 +42,7 @@
                     </div>
                 </li>
                 <!-- ===== FIM CONTROLE DE CAMADAS ===== -->
-                 @auth
+                @auth
                     <!-- ===== TEXTO DE CONFIGURAÇÃO ===== -->
                     <li class="config-text-item">
                         <div class="config-text-wrapper">
@@ -47,35 +51,6 @@
                         </div>
                     </li>
                     <!-- ===== FIM TEXTO DE CONFIGURAÇÃO ===== -->
-
-                    <!-- ===== CONTROLE DE CADASTRO ===== -->
-                    {{-- <li class="menu-item select-control" id="filters-control">
-                        <div class="select-header">
-                            <img src="{{ asset('images/icons/cadastro-bold.svg') }}" alt="Filtros"
-                                class="select-icon-open">
-                            <img src="{{ asset('images/icons/cadastro.svg') }}" alt="Filtros" class="select-icon-closed">
-                            <span class="select-text">Cadastro</span>
-                            <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </div>
-
-                        <div class="select-dropdown">
-                            <div class="select-content">
-                                <div class="select-box">
-                                    <div class="select-options">
-                                        <button class="select-option">
-                                            <span class="option-indicator" style="background: #ff6b6b"></span>
-                                            <span class="option-name">Todos</span>
-                                        </button>
-                                        <button class="select-option">
-                                            <span class="option-indicator" style="background: #4ecdc4"></span>
-                                            <span class="option-name">Ativos</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li> --}}
-                    <!-- ===== FIM CONTROLE DE CADASTRO ===== -->
 
                     <!-- ===== CONTROLE DE UPLOAD ===== -->
                     <li class="menu-item select-control" id="sort-control">
@@ -113,7 +88,7 @@
                                 class="select-icon-open">
                             <img src="{{ asset('images/icons/account-circle.svg') }}" alt="Usuarios"
                                 class="select-icon-closed">
-                            <span class="select-text">Usuários</span>
+                            <span class="select-text">Gerenciar Usuários</span>
                         </div>
                     </li>
                     <!-- ===== FIM GERENCIAR USUARIOS ===== -->
@@ -132,63 +107,66 @@
             </ul>
         </div>
 
-                <!-- Toggle button fixo na base -->
+        <!-- Toggle button fixo na base -->
         <div class="sidebar-toggle">
 
             @guest
-            <!-- Estado de não logado (mostrar link de login) -->
-            <div id="login-state">
-                <a href="{{ route('login') }}" class="user-login-link">
-                    <div class="user-toggle-content">
-                        <img src="{{ asset('images/icons/user-menu.svg') }}" alt="Logo" class="user-icon">
-                        <span class="user-login-text">Login Privativo</span>
-                    </div>
-                </a>
-            </div>
+                <!-- Estado de não logado (mostrar link de login) -->
+                <div id="login-state">
+                    <a href="{{ route('login') }}" class="user-login-link">
+                        <div class="user-toggle-content">
+                            <img src="{{ asset('images/icons/user-menu.svg') }}" alt="Logo" class="user-icon">
+                            <span class="user-login-text">Login Privativo</span>
+                        </div>
+                    </a>
+                </div>
             @endguest
 
             @auth
-            <!-- Estado logado (mostrar menu do usuário) -->
-            <div id="user-menu-container">
-                <div class="user-menu" id="user-menu-control">
-                    <div class="user-menu-header" id="user-menu-toggle">
-                        <div class="user-avatar">
-                            <span class="user-avatar-initials">{{ strtoupper(substr(Auth::user()->first_name, 0, 1) . substr(Auth::user()->last_name, 0, 1)) }}</span>
+                <!-- Estado logado (mostrar menu do usuário) -->
+                <div id="user-menu-container">
+                    <div class="user-menu" id="user-menu-control">
+                        <div class="user-menu-header" id="user-menu-toggle">
+                            <div class="user-avatar">
+                                <span
+                                    class="user-avatar-initials">{{ strtoupper(substr(Auth::user()->first_name, 0, 1) . substr(Auth::user()->last_name, 0, 1)) }}</span>
+                            </div>
+                            <div class="user-menu-info">
+                                <span class="user-menu-name">{{ Auth::user()->name }}</span>
+                                <i class="fas fa-chevron-down user-dropdown-icon"></i>
+                            </div>
                         </div>
-                        <div class="user-menu-info">
-                            <span class="user-menu-name">{{ Auth::user()->name }}</span>
-                            <i class="fas fa-chevron-down user-dropdown-icon"></i>
-                        </div>
-                    </div>
 
-                    <div class="user-menu-dropdown" id="user-menu-dropdown">
-                        <div class="user-menu-options">
-                            <a href="{{ route('user.profile') }}" class="user-menu-option">
-                                <img src="{{ asset('images/icons/account-circle.svg') }}" alt="Perfil"
-                                    class="user-menu-icon">
-                                <span class="user-option-name">Perfil</span>
-                            </a>
-                            <a href="{{ route('user.password') }}" class="user-menu-option">
-                                <img src="{{ asset('images/icons/key-vertical.svg') }}" alt="Senha"
-                                    class="user-menu-icon">
-                                <span class="user-option-name">Alterar senha</span>
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}" style="margin:0;padding:0;">
-                                @csrf
-                                <button type="submit" class="user-menu-option user-logout-link" style="width:100%;background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;">
-                                    <img src="{{ asset('images/icons/Log-out.svg') }}" alt="Sair"
+                        <div class="user-menu-dropdown" id="user-menu-dropdown">
+                            <div class="user-menu-options">
+                                <a href="{{ route('user.profile') }}" class="user-menu-option">
+                                    <img src="{{ asset('images/icons/account-circle.svg') }}" alt="Perfil"
                                         class="user-menu-icon">
-                                    <span class="user-option-name">Sair</span>
-                                </button>
-                            </form>
+                                    <span class="user-option-name">Perfil</span>
+                                </a>
+                                <a href="{{ route('user.password') }}" class="user-menu-option">
+                                    <img src="{{ asset('images/icons/key-vertical.svg') }}" alt="Senha"
+                                        class="user-menu-icon">
+                                    <span class="user-option-name">Alterar senha</span>
+                                </a>
+                                <form method="POST" action="{{ route('logout') }}" style="margin:0;padding:0;">
+                                    @csrf
+                                    <button type="submit" class="user-menu-option user-logout-link"
+                                        style="width:100%;background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;">
+                                        <img src="{{ asset('images/icons/Log-out.svg') }}" alt="Sair"
+                                            class="user-menu-icon">
+                                        <span class="user-option-name">Sair</span>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             @endauth
         </div>
-
+    </div>
 </nav>
+
 @auth
     @include('partials.user-management-modal')
 @endauth
