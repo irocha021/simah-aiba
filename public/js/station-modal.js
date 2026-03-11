@@ -498,18 +498,18 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                 const poco = data.data.poco;
 
                 // 1. Primeiro renderizar a tabela EM DUAS COLUNAS
-                const entries = Object.entries(poco).filter(([key, value]) => 
+                const entries = Object.entries(poco).filter(([key, value]) =>
                     value !== null && value !== '' && value !== undefined
                 );
-                
+
                 const totalItems = entries.length;
                 const itemsPerColumn = Math.ceil(totalItems / 2);
-                
+
                 let html = `
                     <div id="siagasTableContainer" class="siagas-table-container">
                         <div class="siagas-table-column">
                 `;
-                
+
                 // Primeira coluna
                 for (let i = 0; i < itemsPerColumn; i++) {
                     const [key, value] = entries[i];
@@ -520,12 +520,12 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                         </div>
                     `;
                 }
-                
+
                 html += `
                         </div>
                         <div class="siagas-table-column">
                 `;
-                
+
                 // Segunda coluna
                 for (let i = itemsPerColumn; i < totalItems; i++) {
                     const [key, value] = entries[i];
@@ -536,12 +536,12 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                         </div>
                     `;
                 }
-                
+
                 html += `
                         </div>
                     </div>
                 `;
-                
+
                 document.getElementById('siagasDataContent').innerHTML = html;
                 dataContainer.style.display = 'block';
 
@@ -855,11 +855,11 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
             'latitude': 'Latitude',
             'longitude': 'Longitude'
         };
-        
+
         if (labels[key]) {
             return labels[key];
         }
-        
+
         // Se não estiver no mapeamento, formatação padrão
         return key
             .replace(/_/g, ' ')
@@ -1292,7 +1292,7 @@ const lrgsModalConfig = {
 };
 
 function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
-        const elements = {
+    const elements = {
         loading: document.getElementById('lrgsLoadingSpinner'),
         tableContainer: document.getElementById('lrgsTableContainer'),
         error: document.getElementById('lrgsErrorMessage'),
@@ -1377,7 +1377,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
     // Buscar dados
     fetch(`/api/lrgs-client/${stationCode}/readings`)
         .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar leituras'))
-                .then(data => {
+        .then(data => {
             elements.loading.style.display = 'none';
 
             if (data.success && data.data?.readings?.length > 0) {
@@ -1500,52 +1500,37 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             return;
         }
 
-        // Analisar variáveis numéricas disponíveis para gráficos
+        // APENAS AS 5 VARIÁVEIS SOLICITADAS PARA O GRÁFICO COM A NOMENCLATURA ESPECÍFICA
         const numericFields = (function extractNumericFields(readings) {
             const numericFields = [];
-            const usedKeys = new Set();
 
-            // Ignorar campos não numéricos
-            const ignoreFields = ['id', 'dcp_station_id', 'raw_header', 'address', 'failure_code',
-                'signal_strength', 'modulation_index', 'data_quality', 'channel',
-                'spacecraft', 'reception_source', 'display_value', 'door_sensor_open',
-                'serial_number', 'program_signature', 'operating_system_version',
-                'transmitter_serial_number', 'firmware_version', 'goes_antenna_signal',
-                'program_version', 'restart_time', 'sensor_type', 'extra',
-                'created_at', 'updated_at', 'deleted_at'];
+            // Mapeamento exato das variáveis com a nomenclatura solicitada
+            const targetFields = [
+                { key: 'water_level_15min', label: 'Nível da água' },
+                { key: 'flow_15min', label: 'Vazão' },
+                { key: 'rain_15min', label: 'Chuva' },
+                { key: 'water_temperature', label: 'Temperatura da água' },
+                { key: 'atmospheric_pressure', label: 'Pressão atmosférica' }
+            ];
 
-            // Analisar o primeiro registro para encontrar campos numéricos
+            // Analisar apenas as variáveis alvo
             if (readings.length > 0) {
-                Object.keys(readings[0]).forEach(key => {
-                    // Ignorar campos não numéricos
-                    if (ignoreFields.includes(key) ||
-                        key.includes('created') || key.includes('updated') || key.includes('deleted')) {
-                        return;
-                    }
-
-                    // Verificar se o campo tem valores numéricos em pelo menos um registro
+                targetFields.forEach(field => {
+                    // Verificar se o campo tem valores numéricos
                     for (let i = 0; i < Math.min(5, readings.length); i++) {
-                        const value = readings[i][key];
+                        const value = readings[i][field.key];
                         if (value !== null && value !== '' && value !== '-' && !isNaN(parseFloat(value))) {
                             const numValue = parseFloat(value);
                             if (!isNaN(numValue)) {
-                                // Formatar nome para exibição
-                                let displayName = key.replace(/_/g, ' ');
-                                displayName = displayName.split(' ').map(word => {
-                                    if (word.length <= 3) return word.toUpperCase();
-                                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-                                }).join(' ');
-
                                 numericFields.push({
-                                    key: key,
-                                    label: displayName,
-                                    unit: extractUnit(key),
+                                    key: field.key,
+                                    label: field.label,
+                                    unit: extractUnit(field.key),
                                     values: readings.map(r => {
-                                        const val = parseFloat(r[key]);
+                                        const val = parseFloat(r[field.key]);
                                         return isNaN(val) ? null : val;
                                     })
                                 });
-                                usedKeys.add(key);
                                 break;
                             }
                         }
@@ -1560,20 +1545,11 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             });
 
             function extractUnit(fieldKey) {
-                // Extrair unidade do nome do campo
-                if (fieldKey.includes('water_level') || fieldKey.includes('level_adjustment')) {
-                    return 'm';
-                } else if (fieldKey.includes('rain')) {
-                    return 'mm';
-                } else if (fieldKey.includes('temperature')) {
-                    return '°C';
-                } else if (fieldKey.includes('battery_voltage')) {
-                    return 'V';
-                } else if (fieldKey.includes('atmospheric_pressure')) {
-                    return 'hPa';
-                } else if (fieldKey.includes('frequency_offset')) {
-                    return 'Hz';
-                }
+                if (fieldKey.includes('water_level')) return 'm';
+                else if (fieldKey.includes('flow')) return 'm³/s';
+                else if (fieldKey.includes('rain')) return 'mm';
+                else if (fieldKey.includes('temperature')) return '°C';
+                else if (fieldKey.includes('atmospheric_pressure')) return 'hPa';
                 return '';
             }
         })(readings);
@@ -1587,11 +1563,9 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
         // Extrair data/hora para o eixo X (criar timestamp a partir dos campos separados)
         const timestamps = readings.map(r => {
             try {
-                // Usar year, julian_day, hour, minute, second para criar data
                 if (r.year && r.julian_day && r.hour !== undefined && r.minute !== undefined) {
-                    // Converter dia juliano para data normal
-                    const date = new Date(parseInt(r.year), 0); // 1º de janeiro do ano
-                    const julianDay = parseInt(r.julian_day) - 1; // Ajustar porque 1º de janeiro é dia 1
+                    const date = new Date(parseInt(r.year), 0);
+                    const julianDay = parseInt(r.julian_day) - 1;
                     date.setDate(date.getDate() + julianDay);
                     date.setHours(parseInt(r.hour) || 0, parseInt(r.minute) || 0, parseInt(r.second) || 0);
 
@@ -1608,21 +1582,8 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             return '';
         });
 
-        // Selecionar os parâmetros mais interessantes para o gráfico
-        const interestingParams = [
-            'water_level', 'rain', 'water_temperature', 'battery_voltage',
-            'atmospheric_pressure', 'internal_temperature'
-        ];
-
-        // Filtrar campos disponíveis que estão na lista de interessantes
-        const selectedFields = numericFields.filter(field =>
-            interestingParams.some(param => field.key.includes(param))
-        ).slice(0, 5); // Limitar a 5 parâmetros
-
-        // Se não encontrou parâmetros interessantes, pegar os primeiros 5
-        if (selectedFields.length === 0) {
-            selectedFields.push(...numericFields.slice(0, 5));
-        }
+        // Usar todos os campos disponíveis (agora são apenas as 5 variáveis alvo)
+        const selectedFields = numericFields;
 
         // Criar datasets para o gráfico
         const datasets = selectedFields.map((field, index) => {
@@ -1664,7 +1625,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                     text: dataset.label.split('(')[0].trim()
                 },
                 grid: {
-                    drawOnChartArea: index === 0 // Apenas o primeiro eixo mostra grid
+                    drawOnChartArea: index === 0
                 }
             };
         });
@@ -1765,6 +1726,42 @@ function openLrgsFullDataModal(reading) {
     };
 }
 
+// Função para abrir sub-modal de dados completos (admin)
+function openLrgsFullDataModal(reading) {
+    const fullModal = document.getElementById('lrgsFullDataModal');
+    const fullBody = document.getElementById('lrgsFullDataBody');
+    const closeBtn = document.getElementById('closeLrgsFullModal');
+
+    if (!fullModal || !fullBody) return;
+
+    const dl = document.createElement('dl');
+    Object.entries(reading).forEach(([key, value]) => {
+        if (value === null || value === '' || value === undefined) return;
+
+        const dt = document.createElement('dt');
+        dt.textContent = key;
+
+        const dd = document.createElement('dd');
+        dd.textContent = value;
+
+        dl.appendChild(dt);
+        dl.appendChild(dd);
+    });
+
+    fullBody.innerHTML = '';
+    fullBody.appendChild(dl);
+    fullModal.style.display = 'block';
+
+    if (closeBtn) {
+        closeBtn.onclick = () => { fullModal.style.display = 'none'; };
+    }
+
+    fullModal.onclick = (e) => {
+        if (e.target === fullModal) {
+            fullModal.style.display = 'none';
+        }
+    };
+}
 
 // Inicializar modal LRGS
 if (document.readyState === 'loading') {
