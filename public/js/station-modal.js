@@ -1291,6 +1291,7 @@ const lrgsModalConfig = {
     closeButtonId: 'closeLrgsModal'
 };
 
+// Configuração específica para LRGS tabela e gráfico
 function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
     const elements = {
         loading: document.getElementById('lrgsLoadingSpinner'),
@@ -1302,7 +1303,6 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
         errorText: document.getElementById('lrgsErrorText'),
         stationLocation: document.getElementById('lrgsStationLocation')
     };
-
 
     const modal = document.getElementById(lrgsModalConfig.modalId);
     const modalStationCode = document.getElementById(lrgsModalConfig.stationCodeId);
@@ -1319,7 +1319,6 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
         elements.stationLocation.textContent = `Latitude: ${latitude} | Longitude: ${longitude}`;
     }
 
-    // Limpar estado anterior
     if (window.lrgsChartInstance) {
         window.lrgsChartInstance.destroy();
         window.lrgsChartInstance = null;
@@ -1328,8 +1327,8 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
     document.querySelector('.lrgs-view-controls')?.remove();
     document.getElementById('lrgsChartContainer')?.remove();
     document.getElementById('lrgsChart')?.remove();
+    document.querySelector('.lrgs-filter-container')?.remove();
 
-    // Resetar UI
     Object.values(elements).forEach(el => {
         if (el && el.style) {
             if (el === elements.loading) el.style.display = 'block';
@@ -1340,15 +1339,17 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
         }
     });
 
-    // Criar elementos do gráfico e controles
     const chartContainer = createChartContainer();
     const controlsContainer = createControlsContainer();
+    const filterContainer = createFilterContainer();
+
     elements.tableContainer.parentNode.insertBefore(chartContainer, elements.tableContainer);
     elements.tableContainer.parentNode.insertBefore(controlsContainer, elements.tableContainer.nextSibling);
+    elements.tableContainer.parentNode.insertBefore(filterContainer, chartContainer);
 
     let chartData = null;
+    let filteredData = null;
 
-    // Configurar visualizações
     const views = {
         table: () => {
             controlsContainer.children[0].className = 'lrgs-view-btn active';
@@ -1357,6 +1358,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             elements.tableContainer.style.display = 'block';
             chartContainer.style.display = 'none';
+            filterContainer.style.display = 'none';
         },
         chart: () => {
             controlsContainer.children[0].className = 'lrgs-view-btn';
@@ -1365,8 +1367,10 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             elements.tableContainer.style.display = 'none';
             chartContainer.style.display = 'block';
-            if (chartData && (!window.lrgsChartInstance || window.lrgsChartInstance.canvas.id !== 'lrgsChart')) {
-                createChart(chartData);
+            filterContainer.style.display = 'flex';
+            if (chartData) {
+                filteredData = chartData;
+                createChart(filteredData);
             }
         }
     };
@@ -1374,7 +1378,6 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
     controlsContainer.children[0].onclick = views.table;
     controlsContainer.children[1].onclick = views.chart;
 
-    // Buscar dados
     fetch(`/api/lrgs-client/${stationCode}/readings`)
         .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar leituras'))
         .then(data => {
@@ -1382,6 +1385,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
 
             if (data.success && data.data?.readings?.length > 0) {
                 chartData = data.data.readings;
+                filteredData = chartData;
                 const isAdmin = data.is_admin === true;
 
                 elements.total.textContent = data.data.readings.length;
@@ -1393,10 +1397,8 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                     'water_temperature', 'atmospheric_pressure'
                 ];
 
-
                 const fieldsToShow = BASIC_FIELDS.filter(f => chartData[0].hasOwnProperty(f));
 
-                // Criar cabeçalho da tabela
                 const headerRow = document.createElement('tr');
                 fieldsToShow.forEach(key => {
                     const th = document.createElement('th');
@@ -1412,7 +1414,6 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 }
                 elements.tableHeader.appendChild(headerRow);
 
-                // Criar linhas da tabela
                 chartData.forEach(reading => {
                     const row = document.createElement('tr');
                     fieldsToShow.forEach(key => {
@@ -1424,7 +1425,6 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                         } else {
                             td.textContent = value !== null && value !== '' ? value : '-';
                         }
-
                         td.style.whiteSpace = 'nowrap';
                         row.appendChild(td);
                     });
@@ -1456,6 +1456,99 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
         elements.errorText.textContent = message;
         controlsContainer.style.display = 'none';
         chartContainer.style.display = 'none';
+        filterContainer.style.display = 'none';
+    }
+
+    function createFilterContainer() {
+        const container = document.createElement('div');
+        container.className = 'lrgs-filter-container';
+        container.style.cssText = 'display: none; justify-content: center; align-items: center; gap: 15px;';
+
+        const deLabel = document.createElement('label');
+        deLabel.textContent = 'De:';
+        deLabel.style.cssText = 'font-weight: 500; color: #333;';
+
+        const deInput = document.createElement('input');
+        deInput.type = 'date';
+        deInput.id = 'filterDateFrom';
+        deInput.style.cssText = 'padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; cursor: pointer;';
+
+        const ateLabel = document.createElement('label');
+        ateLabel.textContent = 'Até:';
+        ateLabel.style.cssText = 'font-weight: 500; color: #333;';
+
+        const ateInput = document.createElement('input');
+        ateInput.type = 'date';
+        ateInput.id = 'filterDateTo';
+        ateInput.style.cssText = 'padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; cursor: pointer;';
+
+        const aplicarBtn = document.createElement('button');
+        aplicarBtn.textContent = 'Aplicar';
+        aplicarBtn.style.cssText = 'padding: 8px 16px; background: #242731; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+        const limparBtn = document.createElement('button');
+        limparBtn.textContent = 'Limpar';
+        limparBtn.style.cssText = 'padding: 8px 16px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+        aplicarBtn.onclick = () => {
+            if (!chartData) return;
+
+            const fromDate = deInput.value ? new Date(deInput.value) : null;
+            const toDate = ateInput.value ? new Date(ateInput.value) : null;
+
+            // Ajustar para UTC para evitar problemas de fuso
+            if (fromDate) {
+                fromDate.setUTCHours(0, 0, 0, 0);
+            }
+            if (toDate) {
+                toDate.setUTCHours(23, 59, 59, 999);
+            }
+
+            filteredData = chartData.filter(reading => {
+                let readingDate = null;
+
+                if (reading.reading_datetime) {
+                    readingDate = new Date(reading.reading_datetime);
+                } else if (reading.year && reading.julian_day && reading.hour !== undefined && reading.minute !== undefined) {
+                    readingDate = new Date(Date.UTC(
+                        parseInt(reading.year),
+                        0,
+                        parseInt(reading.julian_day),
+                        parseInt(reading.hour) || 0,
+                        parseInt(reading.minute) || 0,
+                        parseInt(reading.second) || 0
+                    ));
+                }
+
+                if (!readingDate) return true;
+
+                // Comparar usando UTC
+                const readingTime = readingDate.getTime();
+
+                if (fromDate && readingTime < fromDate.getTime()) return false;
+                if (toDate && readingTime > toDate.getTime()) return false;
+
+                return true;
+            });
+
+            createChart(filteredData);
+        };
+
+        limparBtn.onclick = () => {
+            deInput.value = '';
+            ateInput.value = '';
+            filteredData = chartData;
+            createChart(filteredData);
+        };
+
+        container.appendChild(deLabel);
+        container.appendChild(deInput);
+        container.appendChild(ateLabel);
+        container.appendChild(ateInput);
+        container.appendChild(aplicarBtn);
+        container.appendChild(limparBtn);
+
+        return container;
     }
 
     function createChartContainer() {
@@ -1500,11 +1593,15 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             return;
         }
 
-        // APENAS AS 5 VARIÁVEIS SOLICITADAS PARA O GRÁFICO COM A NOMENCLATURA ESPECÍFICA
+        // Limpar mensagem de erro anterior se existir
+        const existingError = chartContainer.querySelector('.lrgs-chart-error');
+        if (existingError) {
+            existingError.remove();
+        }
+
         const numericFields = (function extractNumericFields(readings) {
             const numericFields = [];
 
-            // Mapeamento exato das variáveis com a nomenclatura solicitada
             const targetFields = [
                 { key: 'water_level_15min', label: 'Nível da água' },
                 { key: 'flow_15min', label: 'Vazão' },
@@ -1513,10 +1610,8 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 { key: 'atmospheric_pressure', label: 'Pressão atmosférica' }
             ];
 
-            // Analisar apenas as variáveis alvo
             if (readings.length > 0) {
                 targetFields.forEach(field => {
-                    // Verificar se o campo tem valores numéricos
                     for (let i = 0; i < Math.min(5, readings.length); i++) {
                         const value = readings[i][field.key];
                         if (value !== null && value !== '' && value !== '-' && !isNaN(parseFloat(value))) {
@@ -1538,7 +1633,6 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 });
             }
 
-            // Filtrar campos com valores numéricos
             return numericFields.filter(field => {
                 const validValues = field.values.filter(v => v !== null);
                 return validValues.length >= 1;
@@ -1554,26 +1648,36 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             }
         })(readings);
 
-        // Se não houver dados numéricos suficientes
         if (numericFields.length === 0) {
-            chartContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">Não há dados numéricos suficientes para exibir o gráfico.</div>';
+            canvas.style.display = 'none';
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'lrgs-chart-error';
+            errorDiv.style.cssText = 'text-align: center; padding: 50px; color: #666; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%;';
+            errorDiv.textContent = 'Não há dados numéricos suficientes para exibir o gráfico.';
+            chartContainer.appendChild(errorDiv);
             return;
         }
 
-        // Extrair data/hora para o eixo X (criar timestamp a partir dos campos separados)
+        canvas.style.display = 'block';
+
         const timestamps = readings.map(r => {
             try {
                 if (r.year && r.julian_day && r.hour !== undefined && r.minute !== undefined) {
-                    const date = new Date(parseInt(r.year), 0);
-                    const julianDay = parseInt(r.julian_day) - 1;
-                    date.setDate(date.getDate() + julianDay);
-                    date.setHours(parseInt(r.hour) || 0, parseInt(r.minute) || 0, parseInt(r.second) || 0);
+                    const date = new Date(Date.UTC(
+                        parseInt(r.year),
+                        0,
+                        parseInt(r.julian_day),
+                        parseInt(r.hour) || 0,
+                        parseInt(r.minute) || 0,
+                        parseInt(r.second) || 0
+                    ));
 
                     return date.toLocaleString('pt-BR', {
                         day: '2-digit',
                         month: '2-digit',
                         hour: '2-digit',
-                        minute: '2-digit'
+                        minute: '2-digit',
+                        timeZone: 'UTC'
                     });
                 }
             } catch (e) {
@@ -1582,10 +1686,8 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             return '';
         });
 
-        // Usar todos os campos disponíveis (agora são apenas as 5 variáveis alvo)
         const selectedFields = numericFields;
 
-        // Criar datasets para o gráfico
         const datasets = selectedFields.map((field, index) => {
             const colors = ['#3388ff', '#ff5733', '#33ff57', '#ff33a1', '#33fff6'];
             return {
@@ -1600,7 +1702,6 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             };
         });
 
-        // Configurar escalas
         const scales = {
             x: {
                 title: {
@@ -1614,7 +1715,6 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             }
         };
 
-        // Adicionar eixo Y para cada dataset
         datasets.forEach((dataset, index) => {
             scales[`y${index}`] = {
                 type: 'linear',
@@ -1655,10 +1755,14 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
 
                                 try {
                                     if (reading.year && reading.julian_day && reading.hour !== undefined && reading.minute !== undefined) {
-                                        const date = new Date(parseInt(reading.year), 0);
-                                        const julianDay = parseInt(reading.julian_day) - 1;
-                                        date.setDate(date.getDate() + julianDay);
-                                        date.setHours(parseInt(reading.hour) || 0, parseInt(reading.minute) || 0, parseInt(reading.second) || 0);
+                                        const date = new Date(Date.UTC(
+                                            parseInt(reading.year),
+                                            0,
+                                            parseInt(reading.julian_day),
+                                            parseInt(reading.hour) || 0,
+                                            parseInt(reading.minute) || 0,
+                                            parseInt(reading.second) || 0
+                                        ));
 
                                         return date.toLocaleString('pt-BR', {
                                             day: '2-digit',
@@ -1667,7 +1771,8 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                                             hour: '2-digit',
                                             minute: '2-digit',
                                             second: '2-digit',
-                                            hour12: false
+                                            hour12: false,
+                                            timeZone: 'UTC'
                                         });
                                     }
                                 } catch (e) {

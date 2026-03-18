@@ -82,7 +82,7 @@
         padding-bottom: 30px;
         border: 1px solid #888;
         width: 85%;
-        height: 85%;
+        height: 90%;
         overflow-y: auto;
     }
 
