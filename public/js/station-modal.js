@@ -1709,7 +1709,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                     text: 'Data/Hora'
                 },
                 ticks: {
-                    maxTicksLimit: 10,
+                    maxTicksLimit: 20,
                     autoSkip: true
                 }
             }
@@ -1720,6 +1720,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 type: 'linear',
                 display: true,
                 position: index === 0 ? 'left' : 'right',
+                min: 0, // início em 0
                 title: {
                     display: true,
                     text: dataset.label.split('(')[0].trim()
