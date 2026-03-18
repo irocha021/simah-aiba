@@ -1599,6 +1599,9 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             existingError.remove();
         }
 
+        // Inverter a ordem dos readings apenas para o gráfico
+        const reversedReadings = [...readings].reverse();
+
         const numericFields = (function extractNumericFields(readings) {
             const numericFields = [];
 
@@ -1646,7 +1649,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 else if (fieldKey.includes('atmospheric_pressure')) return 'hPa';
                 return '';
             }
-        })(readings);
+        })(reversedReadings); // Usar readings invertidos
 
         if (numericFields.length === 0) {
             canvas.style.display = 'none';
@@ -1660,7 +1663,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
 
         canvas.style.display = 'block';
 
-        const timestamps = readings.map(r => {
+        const timestamps = reversedReadings.map(r => {
             try {
                 if (r.year && r.julian_day && r.hour !== undefined && r.minute !== undefined) {
                     const date = new Date(Date.UTC(
@@ -1752,7 +1755,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                         callbacks: {
                             title: function (context) {
                                 const index = context[0].dataIndex;
-                                const reading = readings[index];
+                                const reading = reversedReadings[index]; // Usar readings invertidos
 
                                 try {
                                     if (reading.year && reading.julian_day && reading.hour !== undefined && reading.minute !== undefined) {
