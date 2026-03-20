@@ -29,4 +29,13 @@ class HidrowebService extends BaseHidroWebService
             $params
         );
     }
+
+    public function fetchHidroInventarioEstacaoByCode(int $stationCode): array
+    {
+        return $this->get('EstacoesTelemetricas/HidroInventarioEstacoes/v1', [
+            'Unidade Federativa' => 'BA',
+            'Código da Estação'  => $stationCode,
+        ]);
+    }
+
 }

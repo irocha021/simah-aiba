@@ -29,5 +29,16 @@ class HwStationQaImportRepository implements HwStationQaImportInterface
 
         return $hwEntity;
     }
+
+    public function storeByStationCode(int $stationCode): void
+    {
+        $this->model->firstOrCreate(['station_code' => $stationCode]);
+    }
+
+    public function deleteByStationCode(int $stationCode): void
+    {
+        $this->model->where('station_code', $stationCode)->delete();
+    }
+
 }
  

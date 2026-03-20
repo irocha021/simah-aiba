@@ -81,6 +81,34 @@
                     </li>
                     <!-- ===== FIM CONTROLE DE UPLOAD ===== -->
 
+                    <!-- ===== EQUIPAMENTOS ===== -->
+                    <li class="menu-item select-control" id="equipamentos-control">
+                        <div class="select-header">
+                            <img src="{{ asset('images/icons/satellite-dish-bold.svg') }}" alt="Equipamentos"
+                                class="select-icon-open">
+                            <img src="{{ asset('images/icons/satellite-dish.svg') }}" alt="Equipamentos"
+                                class="select-icon-closed">
+                            <span class="select-text">Equipamentos</span>
+                            <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </div>
+
+                        <div class="select-dropdown">
+                            <div class="select-content">
+                                <div class="select-box">
+                                    <div class="select-options">
+                                        <a href="{{ route('lrgs-stations.index') }}" class="select-link">
+                                            <span class="option-name">SIMAH</span>
+                                        </a>
+                                        <a href="{{ route('hw-inventory-stations.index') }}" class="select-link">
+                                            <span class="option-name">ANA/HidroWeb</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- ===== FIM EQUIPAMENTOS ===== -->
+
                     <!-- ===== GERENCIAR USUARIOS ===== -->
                     <li class="menu-item select-control" id="user-management-control">
                         <div class="select-header" onclick="openUserManagementModal()">
@@ -92,18 +120,6 @@
                         </div>
                     </li>
                     <!-- ===== FIM GERENCIAR USUARIOS ===== -->
-
-                    <!-- ===== LRGS CLIENT ===== -->
-                    <li class="menu-item select-control" id="lrgs-control">
-                        <div class="select-header" onclick="window.location='{{ route('lrgs-stations.index') }}'">
-                            <img src="{{ asset('images/icons/satellite-dish-bold.svg') }}" alt="Usuarios"
-                                class="select-icon-open">
-                            <img src="{{ asset('images/icons/satellite-dish.svg') }}" alt="Usuarios"
-                                class="select-icon-closed">
-                            <span class="select-text">LRGS Client</span>
-                        </div>
-                    </li>
-                    <!-- ===== FIM LRGS CLIENT ===== -->
 
                   @endauth
             </ul>

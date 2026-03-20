@@ -18,4 +18,15 @@ class HidroStationQaImportService
     {
         return $this->repository->getAll();
     }
+
+    public function storeByStationCode(int $stationCode): void
+    {
+        $this->repository->storeByStationCode($stationCode);
+    }
+
+    public function deleteByStationCode(int $stationCode): void
+    {
+        $this->repository->deleteByStationCode($stationCode);
+    }
+
 }
