@@ -23,4 +23,7 @@ interface HwInventoryStationInterface
     public function getTelemetryStationsWithCoordinates();
     public function getQualityStationsWithCoordinates();
     public function getTelemetryStationsWithForecastCoordinates();
+    public function destroy(int $stationCode): void;
+    public function getByStationCodeWithTrashed(int $stationCode);
+    public function restoreAndUpdate(int $stationCode, array $data): void;
 }

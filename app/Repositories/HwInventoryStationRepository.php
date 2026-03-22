@@ -190,5 +190,26 @@ class HwInventoryStationRepository implements HwInventoryStationInterface
             ->get();
     }
 
+    public function destroy(int $stationCode): void
+    {
+        $station = $this->model->where('station_code', $stationCode)->first();
+        if ($station) {
+            $station->delete();
+        }
+    }
+
+    public function getByStationCodeWithTrashed(int $stationCode)
+    {
+        return $this->model->withTrashed()->where('station_code', $stationCode)->first();
+    }
+
+    public function restoreAndUpdate(int $stationCode, array $data): void
+    {
+        $station = $this->model->withTrashed()->where('station_code', $stationCode)->first();
+        $station->restore();
+        $station->update($data);
+    }
+
+
 }
  

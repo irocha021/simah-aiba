@@ -135,4 +135,36 @@ class HidroInventoryStationService
 
         $this->hwInventoryStationRepository->deleteFiles($stationCode, $data);
     }
+
+    public function storeFromApi(int $stationCode, array $apiData, array $extraData): void
+    {
+        $existing = $this->hwInventoryStationRepository->getByStationCodeWithTrashed($stationCode);
+
+        if ($existing) {
+            $this->hwInventoryStationRepository->restoreAndUpdate($stationCode, $apiData);
+        } else {
+            $this->hwInventoryStationRepository->store($apiData);
+        }
+
+        $stationData = \App\Models\HwInventoryStationData::withTrashed()
+            ->where('station_code', $stationCode)
+            ->first();
+
+        if ($stationData) {
+            if ($stationData->trashed()) {
+                $stationData->restore();
+            }
+            $stationData->update($extraData);
+        } else {
+            \App\Models\HwInventoryStationData::create(
+                array_merge(['station_code' => $stationCode], $extraData)
+            );
+        }
+    }
+
+    public function destroy(int $stationCode): void
+    {
+        $this->hwInventoryStationRepository->destroy($stationCode);
+    }
+
 }

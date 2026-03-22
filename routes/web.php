@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\GeobahiaImportController;
+use App\Http\Controllers\HwInventoryStationController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroFlowForecastController;
 use App\Http\Controllers\Jobs\HidroWeb\HidroInfoAnaAdoptedTelemetricSeriesReadingController;
@@ -113,6 +114,16 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/{id}',      [LrgsStationController::class, 'update'])->name('lrgs-stations.update');
             Route::delete('/{id}',    [LrgsStationController::class, 'destroy'])->name('lrgs-stations.destroy');
         });
+
+        Route::prefix('hw-inventory-stations')->group(function () {
+            Route::get('/',            [HwInventoryStationController::class, 'index'])->name('hw-inventory-stations.index');
+            Route::get('/create',      [HwInventoryStationController::class, 'create'])->name('hw-inventory-stations.create');
+            Route::post('/',           [HwInventoryStationController::class, 'store'])->name('hw-inventory-stations.store');
+            Route::get('/{code}/edit', [HwInventoryStationController::class, 'edit'])->name('hw-inventory-stations.edit');
+            Route::post('/{code}',     [HwInventoryStationController::class, 'update'])->name('hw-inventory-stations.update');
+            Route::delete('/{code}',   [HwInventoryStationController::class, 'destroy'])->name('hw-inventory-stations.destroy');
+        });
+
 
     });
 });
