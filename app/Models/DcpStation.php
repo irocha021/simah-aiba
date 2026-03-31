@@ -24,11 +24,6 @@ class DcpStation extends Model
         'preamble',
         'is_active',
         'last_successful_transmission_at',
-        'curva_chave',
-        'a',
-        'b',
-        'c',
-        'h0',
         'latitude',
         'longitude',
     ];
@@ -40,25 +35,31 @@ class DcpStation extends Model
         'baud_rate' => 'integer',
         'last_successful_transmission_at' => 'datetime',
         'first_transmission_time' => 'datetime:H:i:s',
-        'curva_chave' => 'integer',
-        'a' => 'decimal:15',
-        'b' => 'decimal:15',
-        'c' => 'decimal:15',
-        'h0' => 'decimal:15',
     ];
 
-    public function transmissions(): HasMany
+    // public function transmissions(): HasMany
+    // {
+    //     return $this->hasMany(DcpStationTransmission::class, 'station_id');
+    // }
+
+    // public function successfulTransmissions(): HasMany
+    // {
+    //     return $this->transmissions()->where('is_successful', true);
+    // }
+
+    // public function failedTransmissions(): HasMany
+    // {
+    //     return $this->transmissions()->where('is_successful', false);
+    // }
+
+     public function ratingCurves(): HasMany
     {
-        return $this->hasMany(DcpStationTransmission::class, 'station_id');
+        return $this->hasMany(DcpStationRatingCurve::class, 'dcp_station_id');
     }
 
-    public function successfulTransmissions(): HasMany
+    public function activeRatingCurve(): HasOne
     {
-        return $this->transmissions()->where('is_successful', true);
+        return $this->hasOne(DcpStationRatingCurve::class, 'dcp_station_id')->whereNull('ends_at');
     }
 
-    public function failedTransmissions(): HasMany
-    {
-        return $this->transmissions()->where('is_successful', false);
-    }
 }

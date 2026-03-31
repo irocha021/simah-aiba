@@ -203,13 +203,13 @@
         tileSatellite.addTo(map);
         var activeBaseTile = tileSatellite;
 
-        // Seletor de camada base
         document.getElementById('btn-satellite').addEventListener('click', function() {
             map.removeLayer(activeBaseTile);
             tileSatellite.addTo(map);
             activeBaseTile = tileSatellite;
             this.classList.add('active');
             document.getElementById('btn-street').classList.remove('active');
+            bringGeoMapLayersToFront();
         });
         document.getElementById('btn-street').addEventListener('click', function() {
             map.removeLayer(activeBaseTile);
@@ -217,7 +217,9 @@
             activeBaseTile = tileStreet;
             this.classList.add('active');
             document.getElementById('btn-satellite').classList.remove('active');
+            bringGeoMapLayersToFront();
         });
+
 
         // Criar MarkerClusterGroups para cada tipo
         var clusterGroups = {
@@ -388,7 +390,7 @@
                 popupContent += `
                     <button onclick="openLrgsReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
                             class="popup-button lrgs">
-                        Ver Leituras (Últimas 50)
+                        Ver Leituras (Últimas 72)
                     </button>
                 `;
             }

@@ -86,7 +86,6 @@
         font-size: 16px;
     }
 
-<<<<<<< HEAD
 .geomap-layer-item .drag-handle {
     color: #999;
     margin-right: 10px;
@@ -126,7 +125,6 @@
     border-bottom: 2px solid #165b9c;
     background: white;
 }
-=======
     .geomap-layer-item .layer-info:hover {
         color: #1976D2;
     }
@@ -136,7 +134,35 @@
         margin-right: 10px;
         cursor: grab;
     }
->>>>>>> 7df7ecd49465335ccc9f87b7fa346f0f133cc45d
+
+    .geomap-opacity-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-bottom: 1px solid #eee;
+    background: #f8f9fa;
+    font-size: 12px;
+    color: #555;
+}
+
+.geomap-opacity-bar label {
+    white-space: nowrap;
+}
+
+.geomap-opacity-bar input[type="range"] {
+    flex: 1;
+    accent-color: #165b9c;
+    cursor: pointer;
+}
+
+#globalOpacityValue {
+    min-width: 35px;
+    text-align: right;
+    font-weight: 600;
+    color: #165b9c;
+}
+
 </style>
 
 <!-- Painel GEOMAP -->
@@ -158,6 +184,15 @@
             <i class="fas fa-map"></i> Mapa
         </button>
     </div>
+    <div class="geomap-opacity-bar">
+        <label for="globalOpacitySlider">
+            <i class="fas fa-adjust"></i> Opacidade
+        </label>
+        <input type="range" id="globalOpacitySlider" min="0" max="1" step="0.05" value="1"
+            oninput="setAllLayersOpacity(parseFloat(this.value)); document.getElementById('globalOpacityValue').textContent = Math.round(this.value * 100) + '%'">
+        <span id="globalOpacityValue">100%</span>
+    </div>
+
     <div class="geomap-panel-content" id="geomapPanelContent">
         <!-- Items serão inseridos via JavaScript -->
     </div>

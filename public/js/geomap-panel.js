@@ -32,6 +32,16 @@ function toggleGeomapPanel() {
     }
 }
 
+// ========== TRAZER CAMADAS GEOMAP PARA FRENTE APÓS TROCA DE BASEMAP ==========
+function bringGeoMapLayersToFront() {
+    Object.keys(geoMapLayers).forEach(function (slug) {
+        var layerObj = geoMapLayers[slug];
+        if (layerObj && layerObj.layer && map.hasLayer(layerObj.layer)) {
+            layerObj.layer.bringToFront();
+        }
+    });
+}
+
 // ========== POPULAR O PAINEL ==========
 function populateGeomapPanel() {
     var container = document.getElementById('geomapPanelContent');
@@ -162,6 +172,27 @@ function updateLayersZIndex() {
 
     console.log('Z-index atualizado pela ordem do painel');
 }
+
+// ========== OPACIDADE GLOBAL DAS CAMADAS ==========
+function setAllLayersOpacity(opacity) {
+    Object.keys(geoMapLayers).forEach(function (slug) {
+        var layerObj = geoMapLayers[slug];
+        if (!layerObj || !layerObj.layer) return;
+        var layer = layerObj.layer;
+
+        if (layer.setOpacity) {
+            layer.setOpacity(opacity);
+        }
+        if (layer.eachLayer) {
+            layer.eachLayer(function (sub) {
+                if (sub.setStyle) {
+                    sub.setStyle({ opacity: opacity, fillOpacity: opacity });
+                }
+            });
+        }
+    });
+}
+
 
 // ========== TOGGLE DE CAMADAS ==========
 function toggleLayer(slug, visible) {

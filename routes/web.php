@@ -113,7 +113,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/{id}/edit',  [LrgsStationController::class, 'edit'])->name('lrgs-stations.edit');
             Route::post('/{id}',      [LrgsStationController::class, 'update'])->name('lrgs-stations.update');
             Route::delete('/{id}',    [LrgsStationController::class, 'destroy'])->name('lrgs-stations.destroy');
+            Route::post('/{id}/rating-curves',                [LrgsStationController::class, 'storeCurve'])->name('lrgs-stations.rating-curves.store');
+            Route::post('/{id}/rating-curves/{curveId}',     [LrgsStationController::class, 'updateCurve'])->name('lrgs-stations.rating-curves.update');
+            Route::delete('/{id}/rating-curves/{curveId}',   [LrgsStationController::class, 'destroyCurve'])->name('lrgs-stations.rating-curves.destroy');
         });
+
 
         Route::prefix('hw-inventory-stations')->group(function () {
             Route::get('/',            [HwInventoryStationController::class, 'index'])->name('hw-inventory-stations.index');
