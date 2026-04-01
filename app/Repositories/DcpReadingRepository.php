@@ -26,6 +26,32 @@ class DcpReadingRepository implements DcpReadingRepositoryInterface
             ->get();
     }
 
+    public function findByAddressAndDateRange(string $address, string $dateFrom, string $dateTo)
+    {
+        return DcpReading::where('address', $address)
+            ->where('reading_datetime', '>=', $dateFrom)
+            ->where('reading_datetime', '<=', $dateTo)
+            ->orderBy('reading_datetime', 'desc')
+            ->get();
+    }
+
+    public function cursorByAddressAndDateRange(string $address, ?string $dateFrom, ?string $dateTo): \Generator
+    {
+        $query = DcpReading::where('address', $address)
+            ->when($dateFrom, fn($q) => $q->where('reading_datetime', '>=', $dateFrom))
+            ->when($dateTo,   fn($q) => $q->where('reading_datetime', '<=', $dateTo))
+            ->orderBy('reading_datetime', 'desc');
+
+        if (!$dateFrom && !$dateTo) {
+            $query->limit(72);
+        }
+
+        foreach ($query->cursor() as $record) {
+            yield $record;
+        }
+    }
+
+
     public function create(array $data): DcpReading
     {
         return DcpReading::create($data);
@@ -113,27 +139,34 @@ class DcpReadingRepository implements DcpReadingRepositoryInterface
         if (!empty($update)) {
             $update['recovered_at'] = now();
 
-            // Recalcula flow_15min se water_level_15min foi recuperado
-            if (isset($update['water_level_15min'])) {
-                $reading = DcpReading::with('dcpStation')->find($id);
-                if ($reading && $reading->dcpStation) {
-                    $station = $reading->dcpStation;
+            // Busca o primeiro water level disponível na sequência
+            $reading = DcpReading::with('dcpStation')->find($id);
+            if ($reading && $reading->dcpStation) {
+                $readingDatetime = $reading->reading_datetime;
 
-                    if ($station->curva_chave && !is_null($station->a) && !is_null($station->b)) {
-                        $h = (float) $update['water_level_15min'];
-                        if ($station->curva_chave == 1) {
-                            $update['flow_15min'] = \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioPrimeira(
-                                (float) $station->a,
-                                (float) $station->b,
-                                $h,
-                                (float) $station->h0
+                $waterLevel = $reading->water_level_15min ?? $reading->water_level_30min ?? $reading->water_level_45min ?? $reading->water_level_60min;
+
+                // Sobrescreve com os valores recém recuperados se existirem
+                $waterLevel = $update['water_level_15min'] ?? $update['water_level_30min'] ?? $update['water_level_45min'] ?? $update['water_level_60min'] ?? $waterLevel;
+
+                if ($waterLevel !== null) {
+                    $curve = $reading->dcpStation->ratingCurves()
+                        ->where('starts_at', '<=', $readingDatetime->toDateString())
+                        ->where(function ($q) use ($readingDatetime) {
+                            $q->whereNull('ends_at')
+                              ->orWhere('ends_at', '>=', $readingDatetime->toDateString());
+                        })
+                        ->first();
+
+                    if ($curve) {
+                        $h = (float) $waterLevel;
+                        if ($curve->curva_chave == 1) {
+                            $update['flow'] = \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioPrimeira(
+                                (float) $curve->a, (float) $curve->b, $h, (float) $curve->h0
                             );
-                        } elseif ($station->curva_chave == 2) {
-                            $update['flow_15min'] = \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioSegunda(
-                                (float) $station->a,
-                                (float) $station->b,
-                                (float) $station->c,
-                                $h
+                        } elseif ($curve->curva_chave == 2) {
+                            $update['flow'] = \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioSegunda(
+                                (float) $curve->a, (float) $curve->b, (float) $curve->c, $h
                             );
                         }
                     }

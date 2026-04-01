@@ -1349,6 +1349,9 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
 
     let chartData = null;
     let filteredData = null;
+    let fieldsToShow = [];
+    let isAdmin = false;
+
 
     const views = {
         table: () => {
@@ -1358,7 +1361,9 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             elements.tableContainer.style.display = 'block';
             chartContainer.style.display = 'none';
-            filterContainer.style.display = 'none';
+            filterContainer.style.display = 'flex';
+            const exportBtns = document.querySelector('.lrgs-export-btns');
+            if (exportBtns) exportBtns.style.display = 'flex';
         },
         chart: () => {
             controlsContainer.children[0].className = 'lrgs-view-btn';
@@ -1368,6 +1373,8 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             elements.tableContainer.style.display = 'none';
             chartContainer.style.display = 'block';
             filterContainer.style.display = 'flex';
+            const exportBtns = document.querySelector('.lrgs-export-btns');
+            if (exportBtns) exportBtns.style.display = 'none';
             if (chartData) {
                 filteredData = chartData;
                 createChart(filteredData);
@@ -1386,18 +1393,18 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
             if (data.success && data.data?.readings?.length > 0) {
                 chartData = data.data.readings;
                 filteredData = chartData;
-                const isAdmin = data.is_admin === true;
+                isAdmin = data.is_admin === true;
 
                 elements.total.textContent = data.data.readings.length;
 
                 const BASIC_FIELDS = [
                     'reading_datetime',
-                    'water_level_60min', 'water_level_45min', 'water_level_30min', 'water_level_15min', 'flow_15min',
-                    'rain_60min', 'rain_45min', 'rain_30min', 'rain_15min',
+                    'water_level', 'flow_15min',
+                    'rain',
                     'water_temperature', 'atmospheric_pressure'
                 ];
 
-                const fieldsToShow = BASIC_FIELDS.filter(f => chartData[0].hasOwnProperty(f));
+                fieldsToShow = BASIC_FIELDS.filter(f => chartData[0].hasOwnProperty(f));
 
                 const headerRow = document.createElement('tr');
                 fieldsToShow.forEach(key => {
@@ -1441,6 +1448,83 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 });
 
                 views.table();
+
+                // Botões de exportação — no filterContainer à direita
+                const buildExportUrl = (format) => {
+                    const dateFrom = document.getElementById('filterDateFrom')?.value || '';
+                    const dateTo   = document.getElementById('filterDateTo')?.value   || '';
+                    let url = `/api/lrgs-client/${stationCode}/export?format=${format}`;
+                    if (dateFrom) url += `&date_from=${dateFrom}`;
+                    if (dateTo)   url += `&date_to=${dateTo}`;
+                    if (isAdmin)  url += `&admin=1`;
+                    return url;
+                };
+
+                const csvBtn = document.createElement('button');
+                csvBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>CSV`;
+                csvBtn.title = 'Exportar CSV';
+                csvBtn.style.cssText = 'padding: 6px 12px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px;';
+                const showExportSuccess = (msg) => {
+                    const toast = document.createElement('div');
+                    toast.textContent = msg;
+                    toast.style.cssText = 'position:fixed; bottom:30px; right:30px; background:#1e6e3e; color:#fff; padding:12px 20px; border-radius:6px; font-size:14px; font-weight:500; z-index:99999; box-shadow:0 4px 12px rgba(0,0,0,0.15); transition:opacity 0.5s;';
+                    document.body.appendChild(toast);
+                    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 3000);
+                };
+
+                const csvSvg = csvBtn.innerHTML;
+                csvBtn.onclick = () => {
+                    csvBtn.disabled = true;
+                    csvBtn.textContent = 'Exportando...';
+                    fetch(buildExportUrl('csv'))
+                        .then(r => r.blob())
+                        .then(blob => {
+                            const a = document.createElement('a');
+                            a.href = URL.createObjectURL(blob);
+                            a.download = `lrgs_${stationCode}.csv`;
+                            a.click();
+                            URL.revokeObjectURL(a.href);
+                            showExportSuccess('✓ Download CSV concluído!');
+                        })
+                        .finally(() => {
+                            csvBtn.disabled = false;
+                            csvBtn.innerHTML = csvSvg;
+                        });
+                };
+
+                const xlsBtn = document.createElement('button');
+                xlsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13l2.5 4 2.5-4"/><path d="M8 17l2.5-4 2.5 4"/></svg>Excel`;
+                xlsBtn.title = 'Exportar Excel';
+                xlsBtn.style.cssText = 'padding: 6px 12px; background: #ffffff; color: #1e6e3e; border: 1px solid #1e6e3e; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px;';
+                const xlsSvg = xlsBtn.innerHTML;
+                xlsBtn.onclick = () => {
+                    xlsBtn.disabled = true;
+                    xlsBtn.textContent = 'Exportando...';
+                    fetch(buildExportUrl('excel'))
+                        .then(r => r.blob())
+                        .then(blob => {
+                            const a = document.createElement('a');
+                            a.href = URL.createObjectURL(blob);
+                            a.download = `lrgs_${stationCode}.xlsx`;
+                            a.click();
+                            URL.revokeObjectURL(a.href);
+                            showExportSuccess('✓ Download Excel concluído!');
+                        })
+                        .finally(() => {
+                            xlsBtn.disabled = false;
+                            xlsBtn.innerHTML = xlsSvg;
+                        });
+                };
+
+                const existingExportBtns = elements.tableContainer.parentNode.querySelector('.lrgs-export-btns');
+                if (existingExportBtns) existingExportBtns.remove();
+                const exportBtns = document.createElement('div');
+                exportBtns.className = 'lrgs-export-btns';
+                exportBtns.style.cssText = 'display: flex; justify-content: flex-end; gap: 8px; padding: 6px 0; width: 92%; margin: 0 auto;';
+                exportBtns.appendChild(csvBtn);
+                exportBtns.appendChild(xlsBtn);
+                elements.tableContainer.parentNode.insertBefore(exportBtns, elements.tableContainer);
+
             } else {
                 showError('Nenhuma leitura encontrada.');
             }
@@ -1491,54 +1575,109 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
         limparBtn.style.cssText = 'padding: 8px 16px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
 
         aplicarBtn.onclick = () => {
-            if (!chartData) return;
+            console.log('aplicar clicado');
+            const fromVal = deInput.value;
+            const toVal   = ateInput.value;
+            const isTableActive = chartContainer.style.display === 'none';
+            
+            console.log('isTableActive:', isTableActive);
+            console.log('fromVal:', fromVal, 'toVal:', toVal);
 
-            const fromDate = deInput.value ? new Date(deInput.value) : null;
-            const toDate = ateInput.value ? new Date(ateInput.value) : null;
 
-            // Ajustar para UTC para evitar problemas de fuso
-            if (fromDate) {
-                fromDate.setUTCHours(0, 0, 0, 0);
-            }
-            if (toDate) {
-                toDate.setUTCHours(23, 59, 59, 999);
-            }
+            if (!fromVal || !toVal) return;
+            elements.tableBody.innerHTML = '';
+            elements.loading.style.display = 'block';
+            fetch(`/api/lrgs-client/${stationCode}/readings?date_from=${fromVal}&date_to=${toVal}`)
+                .then(r => r.json())
+                .then(data => {
+                    elements.loading.style.display = 'none';
+                    if (data.success && data.data?.readings?.length > 0) {
+                        const readings = data.data.readings;
+                        elements.total.textContent = readings.length;
 
-            filteredData = chartData.filter(reading => {
-                let readingDate = null;
+                        // Atualiza tabela
+                        elements.tableBody.innerHTML = '';
+                        readings.forEach(reading => {
+                            const row = document.createElement('tr');
+                            fieldsToShow.forEach(key => {
+                                const td = document.createElement('td');
+                                const value = reading[key];
+                                if (key === 'reading_datetime' && value) {
+                                    td.textContent = new Date(value).toLocaleString('pt-BR');
+                                } else {
+                                    td.textContent = value !== null && value !== '' ? value : '-';
+                                }
+                                td.style.whiteSpace = 'nowrap';
+                                row.appendChild(td);
+                            });
+                            if (isAdmin) {
+                                const td = document.createElement('td');
+                                const btn = document.createElement('button');
+                                btn.textContent = 'Ver completo';
+                                btn.className = 'lrgs-full-data-btn';
+                                btn.onclick = () => openLrgsFullDataModal(reading);
+                                td.appendChild(btn);
+                                row.appendChild(td);
+                            }
+                            elements.tableBody.appendChild(row);
+                        });
 
-                if (reading.reading_datetime) {
-                    readingDate = new Date(reading.reading_datetime);
-                } else if (reading.year && reading.julian_day && reading.hour !== undefined && reading.minute !== undefined) {
-                    readingDate = new Date(Date.UTC(
-                        parseInt(reading.year),
-                        0,
-                        parseInt(reading.julian_day),
-                        parseInt(reading.hour) || 0,
-                        parseInt(reading.minute) || 0,
-                        parseInt(reading.second) || 0
-                    ));
-                }
-
-                if (!readingDate) return true;
-
-                // Comparar usando UTC
-                const readingTime = readingDate.getTime();
-
-                if (fromDate && readingTime < fromDate.getTime()) return false;
-                if (toDate && readingTime > toDate.getTime()) return false;
-
-                return true;
-            });
-
-            createChart(filteredData);
+                        // Atualiza gráfico com os mesmos dados
+                        filteredData = readings;
+                        createChart(filteredData);
+                    } else {
+                        elements.tableBody.innerHTML = '<tr><td colspan="99">Nenhuma leitura encontrada.</td></tr>';
+                        filteredData = [];
+                        createChart(filteredData);
+                    }
+                });
         };
+
 
         limparBtn.onclick = () => {
             deInput.value = '';
             ateInput.value = '';
-            filteredData = chartData;
-            createChart(filteredData);
+            elements.tableBody.innerHTML = '';
+            elements.loading.style.display = 'block';
+            fetch(`/api/lrgs-client/${stationCode}/readings`)
+                .then(r => r.json())
+                .then(data => {
+                    elements.loading.style.display = 'none';
+                    if (data.success && data.data?.readings?.length > 0) {
+                        const readings = data.data.readings;
+                        chartData = readings;
+                        filteredData = readings;
+                        elements.total.textContent = readings.length;
+
+                        elements.tableBody.innerHTML = '';
+                        readings.forEach(reading => {
+                            const row = document.createElement('tr');
+                            fieldsToShow.forEach(key => {
+                                const td = document.createElement('td');
+                                const value = reading[key];
+                                if (key === 'reading_datetime' && value) {
+                                    td.textContent = new Date(value).toLocaleString('pt-BR');
+                                } else {
+                                    td.textContent = value !== null && value !== '' ? value : '-';
+                                }
+                                td.style.whiteSpace = 'nowrap';
+                                row.appendChild(td);
+                            });
+                            if (isAdmin) {
+                                const td = document.createElement('td');
+                                const btn = document.createElement('button');
+                                btn.textContent = 'Ver completo';
+                                btn.className = 'lrgs-full-data-btn';
+                                btn.onclick = () => openLrgsFullDataModal(reading);
+                                td.appendChild(btn);
+                                row.appendChild(td);
+                            }
+                            elements.tableBody.appendChild(row);
+                        });
+
+                        createChart(filteredData);
+                    }
+                });
         };
 
         container.appendChild(deLabel);
@@ -1664,29 +1803,14 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
         canvas.style.display = 'block';
 
         const timestamps = reversedReadings.map(r => {
-            try {
-                if (r.year && r.julian_day && r.hour !== undefined && r.minute !== undefined) {
-                    const date = new Date(Date.UTC(
-                        parseInt(r.year),
-                        0,
-                        parseInt(r.julian_day),
-                        parseInt(r.hour) || 0,
-                        parseInt(r.minute) || 0,
-                        parseInt(r.second) || 0
-                    ));
-
-                    return date.toLocaleString('pt-BR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        timeZone: 'UTC'
-                    });
-                }
-            } catch (e) {
-                console.error('Erro ao processar data:', e);
-            }
-            return '';
+            if (!r.reading_datetime) return '';
+            return new Date(r.reading_datetime).toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
         });
 
         const selectedFields = numericFields;
@@ -1755,35 +1879,17 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                         callbacks: {
                             title: function (context) {
                                 const index = context[0].dataIndex;
-                                const reading = reversedReadings[index]; // Usar readings invertidos
-
-                                try {
-                                    if (reading.year && reading.julian_day && reading.hour !== undefined && reading.minute !== undefined) {
-                                        const date = new Date(Date.UTC(
-                                            parseInt(reading.year),
-                                            0,
-                                            parseInt(reading.julian_day),
-                                            parseInt(reading.hour) || 0,
-                                            parseInt(reading.minute) || 0,
-                                            parseInt(reading.second) || 0
-                                        ));
-
-                                        return date.toLocaleString('pt-BR', {
-                                            day: '2-digit',
-                                            month: '2-digit',
-                                            year: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                            second: '2-digit',
-                                            hour12: false,
-                                            timeZone: 'UTC'
-                                        });
-                                    }
-                                } catch (e) {
-                                    console.error('Erro no tooltip:', e);
-                                }
-
-                                return `Registro ${index + 1}`;
+                                const reading = reversedReadings[index];
+                                if (!reading?.reading_datetime) return `Registro ${index + 1}`;
+                                return new Date(reading.reading_datetime).toLocaleString('pt-BR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    second: '2-digit',
+                                    hour12: false
+                                });
                             }
                         }
                     }

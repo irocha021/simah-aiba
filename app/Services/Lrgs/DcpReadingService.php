@@ -3,7 +3,6 @@
 namespace App\Services\Lrgs;
 
 use App\Repositories\Interfaces\DcpReadingRepositoryInterface;
-use Illuminate\Support\Facades\Log;
 
 class DcpReadingService
 {
@@ -26,7 +25,7 @@ class DcpReadingService
      */
     public function processAndInsertMessages(array $messages): array
     {
-        $validReadings = [];
+        $validReadings    = [];
         $corruptedHeaders = [];
 
         foreach ($messages as $message) {
@@ -40,20 +39,35 @@ class DcpReadingService
                 continue;
             }
 
-            $validReadings[] = $result;
+            // Captura o flow record imediatamente após o processamento
+            $pendingFlow = $this->messageProcessor->pendingFlowRecord;
+            $this->messageProcessor->pendingFlowRecord = [];
+
+            $validReadings[] = [
+                'data' => $result,
+                'flow' => $pendingFlow,
+            ];
         }
 
         $insertedCount = 0;
 
         if (!empty($validReadings)) {
-            $this->dcpReadingRepository->bulkInsert($validReadings);
-            $insertedCount = count($validReadings);
+            foreach ($validReadings as $item) {
+                $inserted = $this->dcpReadingRepository->create($item['data']);
+                $insertedCount++;
 
-            // Após inserir, verifica e preenche NULLs do registro anterior
-            foreach ($validReadings as $reading) {
+                // Grava rastreamento de flow se houver
+                if (!empty($item['flow'])) {
+                    \App\Models\DcpReadingFlow::create(array_merge(
+                        $item['flow'],
+                        ['dcp_reading_id' => $inserted->id]
+                    ));
+                }
+
+                // Preenche NULLs do registro anterior
                 $previous = $this->dcpReadingRepository->findPreviousReading(
-                    $reading['address'],
-                    (string) $reading['reading_datetime']
+                    $item['data']['address'],
+                    (string) $item['data']['reading_datetime']
                 );
 
                 if (!$previous) {
@@ -61,18 +75,18 @@ class DcpReadingService
                 }
 
                 $this->dcpReadingRepository->updateNullReadings($previous->id, [
-                    'water_level_60min' => is_null($previous->water_level_60min) ? $reading['water_level_120min'] : null,
-                    'water_level_45min' => is_null($previous->water_level_45min) ? $reading['water_level_105min'] : null,
-                    'water_level_30min' => is_null($previous->water_level_30min) ? $reading['water_level_90min'] : null,
-                    'water_level_15min' => is_null($previous->water_level_15min) ? $reading['water_level_75min'] : null,
-                    'rain_60min'        => is_null($previous->rain_60min) ? $reading['rain_120min'] : null,
-                    'rain_45min'        => is_null($previous->rain_45min) ? $reading['rain_105min'] : null,
-                    'rain_30min'        => is_null($previous->rain_30min) ? $reading['rain_90min'] : null,
-                    'rain_15min'        => is_null($previous->rain_15min) ? $reading['rain_75min'] : null,
+                    'water_level_60min' => is_null($previous->water_level_60min) ? $item['data']['water_level_120min'] : null,
+                    'water_level_45min' => is_null($previous->water_level_45min) ? $item['data']['water_level_105min'] : null,
+                    'water_level_30min' => is_null($previous->water_level_30min) ? $item['data']['water_level_90min'] : null,
+                    'water_level_15min' => is_null($previous->water_level_15min) ? $item['data']['water_level_75min'] : null,
+                    'rain_60min'        => is_null($previous->rain_60min) ? $item['data']['rain_120min'] : null,
+                    'rain_45min'        => is_null($previous->rain_45min) ? $item['data']['rain_105min'] : null,
+                    'rain_30min'        => is_null($previous->rain_30min) ? $item['data']['rain_90min'] : null,
+                    'rain_15min'        => is_null($previous->rain_15min) ? $item['data']['rain_75min'] : null,
                 ]);
-
             }
         }
+
 
         return [
             'total' => count($messages),
@@ -117,6 +131,17 @@ class DcpReadingService
     {
         return $this->dcpReadingRepository->findByAddress($address, $limit);
     }
+
+    public function getReadingsByAddressAndDateRange(string $address, string $dateFrom, string $dateTo)
+    {
+        return $this->dcpReadingRepository->findByAddressAndDateRange($address, $dateFrom, $dateTo);
+    }
+
+    public function cursorReadingsByAddressAndDateRange(string $address, ?string $dateFrom, ?string $dateTo): \Generator
+    {
+        return $this->dcpReadingRepository->cursorByAddressAndDateRange($address, $dateFrom, $dateTo);
+    }
+
 
     /**
      * Soft delete readings for a specific station and time period

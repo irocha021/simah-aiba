@@ -29,5 +29,10 @@ interface DcpReadingRepositoryInterface
     public function findPreviousReading(string $address, string $readingDatetime): ?DcpReading;
 
     public function updateNullReadings(int $id, array $data): void;
+
+    public function findByAddressAndDateRange(string $address, string $dateFrom, string $dateTo);
+
+    public function cursorByAddressAndDateRange(string $address, ?string $dateFrom, ?string $dateTo): \Generator;
+
     
 }

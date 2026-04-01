@@ -10,6 +10,8 @@ class DcpMessageProcessor
 {
     private DcpHeaderParser $headerParser;
     private DcpStationRepositoryInterface $dcpStationRepository;
+    public array $pendingFlowRecord = [];
+
 
     public function __construct(
         DcpHeaderParser $headerParser,
@@ -197,11 +199,19 @@ class DcpMessageProcessor
             'water_level_105min' => $this->parseNumericValue($parts[2] ?? null),
             'water_level_90min' => $this->parseNumericValue($parts[3] ?? null),
             'water_level_75min' => $this->parseNumericValue($parts[4] ?? null),
-            'water_level_60min' => $this->parseNumericValue($parts[5] ?? null),
-            'water_level_45min' => $this->parseNumericValue($parts[6] ?? null),
-            'water_level_30min' => $this->parseNumericValue($parts[7] ?? null),
+            'water_level_60min' => $waterLevel60 = $this->parseNumericValue($parts[5] ?? null),
+            'water_level_45min' => $waterLevel45 = $this->parseNumericValue($parts[6] ?? null),
+            'water_level_30min' => $waterLevel30 = $this->parseNumericValue($parts[7] ?? null),
             'water_level_15min' => $waterLevel15 = $this->parseNumericValue($parts[8] ?? null),
-            'flow_15min' => $this->calculateFlow($station, $waterLevel15),
+            'flow' => $this->calculateFlow(
+                $station, 
+                $readingDatetime, 
+                $waterLevel15, 
+                $waterLevel30, 
+                $waterLevel45, 
+                $waterLevel60
+            ),
+
 
 
             // Rain readings (indices 9-16)
@@ -248,33 +258,78 @@ class DcpMessageProcessor
         ];
     }
 
-    private function calculateFlow($station, ?float $waterLevel): ?float
-    {
-        if ($waterLevel === null || !$station->curva_chave) {
+    private function calculateFlow(
+        $station, 
+        \Carbon\Carbon $readingDatetime, 
+        ?float $waterLevel15, 
+        ?float $waterLevel30, 
+        ?float $waterLevel45, 
+        ?float $waterLevel60
+    ): ?float {
+        // Busca curva vigente na data da leitura
+        $curve = $station->ratingCurves()
+            ->where('starts_at', '<=', $readingDatetime->toDateString())
+            ->where(function ($q) use ($readingDatetime) {
+                $q->whereNull('ends_at')
+                ->orWhere('ends_at', '>=', $readingDatetime->toDateString());
+            })
+            ->first();
+
+        if (!$curve) {
             return null;
         }
 
-        if ($station->curva_chave == 1) {
-            return \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioPrimeira(
-                (float) $station->a,
-                (float) $station->b,
-                $waterLevel,
-                (float) $station->h0
-            );
+        // Fallback: usa o primeiro water level disponível na sequência
+        $waterLevel = null;
+        $interval   = null;
+
+        if ($waterLevel15 !== null) {
+            $waterLevel = $waterLevel15;
+            $interval   = 15;
+        } elseif ($waterLevel30 !== null) {
+            $waterLevel = $waterLevel30;
+            $interval   = 30;
+        } elseif ($waterLevel45 !== null) {
+            $waterLevel = $waterLevel45;
+            $interval   = 45;
+        } elseif ($waterLevel60 !== null) {
+            $waterLevel = $waterLevel60;
+            $interval   = 60;
         }
 
-        if ($station->curva_chave == 2) {
-            return \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioSegunda(
-                (float) $station->a,
-                (float) $station->b,
-                (float) $station->c,
+        if ($waterLevel === null) {
+            return null;
+        }
+
+        // Calcula a vazão
+        if ($curve->curva_chave == 1) {
+            $flow = \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioPrimeira(
+                (float) $curve->a,
+                (float) $curve->b,
+                $waterLevel,
+                (float) $curve->h0
+            );
+        } elseif ($curve->curva_chave == 2) {
+            $flow = \App\Helpers\Equations::calcularConversaoDaCargaHidraulicaEmVazaoDeRioSegunda(
+                (float) $curve->a,
+                (float) $curve->b,
+                (float) $curve->c,
                 $waterLevel
             );
+        } else {
+            return null;
         }
 
-        return null;
-    }
+        // Grava rastreamento (após o reading ser inserido, via observer ou após insert)
+        $this->pendingFlowRecord = [
+            'dcp_station_rating_curve_id' => $curve->id,
+            'water_level_used'            => $waterLevel,
+            'water_level_interval'        => $interval,
+            'flow'                        => $flow,
+        ];
 
+        return $flow;
+    }
 
     /**
      * Parse de valor numérico (converte NAN e vazios para null)

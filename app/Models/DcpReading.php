@@ -37,7 +37,7 @@ class DcpReading extends Model
         'water_level_45min',
         'water_level_30min',
         'water_level_15min',
-        'flow_15min',
+        'flow',
         // Rain readings
         'rain_120min',
         'rain_105min',
@@ -89,7 +89,7 @@ class DcpReading extends Model
         'water_level_45min' => 'decimal:0',
         'water_level_30min' => 'decimal:0',
         'water_level_15min' => 'decimal:0',
-        'flow_15min' => 'decimal:3',
+        'flow_15min' => 'decimal:6',
         'rain_120min' => 'decimal:1',
         'rain_105min' => 'decimal:1',
         'rain_90min' => 'decimal:1',
@@ -109,7 +109,11 @@ class DcpReading extends Model
         'skipped_scan' => 'integer',
         'reading_datetime' => 'datetime:Y-m-d H:i:s',
         'recovered_at'     => 'datetime:Y-m-d H:i:s',
+    ];
 
+    protected $appends = [
+        'water_level', 
+        'rain'
     ];
 
     /**
@@ -119,4 +123,27 @@ class DcpReading extends Model
     {
         return $this->belongsTo(DcpStation::class);
     }
+
+    public function getWaterLevelAttribute(): ?string
+    {
+        foreach (['water_level_15min', 'water_level_30min', 'water_level_45min', 'water_level_60min'] as $field) {
+            if (!is_null($this->$field)) return $this->$field;
+        }
+        return null;
+    }
+
+    public function getRainAttribute(): ?string
+    {
+        foreach (['rain_15min', 'rain_30min', 'rain_45min', 'rain_60min'] as $field) {
+            if (!is_null($this->$field)) return $this->$field;
+        }
+        return null;
+    }
+
+    public function flowRecord(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(DcpReadingFlow::class, 'dcp_reading_id');
+    }
+
+
 }
