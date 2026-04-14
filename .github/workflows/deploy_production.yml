@@ -54,7 +54,10 @@ jobs:
             chmod -R 777 storage
             rm -rf storage/logs/*
             chmod -R 777 lrgs
-            docker compose -f docker-compose.production.yml -p mhb up -d --build
+            docker rm -f 'mhb' || true
+            docker rm -f 'mhb_db' || true
+            docker rm -f 'mhb_queue' || true
+            docker compose -f docker-compose.production.yml -p mhb up -d --build --force-recreate --remove-orphans
 
       - name: Update Database and Link File Storage
         uses: appleboy/ssh-action@v1.0.1
