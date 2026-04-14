@@ -22,6 +22,9 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+# Scribe (gerado automaticamente)
+/.scribe
+
 # Pastas geradas
 /public/geojson/*
 !/public/geojson/.gitkeep

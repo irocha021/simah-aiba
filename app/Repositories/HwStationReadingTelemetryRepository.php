@@ -110,5 +110,22 @@ class HwStationReadingTelemetryRepository implements HwStationReadingTelemetryIn
             ->get();
     }
 
+    public function getReadingsByStationCodeAndDateRange(string $stationCode, ?string $dateFrom, ?string $dateTo)
+    {
+        $query = $this->model->where('station_code', $stationCode)
+            ->orderBy('measurement_datetime', 'asc');
+
+        if ($dateFrom) {
+            $query->where('measurement_datetime', '>=', $dateFrom . ' 00:00:00');
+        }
+
+        if ($dateTo) {
+            $query->where('measurement_datetime', '<=', $dateTo . ' 23:59:59');
+        }
+
+        return $query->get();
+    }
+
+
 }
  

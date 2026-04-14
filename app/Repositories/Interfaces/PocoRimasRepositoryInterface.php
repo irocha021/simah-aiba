@@ -30,4 +30,7 @@ interface PocoRimasRepositoryInterface
     public function getAllWithCoordinates(): Collection;
 
     public function getReadingsByIdPonto(string $idPonto, int $limit = 50);
+
+    public function getReadingsByIdPontoAndDateRange(int $idPonto, ?string $dateFrom, ?string $dateTo): Collection;
+
 }

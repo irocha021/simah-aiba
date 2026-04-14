@@ -124,17 +124,27 @@ class PocoRimasRepository implements PocoRimasRepositoryInterface
         $normalized = [];
 
         foreach ($record as $key => $value) {
-            // Remove espaços e converte para snake_case
             $normalizedKey = strtolower(trim(str_replace(' ', '_', $key)));
             $normalized[$normalizedKey] = $value;
         }
 
-        // Adiciona timestamps
-        $normalized['created_at'] = now();
-        $normalized['updated_at'] = now();
+        // Monta data_hora_medicao combinando data_da_me + hora_da_me
+        $data = $normalized['data_da_me'] ?? null;
+        $hora = $normalized['hora_da_me'] ?? null;
+
+         if ($data && $hora) {
+             $dt = \DateTime::createFromFormat('d/m/Y H:i:s', $data . ' ' . substr($hora, 0, 8));
+             $normalized['data_hora_medicao'] = $dt ? $dt->format('Y-m-d H:i:s') : null;
+         } else {
+             $normalized['data_hora_medicao'] = null;
+         }
+
+        $normalized['created_at'] = date('Y-m-d H:i:s');
+        $normalized['updated_at'] = date('Y-m-d H:i:s');
 
         return $normalized;
     }
+
 
     public function getAllWithCoordinates(): Collection
     {
@@ -152,4 +162,21 @@ class PocoRimasRepository implements PocoRimasRepositoryInterface
             ->limit($limit)
             ->get();
     }
+
+    public function getReadingsByIdPontoAndDateRange(int $idPonto, ?string $dateFrom, ?string $dateTo): Collection
+    {
+        $query = PocoRimas::where('id_ponto', $idPonto)
+            ->orderBy('data_hora_medicao', 'asc');
+
+        if ($dateFrom) {
+            $query->where('data_hora_medicao', '>=', $dateFrom . ' 00:00:00');
+        }
+
+        if ($dateTo) {
+            $query->where('data_hora_medicao', '<=', $dateTo . ' 23:59:59');
+        }
+
+        return $query->get();
+    }
+
 }

@@ -135,5 +135,21 @@ class HwStationReadingQaRepository implements HwStationReadingQaInterface
             ->get();
     }
 
+    public function getReadingsByStationCodeAndDateRange(string $stationCode, ?string $dateFrom, ?string $dateTo)
+    {
+        $query = $this->model->where('station_code', $stationCode)
+            ->orderBy('data_hora_dado', 'asc');
+
+        if ($dateFrom) {
+            $query->where('data_hora_dado', '>=', $dateFrom . ' 00:00:00');
+        }
+
+        if ($dateTo) {
+            $query->where('data_hora_dado', '<=', $dateTo . ' 23:59:59');
+        }
+
+        return $query->get();
+    }
+
 }
  

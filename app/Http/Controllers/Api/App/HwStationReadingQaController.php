@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\App;
 
 use App\Http\Controllers\Controller;
-use App\Services\HidroStationReadingTelemetryService;
-use App\Http\Resources\HwStationReadingTelemetryResource;
+use App\Http\Resources\App\HwStationReadingQaResource;
+use App\Services\HidroStationReadingQaService;
 use Illuminate\Http\JsonResponse;
 
-class HwStationReadingTelemetryController extends Controller
+class HwStationReadingQaController extends Controller
 {
     protected $service;
 
-    public function __construct(HidroStationReadingTelemetryService $service)
+    public function __construct(HidroStationReadingQaService $service)
     {
         $this->service = $service;
     }
@@ -20,7 +20,7 @@ class HwStationReadingTelemetryController extends Controller
     {
         $readings = $this->service->getReadingsByStationCode($stationCode, 50);
 
-        return (new HwStationReadingTelemetryResource($readings))
+        return (new HwStationReadingQaResource($readings))
             ->additional([
                 'success' => true,
                 'meta' => [

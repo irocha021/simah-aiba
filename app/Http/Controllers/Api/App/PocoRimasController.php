@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\App;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\PocoRimasResource;
+use App\Http\Resources\App\PocoRimasResource;
 use App\Services\PocoRimasService;
 use Illuminate\Http\JsonResponse;
 

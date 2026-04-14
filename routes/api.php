@@ -2,7 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\StationController;
+use App\Http\Controllers\Api\App\StationController;
+use App\Http\Controllers\Api\App\PocoRimasController;
+use App\Http\Controllers\Api\App\PocoSiagasController;
+use App\Http\Controllers\Api\App\HwStationReadingQaController;
+use App\Http\Controllers\Api\App\HwStationReadingTelemetryController;
+use App\Http\Controllers\Api\App\LrgsClientController;
+use App\Http\Controllers\Api\App\CnarhController;
 
 // Rotas de API com middleware 'api' aplicado automaticamente
 Route::get('/user', function (Request $request) {
@@ -32,14 +38,20 @@ Route::get('/stations/lrgs-client', [StationController::class, 'getLrgsClient'])
     ->name('api.stations.lrgs-client');
 
 
-Route::get('/pocos-rimas/{id_ponto}/readings', [App\Http\Controllers\Api\PocoRimasController::class, 'getReadings']);
-Route::get('/pocos-siagas/{id_ponto}/readings', [App\Http\Controllers\Api\PocoSiagasController::class, 'getReadings']);
-Route::get('/hidroweb-qualidade-agua/{station_code}/readings', [App\Http\Controllers\Api\HwStationReadingQaController::class, 'getReadings']);
+Route::get('/pocos-rimas/{id_ponto}/readings', [PocoRimasController::class, 'getReadings']);
+Route::get('/pocos-siagas/{id_ponto}/readings', [PocoSiagasController::class, 'getReadings']);
+Route::get('/hidroweb-qualidade-agua/{station_code}/readings', [HwStationReadingQaController::class, 'getReadings']);
 
-Route::get('/lrgs-client/{station_code}/readings', [App\Http\Controllers\Api\LrgsClientController::class, 'getReadings'])->middleware('web');
-Route::get('/lrgs-client/{station_code}/export', [App\Http\Controllers\Api\LrgsClientController::class, 'exportReadings'])->middleware('web');
+Route::prefix('lrgs-client')->group(function () {
+    Route::get('/stations',                [LrgsClientController::class, 'stations'])->name('api.lrgs.stations');
+    Route::get('/{station_code}/readings', [LrgsClientController::class, 'getReadings'])->middleware('web');
+    Route::get('/{station_code}/export',   [LrgsClientController::class, 'exportReadings'])->middleware('web');
+});
 
-
-Route::get('/hidroweb-telemetria/{station_code}/readings', [App\Http\Controllers\Api\HwStationReadingTelemetryController::class, 'getReadings']);
+Route::get('/hidroweb-telemetria/{station_code}/readings', [HwStationReadingTelemetryController::class, 'getReadings']);
 Route::get('/hidroweb-telemetria/{station_code}/forecast', [App\Http\Controllers\Jobs\HidroWeb\HidroFlowForecastController::class, 'getForecastForStation']);
-Route::get('/cnarh/{int_cd_cnarh40}/readings', [App\Http\Controllers\Api\CnarhController::class, 'getReadings']);
+Route::get('/cnarh/{int_cd_cnarh40}/readings', [CnarhController::class, 'getReadings']);
+
+
+Route::post('/auth/request-key', [App\Http\Controllers\Api\Public\ApiKeyController::class, 'store'])
+    ->name('api.auth.request-key');

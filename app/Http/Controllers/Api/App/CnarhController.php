@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\App;
 
 use App\Http\Controllers\Controller;
 use App\Services\CnarhService;
-use App\Http\Resources\CnarhResource;
+use App\Http\Resources\App\CnarhResource;
 use Illuminate\Http\JsonResponse;
 
 class CnarhController extends Controller

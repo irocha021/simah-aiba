@@ -130,13 +130,21 @@
 
             @guest
                 <!-- Estado de não logado (mostrar link de login) -->
-                <div id="login-state">
-                    <a href="{{ route('login') }}" class="user-login-link">
-                        <div class="user-toggle-content">
-                            <img src="{{ asset('images/icons/user-menu.svg') }}" alt="Logo" class="user-icon">
-                            <span class="user-login-text">Login Privativo</span>
-                        </div>
-                    </a>
+                <div style="display: flex; flex-direction: column; width: 100%;">
+                    <div id="login-state">
+                        <a href="{{ route('login') }}" class="user-login-link">
+                            <div class="user-toggle-content">
+                                <img src="{{ asset('images/icons/user-menu.svg') }}" alt="Logo" class="user-icon">
+                                <span class="user-login-text">Login Privativo</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div style="text-align: center; padding: 6px 16px 10px; border-top: 1px solid #ebebeb;">
+                        <a href="{{ route('api-key.form') }}" style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #165b9c; text-decoration: none; font-weight: 500;">
+                            <i class="fas fa-key" style="font-size: 11px;"></i> Solicitar Acesso à API
+                        </a>
+                    </div>
                 </div>
             @endguest
 
