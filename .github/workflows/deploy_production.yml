@@ -70,3 +70,4 @@ jobs:
             docker exec mhb php artisan migrate --force
             docker exec mhb php artisan optimize:clear
             docker exec mhb php artisan storage:link
+            docker exec mhb php -d memory_limit=512M artisan scribe:generate
