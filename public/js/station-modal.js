@@ -177,16 +177,7 @@ function openRimasReadingsModal(idPonto, stationName, latitude, longitude) {
 
                     // Data
                     const tdDate = document.createElement('td');
-                    if (reading.data_da_me) {
-                        try {
-                            const date = new Date(reading.data_da_me);
-                            tdDate.textContent = date.toLocaleDateString('pt-BR');
-                        } catch (e) {
-                            tdDate.textContent = reading.data_da_me;
-                        }
-                    } else {
-                        tdDate.textContent = '-';
-                    }
+                    tdDate.textContent = reading.data_da_me || '-';
                     row.appendChild(tdDate);
 
                     // Hora
@@ -1399,7 +1390,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
 
                 const BASIC_FIELDS = [
                     'reading_datetime',
-                    'water_level', 'flow_15min',
+                    'water_level', 'flow',
                     'rain',
                     'water_temperature', 'atmospheric_pressure'
                 ];
@@ -1746,7 +1737,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
 
             const targetFields = [
                 { key: 'water_level_15min', label: 'Nível da água' },
-                { key: 'flow_15min', label: 'Vazão' },
+                { key: 'flow', label: 'Vazão' },
                 { key: 'rain_15min', label: 'Chuva' },
                 { key: 'water_temperature', label: 'Temperatura da água' },
                 { key: 'atmospheric_pressure', label: 'Pressão atmosférica' }

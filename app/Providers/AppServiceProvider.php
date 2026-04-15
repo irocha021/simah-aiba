@@ -2,13 +2,10 @@
 
 namespace App\Providers;
 
+use App\Repositories\ApiKeyRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Interfaces\DcpStationRepositoryInterface;
 use App\Repositories\DcpStationRepository;
-use App\Repositories\Interfaces\DcpStationTransmissionRepositoryInterface;
-use App\Repositories\DcpStationTransmissionRepository;
-use App\Repositories\Interfaces\DcpTransmissionRawDataRepositoryInterface;
-use App\Repositories\DcpTransmissionRawDataRepository;
 use App\Repositories\Interfaces\DcpFailureCodeRepositoryInterface;
 use App\Repositories\DcpFailureCodeRepository;
 use App\Repositories\DcpSyncLogRepository;
@@ -34,9 +31,14 @@ use App\Repositories\PocoRimasRepository;
 use App\Repositories\Interfaces\CnarhRepositoryInterface;
 use App\Repositories\CnarhRepository;
 use App\Repositories\HwStationTelemetryImportRepository;
+use App\Repositories\Interfaces\ApiKeyRepositoryInterface;
 use App\Repositories\Interfaces\HwStationTelemetryImportInterface;
 use App\Repositories\Interfaces\MapLayerRepositoryInterface;
 use App\Repositories\MapLayerRepository;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Http\Request;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -76,10 +78,18 @@ class AppServiceProvider extends ServiceProvider
         // Binding for Map Layers
         $this->app->bind(MapLayerRepositoryInterface::class, MapLayerRepository::class);
 
+        //API
+        $this->app->bind(ApiKeyRepositoryInterface::class, ApiKeyRepository::class);
     }
 
     public function boot(): void
     {
+        RateLimiter::for('public-api', function (Request $request) {
+            $apiKey = $request->header('X-Api-Key') ?? $request->query('api_key', 'unknown');
+            return Limit::perMinute(300)->by($apiKey);
+        });
+
+
         // Força HTTPS quando a aplicação está atrás de um proxy (ngrok, load balancer, etc)
         if (config('app.env') !== 'local' || request()->header('X-Forwarded-Proto') === 'https') {
             \URL::forceScheme('https');

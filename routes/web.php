@@ -67,6 +67,9 @@ Route::prefix('geobahia')->group(function(){
     Route::get('/import-all', [GeobahiaImportController::class, 'importAll']);
 });
 
+Route::get('/api-key', [App\Http\Controllers\Api\Public\ApiKeyController::class, 'showForm'])->name('api-key.form');
+Route::post('/api-key', [App\Http\Controllers\Api\Public\ApiKeyController::class, 'requestKey'])->name('api-key.request');
+
 // ============================
 // ROTAS AUTENTICADAS
 // ============================
@@ -127,7 +130,5 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/{code}',     [HwInventoryStationController::class, 'update'])->name('hw-inventory-stations.update');
             Route::delete('/{code}',   [HwInventoryStationController::class, 'destroy'])->name('hw-inventory-stations.destroy');
         });
-
-
     });
 });

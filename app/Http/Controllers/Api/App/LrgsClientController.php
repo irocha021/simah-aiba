@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\App;
 
 use App\Http\Controllers\Controller;
 use App\Services\Lrgs\DcpReadingService;
-use App\Http\Resources\DcpReadingResource;
+use App\Http\Resources\App\DcpReadingResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

@@ -360,8 +360,8 @@ class ReadDcpMessagesController extends Controller
             ]);
 
             $stationId = $request->input('station_id');
-            $startTime = \Carbon\Carbon::parse($request->input('start_time'));
-            $endTime = \Carbon\Carbon::parse($request->input('end_time'));
+            $startTime = \Carbon\Carbon::parse($request->input('start_time'), 'America/Bahia')->utc();
+            $endTime = \Carbon\Carbon::parse($request->input('end_time'), 'America/Bahia')->utc();
 
             // Busca a estação
             $station = $this->dcpStationService->getActiveStations()

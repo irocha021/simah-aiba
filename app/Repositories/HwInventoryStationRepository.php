@@ -36,9 +36,9 @@ class HwInventoryStationRepository implements HwInventoryStationInterface
     public function getAll($onlyDisplayInSystem = false)
     {
         if ($onlyDisplayInSystem) {
-            $dataDb = $this->model->where('status', 1)->get();
+            $dataDb = $this->model->with('stationData')->where('status', 1)->get();
         } else {
-            $dataDb = $this->model->all();
+            $dataDb = $this->model->with('stationData')->get();
         }
 
         return $dataDb;
@@ -124,12 +124,21 @@ class HwInventoryStationRepository implements HwInventoryStationInterface
      */
     public function getStationsByType(string $type = null, bool $active=true)
     {
-        $query = $this->model->newQuery();
+        $query = $this->model->newQuery()->with('stationData');
 
         if ($type === 'telemetry') {
             $query->where('telemetry_station_type', 1);
         } elseif ($type === 'water_quality') {
             $query->where('water_quality_station_type', 1);
+        } elseif ($type === 'both') {
+            $query->where('telemetry_station_type', 1)
+                  ->where('water_quality_station_type', 1);
+        } elseif ($type === 'telemetry_forecast') {
+            $query->whereHas('stationData', function ($q) {
+                $q->whereNotNull('alfa_pond')
+                  ->whereNotNull('q_noventa')
+                  ->whereNotNull('vsup');
+            });
         }
 
         if ($active) {

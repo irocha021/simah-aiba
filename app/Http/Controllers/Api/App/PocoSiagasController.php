@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\App;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\PocoSiagasResource;
+use App\Http\Resources\App\PocoSiagasResource;
 use App\Services\PocoSiagasService;
 use Illuminate\Http\JsonResponse;
 

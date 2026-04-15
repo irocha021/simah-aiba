@@ -95,4 +95,9 @@ class HwInventoryStation extends Model
     {
         return $this->hasOne(HwStationTelemetryImport::class, 'station_code', 'station_code');
     }
+
+    public function stationData()
+    {
+        return $this->hasOne(HwInventoryStationData::class, 'station_code', 'station_code');
+    }
 }

@@ -89,7 +89,7 @@ class DcpReading extends Model
         'water_level_45min' => 'decimal:0',
         'water_level_30min' => 'decimal:0',
         'water_level_15min' => 'decimal:0',
-        'flow_15min' => 'decimal:6',
+        'flow' => 'decimal:6',
         'rain_120min' => 'decimal:1',
         'rain_105min' => 'decimal:1',
         'rain_90min' => 'decimal:1',
