@@ -124,4 +124,16 @@ class StationController extends Controller
         }
     }
 
+    public function getPocosSimah(): JsonResponse
+    {
+        try {
+            $stations = $this->stationService->getPocosSimahStations();
+            return response()->json([
+                'data' => ['stations' => $stations, 'count' => count($stations)]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching Poços SIMAH stations: ' . $e->getMessage());
+            return response()->json(['error' => 'Erro ao buscar estações Poços SIMAH'], 500);
+        }
+    }
 }

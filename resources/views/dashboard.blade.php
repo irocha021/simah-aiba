@@ -264,7 +264,14 @@
                 spiderfyOnMaxZoom: true,
                 showCoverageOnHover: false,
                 zoomToBoundsOnClick: true
-            })
+            }),
+            'pocos_simah': L.markerClusterGroup({
+                maxClusterRadius: 50,
+                spiderfyOnMaxZoom: true,
+                showCoverageOnHover: false,
+                zoomToBoundsOnClick: true
+            }),
+
         };
 
         window.clusterGroups = clusterGroups; // Expoe globalmente
@@ -330,7 +337,15 @@
                     weight: 6,
                     opacity: 1,
                     fillOpacity: 0.7
-                }
+                },
+                'pocos_simah': {
+                    radius: 5,
+                    color: '#165B9C',
+                    fillColor: '#fff',
+                    weight: 6,
+                    opacity: 1,
+                    fillOpacity: 0.7
+                },
             };
 
             return styles[source] || styles['hidroweb_qualidade_agua'];
@@ -415,6 +430,16 @@
                 `;
             }
 
+            if (station.source === 'pocos_simah') {
+            popupContent += `
+                <button onclick="openSimahReadingsModal('${station.code}', '${station.name}')" 
+                        class="popup-button simah">
+                    Ver Leituras (Últimas 50)
+                </button>
+            `;
+        }
+
+
             popupContent += `
                     </div>
                 </div>
@@ -439,6 +464,7 @@
     @include('partials.lrgs-readings-modal')
     @include('partials.hidroweb-telemetry-data-modal')
     @include('partials.cnarh-readings-modal')
+    @include('partials.simah-readings-modal')
 </body>
 
 </html>

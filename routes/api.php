@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\App\HwStationReadingQaController;
 use App\Http\Controllers\Api\App\HwStationReadingTelemetryController;
 use App\Http\Controllers\Api\App\LrgsClientController;
 use App\Http\Controllers\Api\App\CnarhController;
+use App\Http\Controllers\Api\App\PocoSimahController;
 
 // Rotas de API com middleware 'api' aplicado automaticamente
 Route::get('/user', function (Request $request) {
@@ -36,6 +37,9 @@ Route::get('/stations/hidroweb-telemetria-previsao', [StationController::class, 
     ->name('api.stations.hidroweb-telemetria-previsao');
 Route::get('/stations/lrgs-client', [StationController::class, 'getLrgsClient'])
     ->name('api.stations.lrgs-client');
+Route::get('/stations/pocos-simah', [StationController::class, 'getPocosSimah'])
+    ->name('api.stations.pocos-simah');
+Route::get('/pocos-simah/{station_code}/readings', [PocoSimahController::class, 'getReadings']);
 
 
 Route::get('/pocos-rimas/{id_ponto}/readings', [PocoRimasController::class, 'getReadings']);

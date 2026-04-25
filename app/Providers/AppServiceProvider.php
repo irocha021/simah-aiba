@@ -37,6 +37,11 @@ use App\Repositories\Interfaces\MapLayerRepositoryInterface;
 use App\Repositories\MapLayerRepository;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
+use App\Repositories\Interfaces\PocoSimahStationRepositoryInterface;
+use App\Repositories\PocoSimahStationRepository;
+use App\Repositories\Interfaces\PocoSimahReadingRepositoryInterface;
+use App\Repositories\PocoSimahReadingRepository;
+
 use Illuminate\Http\Request;
 
 
@@ -74,6 +79,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Interfaces\HwStationFlowForecastInterface::class,
             \App\Repositories\HwStationFlowForecastRepository::class
         );
+
+        //Binding for poco sinah
+        $this->app->bind(PocoSimahStationRepositoryInterface::class, PocoSimahStationRepository::class);
+        $this->app->bind(PocoSimahReadingRepositoryInterface::class, PocoSimahReadingRepository::class);
+
 
         // Binding for Map Layers
         $this->app->bind(MapLayerRepositoryInterface::class, MapLayerRepository::class);

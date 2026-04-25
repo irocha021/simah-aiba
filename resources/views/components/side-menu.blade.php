@@ -74,6 +74,9 @@
                                         <a href="{{ route('cnarh.index') }}" class="select-link">
                                             <span class="option-name">Importar CNRH</span>
                                         </a>
+                                        <a href="{{ route('poco-simah.import.select') }}" class="select-link">
+                                            <span class="option-name">Importar SIMAH</span>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -98,6 +101,9 @@
                                     <div class="select-options">
                                         <a href="{{ route('lrgs-stations.index') }}" class="select-link">
                                             <span class="option-name">SIMAH</span>
+                                        </a>
+                                        <a href="{{ route('poco-simah.stations.index') }}" class="select-link">
+                                            <span class="option-name">Poços SIMAH</span>
                                         </a>
                                         <a href="{{ route('hw-inventory-stations.index') }}" class="select-link">
                                             <span class="option-name">ANA/HidroWeb</span>
