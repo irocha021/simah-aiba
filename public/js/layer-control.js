@@ -44,7 +44,13 @@ function initLayerControl() {
       color: '#e16ccf',
       icon: 'fas fa-oil-well',
       endpoint: '/api/stations/pocos-siagas'
-    }
+    },
+    'pocos_simah': {
+      name: 'Poços SIMAH',
+      color: '#165B9C',
+      icon: 'fas fa-water',
+      endpoint: '/api/stations/pocos-simah'
+    },
   };
 
   // Estado de cada camada

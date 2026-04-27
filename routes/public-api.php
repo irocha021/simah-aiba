@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\Public\PocoRimasController;
 use App\Http\Controllers\Api\Public\HwStationController;
 use App\Http\Controllers\Api\Public\CnarhController;
 use App\Http\Controllers\Api\Public\ApiKeyController;
-
+use App\Http\Controllers\Api\Public\PocoSimahController;
 
 // -----------------------------------------------------------------------
 // Rotas protegidas por API Key + Rate Limit
@@ -57,5 +57,14 @@ Route::middleware(['api.key', 'throttle:public-api'])->group(function () {
         Route::get('/{cd_cnarh40}', [CnarhController::class, 'show'])
             ->name('public-api.cnarh.show');
     });
+
+    // Poços SIMAH
+    Route::prefix('poco-simah')->group(function () {
+        Route::get('/stations',                [PocoSimahController::class, 'stations'])
+            ->name('public-api.poco-simah.stations');
+        Route::get('/{station_code}/readings', [PocoSimahController::class, 'readings'])
+            ->name('public-api.poco-simah.readings');
+    });
+
 
 });

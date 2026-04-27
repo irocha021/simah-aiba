@@ -8,6 +8,7 @@ use App\Repositories\Interfaces\DcpStationRepositoryInterface;
 use App\Repositories\Interfaces\PocoRimasRepositoryInterface;
 use App\Repositories\Interfaces\PocoSiagasRepositoryInterface;
 use App\Repositories\Interfaces\CnarhRepositoryInterface;
+use App\Repositories\Interfaces\PocoSimahStationRepositoryInterface;
 
 class StationService
 {
@@ -16,7 +17,8 @@ class StationService
         protected DcpStationRepositoryInterface $dcpStationRepository,
         protected PocoRimasRepositoryInterface $pocoRimasRepository,
         protected PocoSiagasRepositoryInterface $pocoSiagasRepository,
-        protected CnarhRepositoryInterface $cnarhRepository
+        protected CnarhRepositoryInterface $cnarhRepository,
+        protected PocoSimahStationRepositoryInterface $pocoSimahStationRepository,
     ) {}
 
     public function getAllForMap(): array
@@ -231,4 +233,18 @@ class StationService
         return $stations;
     }
 
+    public function getPocosSimahStations(): array
+    {
+        $stations = [];
+        foreach ($this->pocoSimahStationRepository->getAllWithCoordinates() as $station) {
+            $stations[] = [
+                'code'      => (string) $station->station_code,
+                'name'      => $station->name,
+                'latitude'  => (float) $station->latitude,
+                'longitude' => (float) $station->longitude,
+                'source'    => 'pocos_simah',
+            ];
+        }
+        return $stations;
+    }
 }

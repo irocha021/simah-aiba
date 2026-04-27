@@ -121,6 +121,18 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/{id}/rating-curves/{curveId}',   [LrgsStationController::class, 'destroyCurve'])->name('lrgs-stations.rating-curves.destroy');
         });
 
+        Route::prefix('poco-simah')->group(function () {
+            Route::get('/stations',                        [\App\Http\Controllers\PocoSimahStationController::class, 'index'])->name('poco-simah.stations.index');
+            Route::get('/stations/check-code',             [\App\Http\Controllers\PocoSimahStationController::class, 'checkCode'])->name('poco-simah.stations.check-code');
+            Route::get('/stations/create',                 [\App\Http\Controllers\PocoSimahStationController::class, 'create'])->name('poco-simah.stations.create');
+            Route::post('/stations',                       [\App\Http\Controllers\PocoSimahStationController::class, 'store'])->name('poco-simah.stations.store');
+            Route::get('/stations/{id}/edit',              [\App\Http\Controllers\PocoSimahStationController::class, 'edit'])->name('poco-simah.stations.edit');
+            Route::post('/stations/{id}',                  [\App\Http\Controllers\PocoSimahStationController::class, 'update'])->name('poco-simah.stations.update');
+            Route::delete('/stations/{id}',                [\App\Http\Controllers\PocoSimahStationController::class, 'destroy'])->name('poco-simah.stations.destroy');
+            Route::get('/stations/{id}/import',            [\App\Http\Controllers\PocoSimahStationController::class, 'showImport'])->name('poco-simah.stations.import');
+            Route::post('/stations/{id}/import',           [\App\Http\Controllers\PocoSimahStationController::class, 'import'])->name('poco-simah.stations.import.store');
+            Route::get('/import/select-station', [\App\Http\Controllers\PocoSimahStationController::class, 'selectStation'])->name('poco-simah.import.select');
+        });
 
         Route::prefix('hw-inventory-stations')->group(function () {
             Route::get('/',            [HwInventoryStationController::class, 'index'])->name('hw-inventory-stations.index');

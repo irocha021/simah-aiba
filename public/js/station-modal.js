@@ -860,6 +860,87 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
     }
 }
 
+function openSimahReadingsModal(stationCode, stationName) {
+    const modal = document.getElementById('simahReadingsModal');
+    const loading = document.getElementById('simahLoadingSpinner');
+    const tableContainer = document.getElementById('simahReadingsTableContainer');
+    const tableBody = document.getElementById('simahReadingsTableBody');
+    const errorMessage = document.getElementById('simahErrorMessage');
+    const errorText = document.getElementById('simahErrorText');
+    const totalReadings = document.getElementById('simahModalTotalReadings');
+    const stationNameEl = document.getElementById('simahModalStationName');
+    const stationCodeEl = document.getElementById('simahModalStationCode');
+
+    modal.style.display = 'block';
+    stationNameEl.textContent = stationName;
+    stationCodeEl.textContent = stationCode;
+
+    loading.style.display = 'block';
+    tableContainer.style.display = 'none';
+    errorMessage.style.display = 'none';
+    tableBody.innerHTML = '';
+
+    document.getElementById('closeSimahModal').onclick = function () {
+        modal.style.display = 'none';
+    };
+
+    window.onclick = function (event) {
+        if (event.target === modal) modal.style.display = 'none';
+    };
+
+    function formatSimahDate(val) {
+        if (!val) return '-';
+        const d = new Date(val.replace(' ', 'T'));
+        if (isNaN(d)) return val;
+        return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(',', '');
+    }
+
+    function formatSimahNum(val) {
+        if (val === null || val === undefined) return '-';
+        return parseFloat(val).toString().replace('.', ',').replace(/,?0+$/, '') || '0';
+    }
+
+    fetch(`/api/pocos-simah/${stationCode}/readings`)
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao buscar leituras');
+            return response.json();
+        })
+        .then(data => {
+            loading.style.display = 'none';
+            const readings = data.data.readings;
+            totalReadings.textContent = data.data.total;
+
+            if (!readings || readings.length === 0) {
+                errorText.textContent = 'Nenhuma leitura encontrada para este poço.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            readings.slice(0, 50).forEach(r => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${r.number ?? '-'}</td>
+                    <td>${formatSimahDate(r.datetime_local)}</td>
+                    <td>${formatSimahDate(r.datetime_utc)}</td>
+                    <td>${formatSimahNum(r.pd_bar)}</td>
+                    <td>${formatSimahNum(r.p1_bar)}</td>
+                    <td>${formatSimahNum(r.p2_bar)}</td>
+                    <td>${formatSimahNum(r.tob1_celsius)}</td>
+                    <td>${formatSimahNum(r.tob2_celsius)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            tableContainer.style.display = 'block';
+        })
+        .catch(err => {
+            loading.style.display = 'none';
+            errorText.textContent = err.message;
+            errorMessage.style.display = 'block';
+        });
+}
+
+
 // Inicializar modal SIAGAS
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => initStationModal(siagasModalConfig));
