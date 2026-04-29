@@ -1009,6 +1009,7 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
     elements.tableContainer.parentNode.insertBefore(controlsContainer, elements.tableContainer.nextSibling);
 
     let chartData = null;
+    let filteredTableData = null;
 
     // Configurar visualizações
     const views = {
@@ -1036,6 +1037,544 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
     controlsContainer.children[0].onclick = views.table;
     controlsContainer.children[1].onclick = views.chart;
 
+    // Função para formatar data/hora para fuso horário de Brasília
+    function formatDateTimeToBrazilian(dateString) {
+        if (!dateString || dateString === '-') return '-';
+        
+        try {
+            const utcDate = new Date(dateString);
+            if (isNaN(utcDate.getTime())) return dateString;
+            
+            return utcDate.toLocaleString('pt-BR', {
+                timeZone: 'America/Sao_Paulo',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).replace(',', ' -');
+        } catch (e) {
+            return dateString;
+        }
+    }
+
+    // Mapeamento de unidades de medida
+    const unitMapping = {
+        'ID': '',
+        'Código': '',
+        'Data e hora do registro': '',
+        'Data última alteração': '',
+        'Nível de consistência': '',
+        'Número da medição': '',
+        'Posição horizontal da coleta': '',
+        'Posição vertical da coleta': '',
+        'Profundidade': 'm',
+        'Choveu': '',
+        'Alcalinidade (CaCO3)': 'mg/L',
+        'Carbono orgânico total': 'mg/L',
+        'Cloretos': 'mg/L',
+        'Clorofila': 'µg/L',
+        'Coliformes termo tolerantes': 'UFC/100mL',
+        'Condutividade específica': 'µS/cm a 25°C',
+        'DBO': 'mg/L',
+        'Descarga líquida': 'm³/s',
+        'DQO': 'mg/L',
+        'Escherichia Coli': 'UFC/100mL',
+        'Fitoplancton': 'células/100mL',
+        'Fósforo total': 'mg/L',
+        'Nitratos': 'mg/L',
+        'Nitrogênio amoniacal': 'mg/L',
+        'Nitrogênio total': 'mg/L',
+        'Ortofosfato total': 'mg/L',
+        'OD': 'mg/L',
+        'Ph': '',
+        'Sólidos dissolvidos totais': 'mg/L',
+        'Sólidos em suspensão totais': 'mg/L',
+        'Temperatura da amostra': '°C',
+        'Temperatura': '°C',
+        'Transparência': 'm',
+        'Turbidez': 'NTU',
+        'Acidez CaCO3': 'mg/L',
+        'Alcalinidade CO3': 'mg/L',
+        'Alcalinidade HCO3': 'mg/L',
+        'Alcalinidade OH': 'mg/L',
+        'Alumínio dissolvido': 'mg/L',
+        'Alumínio': 'mg/L',
+        'Amônia não ionizável': 'mg/L',
+        'Arsênio': 'mg/L',
+        'Bario': 'mg/L',
+        'Berílio': 'mg/L',
+        'Bismuto': 'mg/L',
+        'Boro dissolvido': 'mg/L',
+        'Boro': 'mg/L',
+        'Cádmio': 'mg/L',
+        'Cálcio total': 'mg/L',
+        'Chumbo': 'mg/L',
+        'Cianeto livre': 'mg/L',
+        'Cianetos': 'mg/L',
+        'Cobalto': 'mg/L',
+        'Cobre dissolvido': 'mg/L',
+        'Cobre': 'mg/L',
+        'Coliformes fecais': 'NMP/100mL',
+        'Coliformes totais': 'NMP/100mL',
+        'Compostos orgânicos clorados': 'mg/L',
+        'Compostos orgânicos fosforados': 'mg/L',
+        'Condutividade elétrica': 'µS/cm a 20°C',
+        'Cor': 'mg Pt-Co/L',
+        'Cromo hexavalente': 'mg/L',
+        'Cromo total': 'mg/L',
+        'Cromo trivalente': 'mg/L',
+        'Densidade ciano bactérias': 'mL',
+        'Detergentes': 'mg/L',
+        'Dureza (CaCO3)': 'mg/L',
+        'Dureza (MgCO3)': 'mg/L',
+        'Dureza total': 'mg/L',
+        'Estanho': 'mg/L',
+        'Estreptococos fecais': 'NMP/100mL',
+        'Ferro dissolvido': 'mg/L',
+        'Ferro total': 'mg/L',
+        'Fluoretos': 'mg/L',
+        'Fosfato total': 'mg/L',
+        'Hidrocarbonetos': 'mg/L',
+        'Indicefenois': 'mg/L',
+        'IQA': '',
+        'Lítio': 'mg/L',
+        'Magnésio total': 'mg/L',
+        'Manganês': 'mg/L',
+        'Mercúrio': 'mg/L',
+        'Níquel': 'mg/L',
+        'Nitritos': 'mg/L',
+        'Nitrogênio orgânico': 'mg/L',
+        'Nitrogênio total (Kjeldahl)': 'mg/L',
+        'Óleos e graxas': 'mg/L',
+        'OD (% Sat)': '%',
+        'Potássio total': 'mg/L',
+        'Prata': 'mg/L',
+        'Selênio': 'mg/L',
+        'Sílica dissolvida': 'mg/L',
+        'Sódio total': 'mg/L',
+        'Sólidos dissolvidos fixos': 'mg/L',
+        'Sólidos dissolvidos voláteis': 'mg/L',
+        'Sólidos em suspensão fixos': 'mg/L',
+        'Sólidos em suspensão voláteis': 'mg/L',
+        'Sólidos fixos': 'mg/L',
+        'Sólidos sedimentáveis': 'mg/L',
+        'Sólidos totais': 'mg/L',
+        'Sólidos voláteis': 'mg/L',
+        'Sulfatos': 'mg/L',
+        'Sulfetos': 'mg/L',
+        'Urânio': 'mg/L',
+        'Vanádio': 'mg/L',
+        'Zinco': 'mg/L',
+        '1,1 Dicloroeteno': 'mg/L',
+        '1,2 Dicloroetano': 'mg/L',
+        '2,4,5 T': 'mg/L',
+        '2,4,5 TP': 'mg/L',
+        'Triclorofenol': 'mg/L',
+        'Ácido diclorofenoxiacetico': 'mg/L',
+        'Aldrin': 'mg/L',
+        'Azinfosetil': 'mg/L',
+        'Benzeno': 'mg/L',
+        'Benzoapireno': 'mg/L',
+        'BHC': 'mg/L',
+        'Bifenilaspolicloradas': 'mg/L',
+        'Carbaril': 'mg/L',
+        'Clordano': 'mg/L',
+        'DDEPP': 'mg/L',
+        'DDT': 'mg/L',
+        'Demeton': 'mg/L',
+        'Diazinon': 'mg/L',
+        'Dieldrin': 'mg/L',
+        'Dodecacloro no cloro': 'mg/L',
+        'Dysyston/Disulfton': 'mg/L',
+        'Endossulfan': 'mg/L',
+        'Endrin': 'mg/L',
+        'Epoxidoheptacloro': 'mg/L',
+        'Ethion': 'mg/L',
+        'Gution': 'mg/L',
+        'Heptacloro': 'mg/L',
+        'Lindano': 'mg/L',
+        'Malation': 'mg/L',
+        'Metilparation': 'mg/L',
+        'Metoxicloro': 'mg/L',
+        'Paration': 'mg/L',
+        'Pentaclorofenol': 'mg/L',
+        'Phosdrin': 'mg/L',
+        'Tetracloreto de carbono': 'mg/L',
+        'Tetracloro de eteno': 'mg/L',
+        'Toxafeno': 'mg/L',
+        'Tricloro de eteno': 'mg/L',
+        'Algas': 'UPA/mL',
+        'Amônia': 'mg/L',
+        'Bactérias heterotróficas': 'UFC/mL',
+        'Cloro residual': 'mg/L',
+        'Colifagos': 'NMP/100mL',
+        'Contagem bactérias em placa': 'UFC/mL',
+        'Enterobactérias patogênicas': 'org/mL',
+        'Fungos': 'UFC/mL',
+        'Nitrogênio albuminoide': 'mg/L',
+        'Protozoários': 'org/mL',
+        'Salmonelas': 'NMP/mL',
+        'Zooplancton total': 'org/mL',
+        'created_at': '',
+        'updated_at': '',
+        'deleted_at': ''
+    };
+
+    // Função para filtrar e renomear dados APENAS para a tabela
+    function filterAndRenameForTable(readings) {
+        const fieldMapping = {
+            'id': 'ID',
+            'station_code': 'Código',
+            'data_hora_dado': 'Data e hora do registro',
+            'data_ultima_alteracao': 'Data última alteração',
+            'nivel_consistencia': 'Nível de consistência',
+            'num_medicao': 'Número da medição',
+            'posicao_horizontal_coleta': 'Posição horizontal da coleta',
+            'posicao_vertical_coleta': 'Posição vertical da coleta',
+            'profundidade_m': 'Profundidade',
+            'choveu': 'Choveu',
+            '1_alcalinidade_total_mgl_caco3': 'Alcalinidade (CaCO3)',
+            '1_status': 'Status',
+            '2_carbono_organico_total_mgl': 'Carbono orgânico total',
+            '2_status': 'Status',
+            '3_cloretos_mgl_cl': 'Cloretos',
+            '3_status': 'Status',
+            '4_clorofila_ugl': 'Clorofila',
+            '4_status': 'Status',
+            '5_coliformes_termo_tolerantes_ufc_100ml': 'Coliformes termo tolerantes',
+            '5_status': 'Status',
+            '6_condutividade_especifica_25oc_us_cm_a_25c': 'Condutividade específica',
+            '6_status': 'Status',
+            '7_dbo_mgl_02': 'DBO',
+            '7_status': 'Status',
+            '8_descarga_liquida_m3s': 'Descarga líquida',
+            '8_status': 'Status',
+            '9_dqo_mgl_02': 'DQO',
+            '9_status': 'Status',
+            '10_escherichiacoli_ufc_100ml': 'Escherichia Coli',
+            '10_status': 'Status',
+            '11_fitoplancton_quantitativo_celulas_100ml': 'Fitoplancton',
+            '11_status': 'Status',
+            '12_fosforo_total_mgl': 'Fósforo total',
+            '12_status': 'Status',
+            '13_nitratos_mgl_n': 'Nitratos',
+            '13_status': 'Status',
+            '14_nitrogenio_amoniacal_mgl': 'Nitrogênio amoniacal',
+            '14_status': 'Status',
+            '15_nitrogenio_total_mgl_n': 'Nitrogênio total',
+            '15_status': 'Status',
+            '16_ortofosfato_total_mgl_po4': 'Ortofosfato total',
+            '16_status': 'Status',
+            '17_od_mgl_02': 'OD',
+            '17_status': 'Status',
+            '18_ph': 'Ph',
+            '18_status': 'Status',
+            '19_soldissolvidos_totais_mgl': 'Sólidos dissolvidos totais',
+            '19_status': 'Status',
+            '20_solsuspensao_totais_mgl': 'Sólidos em suspensão totais',
+            '20_status': 'Status',
+            '21_temperatura_amostra_c': 'Temperatura da amostra',
+            '21_status': 'Status',
+            '22_tempar_c': 'Temperatura',
+            '22_status': 'Status',
+            '23_transparencia_m': 'Transparência',
+            '23_status': 'Status',
+            '24_turbidez_ntu': 'Turbidez',
+            '24_status': 'Status',
+            '25_acidez_mgl_caco3': 'Acidez CaCO3',
+            '25_status': 'Status',
+            '26_alcalinidade_co3_mgl': 'Alcalinidade CO3',
+            '26_status': 'Status',
+            '27_alcalinidade_hco3_mgl': 'Alcalinidade HCO3',
+            '27_status': 'Status',
+            '28_alcalinidade_oh_mgl': 'Alcalinidade OH',
+            '28_status': 'Status',
+            '29_aluminio_dissolvido_mgl': 'Alumínio dissolvido',
+            '29_status': 'Status',
+            '30_aluminio_mgl_al': 'Alumínio',
+            '30_status': 'Status',
+            '31_amonia_nao_ionizavel_mgl_nh3': 'Amônia não ionizável',
+            '31_status': 'Status',
+            '32_arsenio_mgl': 'Arsênio',
+            '32_status': 'Status',
+            '33_bario_mgl_ba': 'Bario',
+            '33_status': 'Status',
+            '34_berilio_mgl': 'Berílio',
+            '34_status': 'Status',
+            '35_bismuto_total_mgl': 'Bismuto',
+            '35_status': 'Status',
+            '36_borodissolvido_mgl': 'Boro dissolvido',
+            '36_status': 'Status',
+            '37_boro_mgl_b': 'Boro',
+            '37_status': 'Status',
+            '38_cadmio_mgl_cd': 'Cádmio',
+            '38_status': 'Status',
+            '39_calcio_total_mgl': 'Cálcio total',
+            '39_status': 'Status',
+            '40_chumbo_mgl': 'Chumbo',
+            '40_status': 'Status',
+            '41_cianeto_livre_mgl': 'Cianeto livre',
+            '41_status': 'Status',
+            '42_cianetos_mgl_cn': 'Cianetos',
+            '42_status': 'Status',
+            '43_cobalto_mgl_co': 'Cobalto',
+            '43_status': 'Status',
+            '44_cobre_dissolvido_mgl': 'Cobre dissolvido',
+            '44_status': 'Status',
+            '45_cobre_mgl_cu': 'Cobre',
+            '45_status': 'Status',
+            '46_coliformes_fecais_nmp_100ml': 'Coliformes fecais',
+            '46_status': 'Status',
+            '47_coliformes_totais_nmp_100ml': 'Coliformes totais',
+            '47_status': 'Status',
+            '48_compostos_organo_clorados_mgl': 'Compostos orgânicos clorados',
+            '48_status': 'Status',
+            '49_compostos_organo_fosforados_mgl': 'Compostos orgânicos fosforados',
+            '49_status': 'Status',
+            '50_condutivida_de_eletrica_us_cm_a_20c': 'Condutividade elétrica',
+            '50_status': 'Status',
+            '51_cor_mg_pt_col': 'Cor',
+            '51_status': 'Status',
+            '52_cromo_hexavalente_mgl': 'Cromo hexavalente',
+            '52_status': 'Status',
+            '53_cromo_total_mgl_cr': 'Cromo total',
+            '53_status': 'Status',
+            '54_cromo_trivalente_mgl': 'Cromo trivalente',
+            '54_status': 'Status',
+            '55_densidade_ciano_bacterias_cel_ml': 'Densidade ciano bactérias',
+            '55_status': 'Status',
+            '56_detergentes_mgl_las': 'Detergentes',
+            '56_status': 'Status',
+            '57_dureza_mgl_caco3': 'Dureza (CaCO3)',
+            '57_status': 'Status',
+            '58_dureza_magnesio_mgl_mgco3': 'Dureza (MgCO3)',
+            '58_status': 'Status',
+            '59_dureza_total_mgl': 'Dureza total',
+            '59_status': 'Status',
+            '60_estanho_mgl': 'Estanho',
+            '60_status': 'Status',
+            '61_estreptococos_fecais_nmp_100ml': 'Estreptococos fecais',
+            '61_status': 'Status',
+            '62_ferro_dissolvido_mgl': 'Ferro dissolvido',
+            '62_status': 'Status',
+            '63_ferro_total_mgl': 'Ferro total',
+            '63_status': 'Status',
+            '64_fluoretos_mgl': 'Fluoretos',
+            '64_status': 'Status',
+            '65_fosfato_total_mgl': 'Fosfato total',
+            '65_status': 'Status',
+            '66_hidrocarbonetos_mgl': 'Hidrocarbonetos',
+            '66_status': 'Status',
+            '67_indicefenois_mgl_c6h5oh': 'Indicefenois',
+            '67_status': 'Status',
+            '68_iqa': 'IQA',
+            '68_status': 'Status',
+            '69_litio_mgl': 'Lítio',
+            '69_status': 'Status',
+            '70_magnesio_total_mgl': 'Magnésio total',
+            '70_status': 'Status',
+            '71_manganes_mgl': 'Manganês',
+            '71_status': 'Status',
+            '72_mercurio_mgl': 'Mercúrio',
+            '72_status': 'Status',
+            '73_niquel_mgl': 'Níquel',
+            '73_status': 'Status',
+            '74_nitritos_mgl': 'Nitritos',
+            '74_status': 'Status',
+            '75_nitrogenio_organico_mgl': 'Nitrogênio orgânico',
+            '75_status': 'Status',
+            '76_nitrogenio_total_kjeldahl_mgl': 'Nitrogênio total (Kjeldahl)',
+            '76_status': 'Status',
+            '77_oleos_graxas_mgl': 'Óleos e graxas',
+            '77_status': 'Status',
+            '78_od_perc_saturacao': 'OD (% Sat)',
+            '78_status': 'Status',
+            '79_potassio_total_mgl': 'Potássio total',
+            '79_status': 'Status',
+            '80_prata_mgl': 'Prata',
+            '80_status': 'Status',
+            '81_parametro_profundidade_m': 'Profundidade',
+            '81_status': 'Status',
+            '82_selenio_mgl': 'Selênio',
+            '82_status': 'Status',
+            '83_silicadissolvida_mgl': 'Sílica dissolvida',
+            '83_status': 'Status',
+            '84_sodiototal_mgl': 'Sódio total',
+            '84_status': 'Status',
+            '85_soldissolvidos_fixos_mgl_a_180c': 'Sólidos dissolvidos fixos',
+            '85_status': 'Status',
+            '86_soldissolvidos_volateis_mgl': 'Sólidos dissolvidos voláteis',
+            '86_status': 'Status',
+            '87_sol_suspensao_fixos_mgl': 'Sólidos em suspensão fixos',
+            '87_status': 'Status',
+            '88_sol_suspensao_volateis_mgl': 'Sólidos em suspensão voláteis',
+            '88_status': 'Status',
+            '89_solfixos_mgl': 'Sólidos fixos',
+            '89_status': 'Status',
+            '90_sol_sedimentaveis_mgl': 'Sólidos sedimentáveis',
+            '90_status': 'Status',
+            '91_sol_totais_mgl': 'Sólidos totais',
+            '91_status': 'Status',
+            '92_sol_volateis_mgl': 'Sólidos voláteis',
+            '92_status': 'Status',
+            '93_sulfatos_mgl': 'Sulfatos',
+            '93_status': 'Status',
+            '94_sulfetos_mgl': 'Sulfetos',
+            '94_status': 'Status',
+            '95_uranio_total_mgl': 'Urânio',
+            '95_status': 'Status',
+            '96_vanadio_mgl': 'Vanádio',
+            '96_status': 'Status',
+            '97_zinco_mgl': 'Zinco',
+            '97_status': 'Status',
+            '98_1_1_dicloroeteno_mgl': '1,1 Dicloroeteno',
+            '98_status': 'Status',
+            '99_1_2_dicloroetano_mgl': '1,2 Dicloroetano',
+            '99_status': 'Status',
+            '100_2_4_5_t_mgl': '2,4,5 T',
+            '100_status': 'Status',
+            '101_2_4_5_tp_mgl': '2,4,5 TP',
+            '101_status': 'Status',
+            '102_2_4_6_triclorofenol_mgl': 'Triclorofenol',
+            '102_status': 'Status',
+            '103_acido_2_4_diclorofenoxiacetico_mgl': 'Ácido diclorofenoxiacetico',
+            '103_status': 'Status',
+            '104_aldrin_mgl': 'Aldrin',
+            '104_status': 'Status',
+            '105_azinfosetil_mgl': 'Azinfosetil',
+            '105_status': 'Status',
+            '106_benzeno_mgl': 'Benzeno',
+            '106_status': 'Status',
+            '107_benzoapireno_mgl': 'Benzoapireno',
+            '107_status': 'Status',
+            '108_bhc_mgl': 'BHC',
+            '108_status': 'Status',
+            '109_bifenilaspolicloradas_mgl': 'Bifenilaspolicloradas',
+            '109_status': 'Status',
+            '110_carbaril_mgl': 'Carbaril',
+            '110_status': 'Status',
+            '111_clordano_mgl': 'Clordano',
+            '111_status': 'Status',
+            '112_ddepp_mgl': 'DDEPP',
+            '112_status': 'Status',
+            '113_ddt_mgl': 'DDT',
+            '113_status': 'Status',
+            '114_demeton_mgl': 'Demeton',
+            '114_status': 'Status',
+            '115_diazinon_mgl': 'Diazinon',
+            '115_status': 'Status',
+            '116_dieldrin_mgl': 'Dieldrin',
+            '116_status': 'Status',
+            '117_dodecaclorononacloro_mgl': 'Dodecacloro no cloro',
+            '117_status': 'Status',
+            '118_dysystondisulfton_mgl': 'Dysyston/Disulfton',
+            '118_status': 'Status',
+            '119_endossulfan_mgl': 'Endossulfan',
+            '119_status': 'Status',
+            '120_endrin_mgl': 'Endrin',
+            '120_status': 'Status',
+            '121_epoxidoheptacloro_mgl': 'Epoxidoheptacloro',
+            '121_status': 'Status',
+            '122_ethion_mgl': 'Ethion',
+            '122_status': 'Status',
+            '123_gution_mgl': 'Gution',
+            '123_status': 'Status',
+            '124_heptacloro_mgl': 'Heptacloro',
+            '124_status': 'Status',
+            '125_lindano_mgl': 'Lindano',
+            '125_status': 'Status',
+            '126_malation_mgl': 'Malation',
+            '126_status': 'Status',
+            '127_metilparation_mgl': 'Metilparation',
+            '127_status': 'Status',
+            '128_metoxicloro_mgl': 'Metoxicloro',
+            '128_status': 'Status',
+            '129_paration_mgl': 'Paration',
+            '129_status': 'Status',
+            '130_pentaclorofenol_mgl': 'Pentaclorofenol',
+            '130_status': 'Status',
+            '131_phosdrin_mgl': 'Phosdrin',
+            '131_status': 'Status',
+            '132_tetra_cloreto_carbono_mgl': 'Tetracloreto de carbono',
+            '132_status': 'Status',
+            '133_tetra_cloro_eteno_mgl': 'Tetracloro de eteno',
+            '133_status': 'Status',
+            '134_toxafeno_mgl': 'Toxafeno',
+            '134_status': 'Status',
+            '135_tricloro_eteno_mgl': 'Tricloro de eteno',
+            '135_status': 'Status',
+            '136_algas_n_upa_ml': 'Algas',
+            '136_status': 'Status',
+            '137_amoniaco_mgl': 'Amônia',
+            '137_status': 'Status',
+            '138_bacterias_heterotroficas_ufc_ml': 'Bactérias heterotróficas',
+            '138_status': 'Status',
+            '139_cloro_residual_mgl': 'Cloro residual',
+            '139_status': 'Status',
+            '140_colifagos_nmp_100ml': 'Colifagos',
+            '140_status': 'Status',
+            '141_contagem_bacterias_placa_ufc_ml': 'Contagem bactérias em placa',
+            '141_status': 'Status',
+            '142_entero_bacterias_patogenicas_n_org_ml': 'Enterobactérias patogênicas',
+            '142_status': 'Status',
+            '143_fungos_ufc_ml': 'Fungos',
+            '143_status': 'Status',
+            '144_nitrogenio_albuminoide_mgl': 'Nitrogênio albuminoide',
+            '144_status': 'Status',
+            '145_protozoarios_n_org_ml': 'Protozoários',
+            '145_status': 'Status',
+            '146_salmonelas_nmp_ml': 'Salmonelas',
+            '146_status': 'Status',
+            '147_zooplanctontotal_n_org_ml': 'Zooplancton total',
+            '147_status': 'Status',
+            'created_at': 'Data de criação',
+            'updated_at': 'Data de atualização',
+            'deleted_at': 'Data de exclusão'
+        };
+
+        // Filtrar e renomear os campos em cada leitura
+        return readings.map(reading => {
+            const filteredReading = {};
+            
+            Object.keys(reading).forEach(originalKey => {
+                if (fieldMapping[originalKey]) {
+                    const newKey = fieldMapping[originalKey];
+                    
+                    // Se for um campo de Status, adiciona o nome do parâmetro ao status
+                    if (originalKey.endsWith('_status')) {
+                        const paramNumber = originalKey.split('_')[0];
+                        const paramKey = Object.keys(fieldMapping).find(key => 
+                            key.startsWith(`${paramNumber}_`) && !key.endsWith('_status')
+                        );
+                        
+                        if (paramKey && fieldMapping[paramKey]) {
+                            filteredReading[`Status - ${fieldMapping[paramKey]}`] = reading[originalKey];
+                        } else {
+                            filteredReading[newKey] = reading[originalKey];
+                        }
+                    } else {
+                        let value = reading[originalKey];
+                        
+                        // Aplicar formatação de data para campos específicos
+                        if (originalKey === 'data_hora_dado' || 
+                            originalKey === 'data_ultima_alteracao' ||
+                            originalKey === 'created_at' ||
+                            originalKey === 'updated_at' ||
+                            originalKey === 'deleted_at') {
+                            value = formatDateTimeToBrazilian(value);
+                        }
+                        
+                        filteredReading[newKey] = value;
+                    }
+                }
+            });
+            
+            return filteredReading;
+        });
+    }
+
     // Buscar dados
     fetch(`/api/hidroweb-qualidade-agua/${stationCode}/readings`)
         .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar leituras'))
@@ -1043,27 +1582,36 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
             elements.loading.style.display = 'none';
 
             if (data.success && data.data?.readings?.length > 0) {
+                // Dados originais para o gráfico
                 chartData = data.data.readings;
+                
+                // Dados filtrados e renomeados apenas para a tabela
+                filteredTableData = filterAndRenameForTable(data.data.readings);
+                
                 elements.total.textContent = data.data.readings.length;
 
-                // Criar cabeçalho da tabela
+                // Criar cabeçalho da tabela com unidades de medida
                 const headerRow = document.createElement('tr');
-                Object.keys(chartData[0]).forEach(key => {
+                Object.keys(filteredTableData[0]).forEach(key => {
                     const th = document.createElement('th');
-                    th.textContent = key;
+                    const unit = unitMapping[key];
+                    th.textContent = unit ? `${key} (${unit})` : key;
                     th.style.whiteSpace = 'nowrap';
+                    th.style.padding = '12px';
+                    th.style.fontWeight = '600';
                     headerRow.appendChild(th);
                 });
                 elements.tableHeader.appendChild(headerRow);
 
-                // Criar linhas da tabela
-                chartData.forEach(reading => {
+                // Criar linhas da tabela com dados formatados
+                filteredTableData.forEach(reading => {
                     const row = document.createElement('tr');
                     Object.keys(reading).forEach(key => {
                         const td = document.createElement('td');
                         const value = reading[key];
                         td.textContent = value !== null && value !== '' ? value : '-';
                         td.style.whiteSpace = 'nowrap';
+                        td.style.padding = '8px 12px';
                         row.appendChild(td);
                     });
                     elements.tableBody.appendChild(row);
@@ -1220,12 +1768,12 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
             return;
         }
 
-        // Extrair datas para o eixo X
+        // Extrair datas para o eixo X (já formatadas para exibição)
         const dates = readings.map(r => {
             if (r.data_hora_dado) {
                 try {
                     const date = new Date(r.data_hora_dado);
-                    return date.toLocaleDateString('pt-BR');
+                    return date.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
                 } catch (e) {
                     return r.data_hora_dado;
                 }
@@ -1243,7 +1791,7 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
         // Filtrar campos disponíveis que estão na lista de interessantes
         const selectedFields = numericFields.filter(field =>
             interestingParams.some(param => field.key.includes(param))
-        ).slice(0, 5); // Limitar a 5 parâmetros
+        ).slice(0, 5);
 
         // Se não encontrou parâmetros interessantes, pegar os primeiros 5
         if (selectedFields.length === 0) {
@@ -1290,7 +1838,7 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
                     text: dataset.label.split('(')[0].trim()
                 },
                 grid: {
-                    drawOnChartArea: index === 0 // Apenas o primeiro eixo mostra grid
+                    drawOnChartArea: index === 0
                 }
             };
         });
@@ -1320,13 +1868,14 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
                                     try {
                                         const date = new Date(readings[index].data_hora_dado);
                                         return date.toLocaleString('pt-BR', {
+                                            timeZone: 'America/Sao_Paulo',
                                             day: '2-digit',
                                             month: '2-digit',
                                             year: 'numeric',
                                             hour: '2-digit',
                                             minute: '2-digit',
                                             hour12: false
-                                        });
+                                        }).replace(',', ' -');
                                     } catch (e) {
                                         return readings[index].data_hora_dado;
                                     }

@@ -48,9 +48,9 @@
                     <thead>
                         <tr>
                             <th>Data/Hora</th>
-                            <th>Chuva Adotada</th>
-                            <th>Cota Adotada</th>
-                            <th>Vazão Adotada</th>
+                            <th>Chuva Adotada (mm)</th>
+                            <th>Cota Adotada (m)</th>
+                            <th>Vazão Adotada (m³/s)</th>
                         </tr>
                     </thead>
                     <tbody id="leiturasTableBody"></tbody>
