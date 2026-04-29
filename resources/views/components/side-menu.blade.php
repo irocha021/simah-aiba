@@ -69,13 +69,13 @@
                                     <div class="select-options">
                                         <!-- Links com classe específica -->
                                         <a href="{{ route('dbf-import.index') }}" class="select-link">
-                                            <span class="option-name">Importar DBF</span>
+                                            <span class="option-name">Importar SIAGAS/RIMAS</span>
                                         </a>
                                         <a href="{{ route('cnarh.index') }}" class="select-link">
-                                            <span class="option-name">Importar CNRH</span>
+                                            <span class="option-name">Importar CNARH</span>
                                         </a>
                                         <a href="{{ route('poco-simah.import.select') }}" class="select-link">
-                                            <span class="option-name">Importar SIMAH</span>
+                                            <span class="option-name">Importar Poços AIBA</span>
                                         </a>
                                     </div>
                                 </div>
