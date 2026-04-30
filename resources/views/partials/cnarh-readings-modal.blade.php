@@ -6,7 +6,7 @@
             <div class="cnarh-header-content">
                 <img src="{{ asset('images/logo-top-sigmah.svg') }}" alt="Logo SIGMAH" class="logo-cnarh-modal" />
                 <div class="cnarh-header-content-title">
-                    <h2>Dados CNARH</h2>
+                    <h2>Cadastro Nacional de Usuários de Recursos Hídricos (CNARH)</h2>
                     <p>Informações cadastrais sobre a captação e o uso de recursos hídricos no Brasil, coletadas e
                         disponibilizadas pela Agência Nacional de Águas (ANA).</p>
                 </div>

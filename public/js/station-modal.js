@@ -2649,6 +2649,280 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     elements.dataContainer.style.display = 'none';
     elements.error.style.display = 'none';
 
+    // Função para formatar data/hora para o padrão brasileiro
+    function formatDateTimeToBrazilian(dateString) {
+        if (!dateString || dateString === null || dateString === '') return dateString;
+        
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+            
+            return date.toLocaleString('pt-BR', {
+                timeZone: 'America/Sao_Paulo',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).replace(',', ' -');
+        } catch (e) {
+            return dateString;
+        }
+    }
+
+    // Mapeamento dos campos (chave original -> nome a ser exibido)
+    const fieldMapping = {
+        // Informações básicas da interferência
+        'int_cd': 'Código Identificador Incremental Da Interferência',
+        'int_tin_ds': 'Tipo De Interferencia',
+        'int_tin_cd': 'Código De Interferencia',
+        'int_tsu_ds': 'Subtipo De Interferencia',
+        'int_tsu_cd': 'Código De Interferencia',
+        'int_tch_cd': 'Código Tipo De Corpo',
+        'int_tch_ds': 'Tipo De Corpo',
+        'int_tsi_ds': 'Tipo Da Situação Da Interferência',
+        'int_tsi_cd': 'Código Da Situação Da Interferência',
+        'int_tod_ds': 'Origem Do Dado Cadastrado',
+        'int_tdm_ds': 'Dominio Da Interferência',
+        'int_nu_cnarh': 'Número Cnarh Do Empreendimento',
+        'int_nu_siagas': 'Número De Registro SIAGAS',
+        'int_nu_latitude': 'Latitude',
+        'int_nu_longitude': 'Longitude',
+        
+        // Município
+        'ing_nu_ibgemunicipio': 'Código Ibge',
+        'ing_sg_ufmunicipio': 'Uf',
+        'ing_nm_municipio': 'Nome Do Município',
+        'ing_cd_comiteestadual': 'Código Comitê Estadual',
+        'ing_nm_comiteestadual': 'Nome Comitê Estadual',
+        'ing_cd_comitefederal': 'Código Comitê Federal',
+        'ing_nm_comitefederal': 'Nome Comitê Federal',
+        'ing_cd_ottobacia_trecho': 'Código Otto Bacia Trecho',
+        'ing_cs_conama': 'Classe CONAMA',
+        
+        // Corpo hídrico
+        'int_nm_corpohidrico': 'Corpo Hídrico',
+        'int_nm_corpohidricoalterado': 'Corpo Hídrico Alterado',
+        
+        // Órgão e registro
+        'int_ds_orgao': 'Nome Do Órgão',
+        'int_cd_interferenciaoriginal': 'Código Da Interferência Original',
+        'int_dt_registro': 'Data De Cadastro',
+        'int_cd_declaracao': 'Código Da Declaração',
+        'int_cd_origem': 'Código Origem Da Interferência',
+        'int_ds_opcional': 'Descrição',
+        'int_cd_regla': 'Código REGLA',
+        'int_cd_cnarh40': 'Código CNARH 40',
+        
+        // Empreendimento e usuário
+        'emp_nm_empreendimento': 'Nome Do Empreendimento',
+        'emp_nm_usuario': 'Nome Do Usuário',
+        'emp_nu_cpfcnpj': 'CPF/CNPJ',
+        'emp_ds_emailresponsavel': 'Email',
+        'emp_nu_cependereco': 'CEP',
+        'emp_cd_ibgemuncorrespondencia': 'IBGE Correspondência',
+        'emp_ds_logradouro': 'Logradouro do Usuário',
+        'emp_ds_complementoendereco': 'Complemento Do Endereço',
+        'emp_nu_logradouro': 'Número Do Logradouro',
+        'emp_nu_caixapostal': 'Código Postal',
+        'emp_ds_bairro': 'Bairro Do Endereço',
+        'emp_nu_ddd': 'Ddd',
+        'emp_nu_telefone': 'Número Do Telefone',
+        'emp_sg_uf': 'Uf Do Responsável',
+        'emp_nm_municipio': 'Munícipio Do Responsável',
+        
+        // Vazões
+        'int_qt_vazaomaxima': 'Vazão Máxima',
+        'int_qt_vazaomedia': 'Vazão Media',
+        'int_qt_volumeanual': 'Volume Anual',
+        
+        // Finalidade
+        'fin_tfn_ds': 'Tipo Da Finalidade Da Interferência',
+        'fin_tfn_cd': 'Código da Finalidade',
+        
+        // Outorga
+        'out_tpo_ds': 'Tipo De Pedido De Outorga',
+        'out_tpo_cd': 'Código do Pedido',
+        'out_tsp_ds': 'Situação Da Outorga',
+        'out_tsp_cd': 'Código da Situação Da Outorga',
+        'out_dt_outorgafinal': 'Data De Término',
+        'out_dt_outorgainicial': 'Início de Outorga',
+        'out_nu_processo': 'Número Do Processo',
+        'out_tp_ato': 'Descrição Ato De Outorga',
+        'out_nu_ato': 'Número Do Ato De Outorga',
+        'out_tp_outorga': 'Tipo de Outorga',
+        'out_tp_situacaooutorga': 'Situação da Outorga',
+        
+        // Dados mensais - Vazão
+        'dad_qt_vazaodiajan': 'Atividade_JAN',
+        'dad_qt_vazaodiafev': 'Atividade_FEV',
+        'dad_qt_vazaodiamar': 'Atividade_MAR',
+        'dad_qt_vazaodiaabr': 'Atividade_ABR',
+        'dad_qt_vazaodiamai': 'Atividade_MAI',
+        'dad_qt_vazaodiajun': 'Atividade_JUN',
+        'dad_qt_vazaodiajul': 'Atividade_JUL',
+        'dad_qt_vazaodiaago': 'Atividade_AGO',
+        'dad_qt_vazaodiaset': 'Atividade_SET',
+        'dad_qt_vazaodiaout': 'Atividade_OUT',
+        'dad_qt_vazaodianov': 'Atividade_NOV',
+        'dad_qt_vazaodiadez': 'Atividade_DEZ',
+        
+        // Dados mensais - Horas
+        'dad_qt_horasjan': 'Operação_JAN',
+        'dad_qt_horasfev': 'Operação_FEV',
+        'dad_qt_horasmar': 'Operação_MAR',
+        'dad_qt_horasabr': 'Operação_ABR',
+        'dad_qt_horasmai': 'Operação_MAI',
+        'dad_qt_horasjun': 'Operação_JUN',
+        'dad_qt_horasjul': 'Operação_JUL',
+        'dad_qt_horasago': 'Operação_AGO',
+        'dad_qt_horasset': 'Operação_SET',
+        'dad_qt_horasout': 'Operação_OUT',
+        'dad_qt_horasnov': 'Operação_NOV',
+        'dad_qt_horasdez': 'Operação_DEZ',
+        
+        // Dados mensais - Dias
+        'dad_qt_diajan': 'Atividade_Dias_JAN',
+        'dad_qt_diafev': 'Atividade_Dias_FEV',
+        'dad_qt_diamar': 'Atividade_DIas_MAR',
+        'dad_qt_diaabr': 'Atividade_Dias_ABR',
+        'dad_qt_diamai': 'Atividade_Dias_MAI',
+        'dad_qt_diajun': 'Atividade_Dias_JUN',
+        'dad_qt_diajul': 'Atividade_Dias_JUL',
+        'dad_qt_diaago': 'Atividade_Dias_AGO',
+        'dad_qt_diaset': 'Atividade_Dias_SET',
+        'dad_qt_diaout': 'Atividade_Dias_OUT',
+        'dad_qt_dianov': 'Atividade_Dias_NOV',
+        'dad_qt_diadez': 'Atividade_Dias_DEZ',
+        
+        // Dados do aquífero
+        'asb_dt_instalacao': 'Data de Instalação',
+        'asb_tnp_cd': 'Código Natureza do Ponto',
+        'asb_tnp_ds': 'Natureza do Ponto',
+        'asb_nu_diametroperfuracao': 'Diâmetro Perfuração',
+        'asb_nu_diametrofiltro': 'Diâmetro Do Filtro',
+        'asb_aqp_ds': 'Código Identificador Do Aquífero Ponto',
+        'asb_aqp_cd': 'Código Identificador Aquífero',
+        'asb_nu_topo': 'Profundidade Do Topo Do Aquífero',
+        'asb_nu_base': 'Profundidade Da Base Do Aquífero',
+        'asb_tpn_ds': 'Tipo De Penetração Do Aquífero',
+        'asb_tpn_cd': 'Código Penetração Do Aquífero',
+        'asb_tca_ds': 'Condição Do Aquífero',
+        'asb_tca_cd': 'Condição Do Aquífero',
+        'asb_nu_profundidadefinal': 'Profundidade Do Poço',
+        'asb_nu_alturabocatubo': 'Altura Da Boca Da Tubulação',
+        'asb_nu_cotaterreno': 'Altitude Do Terreno',
+        
+        // Teste de bombeamento
+        'tst_dt': 'Data Do Teste Do Bombeamento',
+        'tst_ttb_ds': 'Tipo De Teste De Bombeamento',
+        'tst_ttb_cd': 'Código Teste De Bombeamento',
+        'tst_ds_tempoduracao': 'Descrição Do Tempo De Duração',
+        'tst_nu_nd': 'Nível Dinâmico',
+        'tst_nu_ne': 'Nível Estático',
+        'tst_vz_estabilizacao': 'Vazão De Estabilização',
+        'tst_tmi_ds': 'Tipo De Método De Interpretação',
+        'tst_tmi_cd': 'Tipo De Método De Interpretação',
+        'tst_nu_coeficientearmazenamento': 'Coeficiente De Armazenamento',
+        'tst_nu_transmissividade': 'Transmissividade',
+        'tst_nu_condutividadehidraulica': 'Condutividade Hidraulica',
+        'tst_nu_permeabilidade': 'Permeabilidade',
+        
+        // Dados da qualidade da água
+        'ama_dt_coleta': 'Data Da Coleta',
+        'ama_dt_analise': 'Data Da Análise',
+        'ama_nu_condutividadeeletrica': 'Condutividade Elétrica',
+        'ama_qt_temperatura': 'Temperatura',
+        'ama_qt_std': 'Sólidos Totais Dissolvidos',
+        'ama_qt_ph': 'Ph – Potencial Hidrogeniônico',
+        'ama_qt_coliformestotais': 'Parâmetro Cloriformes Totais',
+        'ama_qt_coliformesfecais': 'Parâmetro Cloriformes Fecais',
+        'ama_qt_bicarbonato': 'Parâmetro Bicarbonato',
+        'ama_qt_calcio': 'Parâmetro Cálcio',
+        'ama_qt_carbonato': 'Parâmetro Carbonato',
+        'ama_qt_cloreto': 'Parâmetro Cloreto',
+        'ama_qt_durezatotal': 'Parâmetro Dureza Total',
+        'ama_qt_ferrototal': 'Parâmetro Ferro',
+        'ama_qt_fluoretos': 'Parâmetro Fluoretos',
+        'ama_qt_nitratos': 'Parâmetro Nitratos',
+        'ama_qt_nitritos': 'Parâmetro Nitritos',
+        'ama_qt_potassio': 'Parâmetro Potássio',
+        'ama_qt_sodio': 'Parâmetro Sódio',
+        'ama_qt_sulfato': 'Parâmetro Sulfato',
+        'ama_qt_magnesio': 'Parâmetro Magnésio',
+        
+        // Outros
+        'data_extracao': 'Data de Extração',
+        'created_at': 'Data de Criação',
+        'updated_at': 'Data de Atualização',
+        'deleted_at': 'Data de Exclusão',
+        'id': 'ID'
+    };
+
+    // Mapeamento de unidades para valores específicos
+    const unitMapping = {
+        'int_nu_latitude': '°',
+        'int_nu_longitude': '°',
+        'dad_qt_vazaodiajan': 'm³/h',
+        'dad_qt_vazaodiafev': 'm³/h',
+        'dad_qt_vazaodiamar': 'm³/h',
+        'dad_qt_vazaodiaabr': 'm³/h',
+        'dad_qt_vazaodiamai': 'm³/h',
+        'dad_qt_vazaodiajun': 'm³/h',
+        'dad_qt_vazaodiajul': 'm³/h',
+        'dad_qt_vazaodiaago': 'm³/h',
+        'dad_qt_vazaodiaset': 'm³/h',
+        'dad_qt_vazaodiaout': 'm³/h',
+        'dad_qt_vazaodianov': 'm³/h',
+        'dad_qt_vazaodiadez': 'm³/h',
+        'dad_qt_horasjan': 'h',
+        'dad_qt_horasfev': 'h',
+        'dad_qt_horasmar': 'h',
+        'dad_qt_horasabr': 'h',
+        'dad_qt_horasmai': 'h',
+        'dad_qt_horasjun': 'h',
+        'dad_qt_horasjul': 'h',
+        'dad_qt_horasago': 'h',
+        'dad_qt_horasset': 'h',
+        'dad_qt_horasout': 'h',
+        'dad_qt_horasnov': 'h',
+        'dad_qt_horasdez': 'h',
+        'dad_qt_diajan': 'dias',
+        'dad_qt_diafev': 'dias',
+        'dad_qt_diamar': 'dias',
+        'dad_qt_diaabr': 'dias',
+        'dad_qt_diamai': 'dias',
+        'dad_qt_diajun': 'dias',
+        'dad_qt_diajul': 'dias',
+        'dad_qt_diaago': 'dias',
+        'dad_qt_diaset': 'dias',
+        'dad_qt_diaout': 'dias',
+        'dad_qt_dianov': 'dias',
+        'dad_qt_diadez': 'dias',
+        'int_qt_vazaomaxima': 'm³/h',
+        'int_qt_vazaomedia': 'm³/h',
+        'int_qt_volumeanual': 'm³',
+        'tst_nu_transmissividade': 'm³/h',
+        'fes_nu_profundidademediatanque': 'm',
+        'fes_nu_areatotaltanque': 'm²'
+    };
+
+    // Lista de campos que são datas
+    const dateFields = [
+        'int_dt_registro',
+        'out_dt_outorgafinal',
+        'out_dt_outorgainicial',
+        'asb_dt_instalacao',
+        'ama_dt_coleta',
+        'ama_dt_analise',
+        'tst_dt',
+        'data_extracao',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
     // Buscar dados
     fetch(`/api/cnarh/${cnarhCode}/readings`)
         .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar dados'))
@@ -2658,11 +2932,11 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
             if (data.success && data.data?.cnarh) {
                 const cnarhData = data.data.cnarh;
 
-                // Renderizar tabela
+                // Renderizar tabela mantendo a ordem original
                 renderTable(cnarhData);
                 elements.dataContainer.style.display = 'block';
 
-                // Extrair campos numéricos
+                // Extrair campos numéricos para o gráfico
                 const numericFields = extractNumericFields(cnarhData);
 
                 // Criar gráfico e controles se houver dados
@@ -2685,11 +2959,51 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         elements.errorText.textContent = message;
     }
 
+    function formatValueWithUnit(key, value) {
+        // Verificar se o campo tem unidade definida
+        const unit = unitMapping[key];
+        if (unit && value !== null && value !== undefined && value !== '') {
+            // Se for número, formatar e adicionar unidade
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue)) {
+                return `${numValue} ${unit}`;
+            }
+        }
+        return value;
+    }
+
+    function formatValueWithDate(key, value) {
+        // Verificar se é um campo de data
+        if (dateFields.includes(key) && value) {
+            return formatDateTimeToBrazilian(value);
+        }
+        return value;
+    }
+
     function renderTable(cnarhData) {
-        // Filtrar apenas os itens que têm valores
-        const entries = Object.entries(cnarhData).filter(([key, value]) =>
-            value !== null && value !== '' && value !== undefined
-        );
+        // Manter a ordem original das chaves, filtrando apenas valores não nulos
+        const entries = [];
+        
+        for (const [key, value] of Object.entries(cnarhData)) {
+            // Incluir apenas valores que não são null, undefined ou string vazia
+            if (value !== null && value !== undefined && value !== '') {
+                // Usar o mapeamento se existir, senão formatar a chave
+                let displayName = fieldMapping[key];
+                if (!displayName) {
+                    displayName = key
+                        .replace(/_/g, ' ')
+                        .split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                        .join(' ');
+                }
+                
+                // Formatar o valor (primeiro data, depois unidade)
+                let formattedValue = formatValueWithDate(key, value);
+                formattedValue = formatValueWithUnit(key, formattedValue);
+                
+                entries.push([displayName, formattedValue]);
+            }
+        }
 
         const totalItems = entries.length;
         const itemsPerColumn = Math.ceil(totalItems / 2);
@@ -2699,12 +3013,12 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
                 <div class="cnarh-table-column">
         `;
 
-        // Primeira coluna
+        // Primeira coluna (metade superior dos itens na ordem original)
         for (let i = 0; i < itemsPerColumn; i++) {
-            const [key, value] = entries[i];
+            const [displayName, value] = entries[i];
             html += `
                 <div class="cnarh-data-row">
-                    <div class="cnarh-data-label">${formatKey(key)}:</div>
+                    <div class="cnarh-data-label">${displayName}:</div>
                     <div class="cnarh-data-value">${value}</div>
                 </div>
             `;
@@ -2715,12 +3029,12 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
             <div class="cnarh-table-column">
         `;
 
-        // Segunda coluna
+        // Segunda coluna (metade inferior dos itens na ordem original)
         for (let i = itemsPerColumn; i < totalItems; i++) {
-            const [key, value] = entries[i];
+            const [displayName, value] = entries[i];
             html += `
             <div class="cnarh-data-row">
-                <div class="cnarh-data-label">${formatKey(key)}:</div>
+                <div class="cnarh-data-label">${displayName}:</div>
                 <div class="cnarh-data-value">${value}</div>
             </div>
         `;
@@ -2746,7 +3060,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     function extractNumericFields(cnarhData) {
         const numericFields = [];
         const patterns = {
-            vazao: /vazao|volume/i,
+            vazao: /vazao|volume|vazao/i,
             tempo: /hora|dia|minuto/i,
             coordenada: /latitude|longitude/i,
             medida: /profundidade|cota|temperatura|condutividade|ph|std/i
@@ -2754,7 +3068,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
 
         Object.entries(cnarhData).forEach(([key, value]) => {
             // Verificar se é numérico
-            if (value && value !== '-' && !isNaN(parseFloat(value))) {
+            if (value !== null && value !== '' && value !== '-' && !isNaN(parseFloat(value))) {
                 const numValue = parseFloat(value);
 
                 // Verificar se é um campo interessante
@@ -2769,8 +3083,8 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
                 if (isInteresting) {
                     numericFields.push({
                         key,
-                        label: formatKey(key),
-                        unit: getUnit(key),
+                        label: fieldMapping[key] || formatKey(key),
+                        unit: unitMapping[key] || getUnit(key),
                         value: numValue
                     });
                 }
@@ -2783,8 +3097,8 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     function getUnit(key) {
         // Ordem de prioridade (mais específico primeiro)
         if (key.includes('volumeanual')) return 'm³/ano';
-        if (key.includes('vazaodia')) return 'L/s';
-        if (key.includes('vazao')) return 'L/s';
+        if (key.includes('vazaodia')) return 'm³/h';
+        if (key.includes('vazao')) return 'm³/h';
         if (key.includes('volume')) return 'm³';
         if (key.includes('hora')) return 'h';
         if (key.includes('dia') && !key.includes('vazao')) return 'dias';
