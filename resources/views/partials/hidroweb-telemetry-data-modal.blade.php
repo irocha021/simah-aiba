@@ -1,3 +1,9 @@
+@auth
+    <meta name="user-logged-in" content="true">
+@else
+    <meta name="user-logged-in" content="false">
+@endauth
+
 <!-- Modal para exibir dados HidroWeb Telemetria (Leituras + Previsões) -->
 <div id="hidrowebTelemetryDataModal" class="hidroweb-data-modal">
     <div class="hidroweb-data-modal-content">

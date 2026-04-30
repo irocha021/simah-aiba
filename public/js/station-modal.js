@@ -952,6 +952,7 @@ function openSimahReadingsModal(stationCode, stationName) {
     const totalReadings = document.getElementById('simahModalTotalReadings');
     const stationNameEl = document.getElementById('simahModalStationName');
     const stationCodeEl = document.getElementById('simahModalStationCode');
+    const tableHeader = document.querySelector('#simahReadingsTableContainer table thead tr');
 
     modal.style.display = 'block';
     stationNameEl.textContent = stationName;
@@ -962,12 +963,47 @@ function openSimahReadingsModal(stationCode, stationName) {
     errorMessage.style.display = 'none';
     tableBody.innerHTML = '';
 
+    // Verificar se o usuário está logado
+    const isLoggedIn = document.querySelector('meta[name="user-logged-in"]')?.getAttribute('content') === 'true';
+
+    // Esconder colunas no cabeçalho se não estiver logado
+    if (!isLoggedIn && tableHeader) {
+        // Esconder a primeira coluna (Nº)
+        if (tableHeader.children[0]) {
+            tableHeader.children[0].style.display = 'none';
+        }
+        // Esconder a terceira coluna (Data/Hora UTC) - índice 2
+        if (tableHeader.children[2]) {
+            tableHeader.children[2].style.display = 'none';
+        }
+    } else if (isLoggedIn && tableHeader) {
+        // Garantir que as colunas estejam visíveis se estiver logado
+        if (tableHeader.children[0]) {
+            tableHeader.children[0].style.display = '';
+        }
+        if (tableHeader.children[2]) {
+            tableHeader.children[2].style.display = '';
+        }
+    }
+
     document.getElementById('closeSimahModal').onclick = function () {
         modal.style.display = 'none';
+        // Restaurar visibilidade das colunas ao fechar o modal
+        if (tableHeader) {
+            if (tableHeader.children[0]) tableHeader.children[0].style.display = '';
+            if (tableHeader.children[2]) tableHeader.children[2].style.display = '';
+        }
     };
 
     window.onclick = function (event) {
-        if (event.target === modal) modal.style.display = 'none';
+        if (event.target === modal) {
+            modal.style.display = 'none';
+            // Restaurar visibilidade das colunas ao fechar
+            if (tableHeader) {
+                if (tableHeader.children[0]) tableHeader.children[0].style.display = '';
+                if (tableHeader.children[2]) tableHeader.children[2].style.display = '';
+            }
+        }
     };
 
     function formatSimahDate(val) {
@@ -993,12 +1029,10 @@ function openSimahReadingsModal(stationCode, stationName) {
         const num = parseFloat(val);
         if (isNaN(num)) return '-';
 
-        // Para valores muito pequenos, mostrar notação científica
         if (Math.abs(num) < 0.0001 && num !== 0) {
             return num.toExponential(4).replace('.', ',');
         }
 
-        // Para valores maiores, formatar com separador de milhar
         if (Math.abs(num) >= 1000) {
             return num.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
@@ -1006,7 +1040,6 @@ function openSimahReadingsModal(stationCode, stationName) {
             });
         }
 
-        // Formatação padrão com 4 casas decimais
         return num.toLocaleString('pt-BR', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 6
@@ -1031,16 +1064,30 @@ function openSimahReadingsModal(stationCode, stationName) {
 
             readings.slice(0, 50).forEach(r => {
                 const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${r.number ?? '-'}</td>
-                    <td>${formatSimahDate(r.datetime_local)}</td>
-                    <td>${formatSimahDate(r.datetime_utc)}</td>
-                    <td>${formatSimahNum(r.pd_bar)}</td>
-                    <td>${formatSimahNum(r.p1_bar)}</td>
-                    <td>${formatSimahNum(r.p2_bar)}</td>
-                    <td>${formatSimahNum(r.tob1_celsius)}</td>
-                    <td>${formatSimahNum(r.tob2_celsius)}</td>
-                `;
+                
+                if (isLoggedIn) {
+                    // Usuário logado: mostra todas as colunas
+                    row.innerHTML = `
+                        <td>${r.number ?? '-'}</td>
+                        <td>${formatSimahDate(r.datetime_local)}</td>
+                        <td>${formatSimahDate(r.datetime_utc)}</td>
+                        <td>${formatSimahNum(r.pd_bar)}</td>
+                        <td>${formatSimahNum(r.p1_bar)}</td>
+                        <td>${formatSimahNum(r.p2_bar)}</td>
+                        <td>${formatSimahNum(r.tob1_celsius)}</td>
+                        <td>${formatSimahNum(r.tob2_celsius)}</td>
+                    `;
+                } else {
+                    // Usuário não logado: NÃO inclui as colunas Nº e Data/Hora UTC
+                    row.innerHTML = `
+                        <td>${formatSimahDate(r.datetime_local)}</td>
+                        <td>${formatSimahNum(r.pd_bar)}</td>
+                        <td>${formatSimahNum(r.p1_bar)}</td>
+                        <td>${formatSimahNum(r.p2_bar)}</td>
+                        <td>${formatSimahNum(r.tob1_celsius)}</td>
+                        <td>${formatSimahNum(r.tob2_celsius)}</td>
+                    `;
+                }
                 tableBody.appendChild(row);
             });
 
@@ -2795,6 +2842,9 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     elements.dataContainer.style.display = 'none';
     elements.error.style.display = 'none';
 
+    // Verificar se o usuário está logado
+    const isLoggedIn = document.querySelector('meta[name="user-logged-in"]')?.getAttribute('content') === 'true';
+
     // Função para formatar data/hora para o padrão brasileiro
     function formatDateTimeToBrazilian(dateString) {
         if (!dateString || dateString === null || dateString === '') return dateString;
@@ -3131,6 +3181,9 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         const entries = [];
 
         for (const [key, value] of Object.entries(cnarhData)) {
+            if (!isLoggedIn && key === 'emp_nm_empreendimento') {
+                continue;
+            }
             // Incluir apenas valores que não são null, undefined ou string vazia
             if (value !== null && value !== undefined && value !== '') {
                 // Usar o mapeamento se existir, senão formatar a chave

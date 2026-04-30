@@ -1,3 +1,9 @@
+@auth
+    <meta name="user-logged-in" content="true">
+@else
+    <meta name="user-logged-in" content="false">
+@endauth
+
 <!-- Modal para exibir leituras do poço SIMAH -->
 <div id="simahReadingsModal" class="simah-modal">
     <div class="simah-modal-content">

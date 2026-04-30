@@ -1,3 +1,9 @@
+@auth
+    <meta name="user-logged-in" content="true">
+@else
+    <meta name="user-logged-in" content="false">
+@endauth
+
 <!-- Modal para exibir dados CNARH -->
 <div id="cnarhReadingsModal" class="cnarh-modal">
     <div class="cnarh-modal-content">

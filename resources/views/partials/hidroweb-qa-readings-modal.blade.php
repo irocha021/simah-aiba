@@ -1,3 +1,9 @@
+@auth
+    <meta name="user-logged-in" content="true">
+@else
+    <meta name="user-logged-in" content="false">
+@endauth
+
 <!-- Modal para exibir leituras de qualidade da água HidroWeb -->
 <div id="hidrowebQaReadingsModal" class="hidroweb-qa-modal">
     <div class="hidroweb-qa-modal-content">

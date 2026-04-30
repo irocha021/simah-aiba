@@ -1,3 +1,9 @@
+@auth
+    <meta name="user-logged-in" content="true">
+@else
+    <meta name="user-logged-in" content="false">
+@endauth
+
 <!-- Modal para exibir dados do poço SIAGAS -->
 <div id="siagasReadingsModal" class="siagas-modal">
     <div class="siagas-modal-content">
