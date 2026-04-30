@@ -34,10 +34,10 @@
             <table class="rimas-table">
                 <thead>
                     <tr>
-                        <th>Nº Medição</th>
+                        <th>Número do ponto</th>
                         <th>Data</th>
                         <th>Hora</th>
-                        <th>Nível da Água</th>
+                        <th>Nível da Água (m)</th>
                         <th>Observação</th>
                     </tr>
                 </thead>

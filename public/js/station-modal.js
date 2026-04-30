@@ -880,7 +880,7 @@ if (document.readyState === 'loading') {
 }
 
 // ========================================
-// Simah
+// SIMAH
 // ========================================
 
 function openSimahReadingsModal(stationCode, stationName) {
@@ -913,14 +913,45 @@ function openSimahReadingsModal(stationCode, stationName) {
 
     function formatSimahDate(val) {
         if (!val) return '-';
-        const d = new Date(val.replace(' ', 'T'));
-        if (isNaN(d)) return val;
-        return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(',', '');
+        try {
+            const d = new Date(val.replace(' ', 'T'));
+            if (isNaN(d)) return val;
+            return d.toLocaleString('pt-BR', {
+                timeZone: 'America/Sao_Paulo',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).replace(',', '');
+        } catch (e) {
+            return val;
+        }
     }
 
     function formatSimahNum(val) {
-        if (val === null || val === undefined) return '-';
-        return parseFloat(val).toString().replace('.', ',').replace(/,?0+$/, '') || '0';
+        if (val === null || val === undefined || val === '') return '-';
+        const num = parseFloat(val);
+        if (isNaN(num)) return '-';
+
+        // Para valores muito pequenos, mostrar notação científica
+        if (Math.abs(num) < 0.0001 && num !== 0) {
+            return num.toExponential(4).replace('.', ',');
+        }
+
+        // Para valores maiores, formatar com separador de milhar
+        if (Math.abs(num) >= 1000) {
+            return num.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 4
+            });
+        }
+
+        // Formatação padrão com 4 casas decimais
+        return num.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 6
+        });
     }
 
     fetch(`/api/pocos-simah/${stationCode}/readings`)

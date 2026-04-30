@@ -33,13 +33,13 @@
                 <thead>
                     <tr>
                         <th>Nº</th>
-                        <th>Data/Hora Local</th>
+                        <th>Data/hora</th>
                         <th>Data/Hora UTC</th>
-                        <th>Pd (bar)</th>
-                        <th>P1 (bar)</th>
-                        <th>P2 (bar)</th>
-                        <th>Tob1 (°C)</th>
-                        <th>Tob2 (°C)</th>
+                        <th>Variação de Pressão (bar)</th>
+                        <th>Pressão Interna (bar)</th>
+                        <th>Pressão Externa (bar)</th>
+                        <th>Temperatura da Água Interna (°C)</th>
+                        <th>Temperatura da Água Externa (°C)</th>
                     </tr>
                 </thead>
                 <tbody id="simahReadingsTableBody"></tbody>
@@ -100,7 +100,7 @@
         width: 60%;
     }
 
-    .simah-header-content-title h2 {
+    .simah-header-content-title h2, #simahModalStationName {
         color: #000000;
         font-weight: bold;
         font-size: 1.5rem;
