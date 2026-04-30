@@ -489,6 +489,67 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
     // Remover elementos de gráfico e controles anteriores
     document.querySelectorAll('.siagas-view-controls, #siagasChartContainer').forEach(el => el.remove());
 
+    // Mapeamento de nomes personalizados
+    const nameMapping = {
+        'ponto': 'Número do ponto',
+        'localizaca': 'Localização',
+        'latitude_d': 'Latitude',
+        'longitude_': 'Longitude',
+        'utme': 'UTMe',
+        'utmn': 'UTMn',
+        'bacia': 'Bacia',
+        'municipio': 'Município',
+        'natureza': 'Natureza',
+        'nome': 'Nome',
+        'proprietar': 'Proprietário',
+        'subbacia': 'Sub-bacia',
+        'situacao': 'Situação',
+        'uf': 'UF',
+        'data_perfu': 'Data da perfuração',
+        'perfurador': 'Perfurador',
+        'profundida': 'Profundidade',
+        'profundi_1': 'Profundidade total',
+        'data_teste': 'Data do teste',
+        'surgencia': 'Surgência',
+        'nivel_dina': 'Nível dinâmico',
+        'nivel_esta': 'Nível estático',
+        'vazao_esta': 'Vazão estabilizada',
+        'data_anali': 'Data análise',
+        'data_colet': 'Data coleta',
+        'condutivid': 'Condutividade elétrica',
+        'cor': 'Cor',
+        'turbidez': 'Turbidez'
+    };
+
+    // Mapeamento de unidades de medida
+    const unitMapping = {
+        'latitude_d': '°',
+        'longitude_': '°',
+        'utme': 'm',
+        'utmn': 'm',
+        'profundida': 'm',
+        'profundi_1': 'm',
+        'nivel_dina': 'm',
+        'nivel_esta': 'm',
+        'vazao_esta': 'm³/h'
+    };
+
+    // Função para formatar valor com unidade
+    function formatValueWithUnit(key, value) {
+        if (value === null || value === undefined || value === '') return '-';
+        
+        // Se tiver unidade definida e for número
+        const unit = unitMapping[key];
+        if (unit) {
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue)) {
+                return `${numValue} ${unit}`;
+            }
+        }
+        
+        return value;
+    }
+
     fetch(`/api/pocos-siagas/${idPonto}/readings`)
         .then(response => {
             if (!response.ok) throw new Error('Erro ao buscar dados');
@@ -500,10 +561,15 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
             if (data.success && data.data && data.data.poco) {
                 const poco = data.data.poco;
 
-                // 1. Primeiro renderizar a tabela EM DUAS COLUNAS
-                const entries = Object.entries(poco).filter(([key, value]) =>
-                    value !== null && value !== '' && value !== undefined
-                );
+                // Filtrar e mapear os dados com nomes personalizados
+                const entries = Object.entries(poco)
+                    .filter(([key, value]) => value !== '' && value !== undefined)
+                    .map(([key, value]) => {
+                        // Usar nome personalizado ou manter o original formatado
+                        const displayName = nameMapping[key] || formatSiagasKey(key);
+                        const formattedValue = formatValueWithUnit(key, value);
+                        return [displayName, formattedValue];
+                    });
 
                 const totalItems = entries.length;
                 const itemsPerColumn = Math.ceil(totalItems / 2);
@@ -515,11 +581,11 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
 
                 // Primeira coluna
                 for (let i = 0; i < itemsPerColumn; i++) {
-                    const [key, value] = entries[i];
+                    const [displayName, value] = entries[i];
                     html += `
                         <div class="siagas-data-row">
-                            <div class="siagas-data-label" style="text-transform: capitalize;">${formatSiagasKey(key)}:</div>
-                            <div class="siagas-data-value">${value !== null && value !== '' ? value : '-'}</div>
+                            <div class="siagas-data-label">${displayName}:</div>
+                            <div class="siagas-data-value">${value}</div>
                         </div>
                     `;
                 }
@@ -531,11 +597,11 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
 
                 // Segunda coluna
                 for (let i = itemsPerColumn; i < totalItems; i++) {
-                    const [key, value] = entries[i];
+                    const [displayName, value] = entries[i];
                     html += `
                         <div class="siagas-data-row">
-                            <div class="siagas-data-label" style="text-transform: capitalize;">${formatSiagasKey(key)}:</div>
-                            <div class="siagas-data-value">${value !== null && value !== '' ? value : '-'}</div>
+                            <div class="siagas-data-label">${displayName}:</div>
+                            <div class="siagas-data-value">${value}</div>
                         </div>
                     `;
                 }
@@ -548,7 +614,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                 document.getElementById('siagasDataContent').innerHTML = html;
                 dataContainer.style.display = 'block';
 
-                // 2. Analisar variáveis numéricas disponíveis
+                // 2. Analisar variáveis numéricas disponíveis para o gráfico
                 const numericFields = (function extractNumericFields(poco) {
                     const numericFields = [];
                     const potentialNumericFields = [
@@ -701,9 +767,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                                     text: 'Valores Numéricos do Poço',
                                     font: { size: 16 }
                                 },
-                                legend: {
-                                    display: false
-                                },
+                                legend: { display: false },
                                 tooltip: {
                                     callbacks: {
                                         label: function (context) {
@@ -716,10 +780,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                             scales: {
                                 y: {
                                     beginAtZero: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Valores'
-                                    },
+                                    title: { display: true, text: 'Valores' },
                                     ticks: {
                                         callback: function (value) {
                                             return value.toLocaleString('pt-BR');
@@ -776,7 +837,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                             chartBtn.className = 'siagas-view-btn';
                             chartBtn.style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
 
-                            tableContainer.style.display = 'flex'; // Alterado para 'flex'
+                            tableContainer.style.display = 'flex';
                             chartContainer.style.display = 'none';
                         }
                     }
@@ -825,9 +886,8 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
             document.getElementById(siagasModalConfig.errorTextId).textContent = error.message;
         });
 
-    // Função auxiliar para formatar chaves do SIAGAS
+    // Função auxiliar para formatar chaves do SIAGAS (fallback)
     function formatSiagasKey(key) {
-        // Primeiro, tentar mapear para nomes mais legíveis
         const labels = {
             'cota_terre': 'Altitude do Terreno',
             'profundi_1': 'Profundidade Total',
@@ -863,7 +923,6 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
             return labels[key];
         }
 
-        // Se não estiver no mapeamento, formatação padrão
         return key
             .replace(/_/g, ' ')
             .split(' ')
