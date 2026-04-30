@@ -1,3 +1,7 @@
+// ========================================
+// Configurações genéricas para modais
+// ========================================
+
 function openStationModal(config) {
     const modal = document.getElementById(config.modalId);
     const modalIdPonto = document.getElementById(config.idPontoId);
@@ -63,6 +67,10 @@ function initStationModal(config) {
         }
     });
 }
+
+// ========================================
+// RIMAS
+// ========================================
 
 // Configuração específica para RIMAS
 const rimasModalConfig = {
@@ -436,6 +444,10 @@ if (document.readyState === 'loading') {
 } else {
     initStationModal(rimasModalConfig);
 }
+
+// ========================================
+// SIAGAS
+// ========================================
 
 // Configuração específica para SIAGAS
 const siagasModalConfig = {
@@ -860,6 +872,17 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
     }
 }
 
+// Inicializar modal SIAGAS
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => initStationModal(siagasModalConfig));
+} else {
+    initStationModal(siagasModalConfig);
+}
+
+// ========================================
+// Simah
+// ========================================
+
 function openSimahReadingsModal(stationCode, stationName) {
     const modal = document.getElementById('simahReadingsModal');
     const loading = document.getElementById('simahLoadingSpinner');
@@ -940,13 +963,9 @@ function openSimahReadingsModal(stationCode, stationName) {
         });
 }
 
-
-// Inicializar modal SIAGAS
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => initStationModal(siagasModalConfig));
-} else {
-    initStationModal(siagasModalConfig);
-}
+// ========================================
+// Hidroweb Qualidade de água
+// ========================================
 
 // Configuração específica para HidroWeb Qualidade da Água
 const hidrowebQaModalConfig = {
@@ -1040,11 +1059,11 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
     // Função para formatar data/hora para fuso horário de Brasília
     function formatDateTimeToBrazilian(dateString) {
         if (!dateString || dateString === '-') return '-';
-        
+
         try {
             const utcDate = new Date(dateString);
             if (isNaN(utcDate.getTime())) return dateString;
-            
+
             return utcDate.toLocaleString('pt-BR', {
                 timeZone: 'America/Sao_Paulo',
                 day: '2-digit',
@@ -1537,18 +1556,18 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
         // Filtrar e renomear os campos em cada leitura
         return readings.map(reading => {
             const filteredReading = {};
-            
+
             Object.keys(reading).forEach(originalKey => {
                 if (fieldMapping[originalKey]) {
                     const newKey = fieldMapping[originalKey];
-                    
+
                     // Se for um campo de Status, adiciona o nome do parâmetro ao status
                     if (originalKey.endsWith('_status')) {
                         const paramNumber = originalKey.split('_')[0];
-                        const paramKey = Object.keys(fieldMapping).find(key => 
+                        const paramKey = Object.keys(fieldMapping).find(key =>
                             key.startsWith(`${paramNumber}_`) && !key.endsWith('_status')
                         );
-                        
+
                         if (paramKey && fieldMapping[paramKey]) {
                             filteredReading[`Status - ${fieldMapping[paramKey]}`] = reading[originalKey];
                         } else {
@@ -1556,21 +1575,21 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
                         }
                     } else {
                         let value = reading[originalKey];
-                        
+
                         // Aplicar formatação de data para campos específicos
-                        if (originalKey === 'data_hora_dado' || 
+                        if (originalKey === 'data_hora_dado' ||
                             originalKey === 'data_ultima_alteracao' ||
                             originalKey === 'created_at' ||
                             originalKey === 'updated_at' ||
                             originalKey === 'deleted_at') {
                             value = formatDateTimeToBrazilian(value);
                         }
-                        
+
                         filteredReading[newKey] = value;
                     }
                 }
             });
-            
+
             return filteredReading;
         });
     }
@@ -1584,10 +1603,10 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
             if (data.success && data.data?.readings?.length > 0) {
                 // Dados originais para o gráfico
                 chartData = data.data.readings;
-                
+
                 // Dados filtrados e renomeados apenas para a tabela
                 filteredTableData = filterAndRenameForTable(data.data.readings);
-                
+
                 elements.total.textContent = data.data.readings.length;
 
                 // Criar cabeçalho da tabela com unidades de medida
@@ -1902,6 +1921,10 @@ if (document.readyState === 'loading') {
     initStationModal(hidrowebQaModalConfig);
 }
 
+// ========================================
+// LRGS Client (DCP)
+// ========================================
+
 // Configuração específica para LRGS Client (DCP)
 const lrgsModalConfig = {
     modalId: 'lrgsReadingsModal',
@@ -1973,6 +1996,57 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
     let fieldsToShow = [];
     let isAdmin = false;
 
+    // Mapeamento dos nomes das colunas com suas unidades
+    const columnMapping = {
+        'reading_datetime': 'Data/Hora',
+        'water_level': 'Nível de Água (m)',
+        'rain': 'Precipitação (mm)',
+        'water_temperature': 'Temperatura da Água (°C)',
+        'atmospheric_pressure': 'Pressão Atmosférica (hPa)',
+        'flow': 'Vazão (m³/s)',
+        'water_level_15min': 'Nível da Água 15min (m)',
+        'rain_15min': 'Precipitação 15min (mm)'
+    };
+
+    // Função para formatar data/hora no padrão brasileiro
+    function formatDateTimeToBrazilian(dateString) {
+        if (!dateString || dateString === null || dateString === '') return '-';
+
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+
+            return date.toLocaleString('pt-BR', {
+                timeZone: 'America/Sao_Paulo',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).replace(',', ' -');
+        } catch (e) {
+            return dateString;
+        }
+    }
+
+    // Função para formatar valor numérico com unidade
+    function formatValueWithUnit(key, value) {
+        if (value === null || value === undefined || value === '') return '-';
+
+        // Se for data, retorna formatado
+        if (key === 'reading_datetime') {
+            return formatDateTimeToBrazilian(value);
+        }
+
+        // Para campos numéricos, retorna apenas o número
+        const numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+            return numValue;
+        }
+
+        return value;
+    }
 
     const views = {
         table: () => {
@@ -2027,10 +2101,11 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
 
                 fieldsToShow = BASIC_FIELDS.filter(f => chartData[0].hasOwnProperty(f));
 
+                // Criar cabeçalho da tabela com nomes traduzidos
                 const headerRow = document.createElement('tr');
                 fieldsToShow.forEach(key => {
                     const th = document.createElement('th');
-                    th.textContent = key;
+                    th.textContent = columnMapping[key] || key;
                     th.style.whiteSpace = 'nowrap';
                     headerRow.appendChild(th);
                 });
@@ -2042,17 +2117,14 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 }
                 elements.tableHeader.appendChild(headerRow);
 
+                // Preencher linhas da tabela com valores formatados
                 chartData.forEach(reading => {
                     const row = document.createElement('tr');
                     fieldsToShow.forEach(key => {
                         const td = document.createElement('td');
                         const value = reading[key];
-                        if (key === 'reading_datetime' && value) {
-                            const d = new Date(value);
-                            td.textContent = d.toLocaleString('pt-BR');
-                        } else {
-                            td.textContent = value !== null && value !== '' ? value : '-';
-                        }
+                        const formattedValue = formatValueWithUnit(key, value);
+                        td.textContent = formattedValue;
                         td.style.whiteSpace = 'nowrap';
                         row.appendChild(td);
                     });
@@ -2073,11 +2145,11 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 // Botões de exportação — no filterContainer à direita
                 const buildExportUrl = (format) => {
                     const dateFrom = document.getElementById('filterDateFrom')?.value || '';
-                    const dateTo   = document.getElementById('filterDateTo')?.value   || '';
+                    const dateTo = document.getElementById('filterDateTo')?.value || '';
                     let url = `/api/lrgs-client/${stationCode}/export?format=${format}`;
                     if (dateFrom) url += `&date_from=${dateFrom}`;
-                    if (dateTo)   url += `&date_to=${dateTo}`;
-                    if (isAdmin)  url += `&admin=1`;
+                    if (dateTo) url += `&date_to=${dateTo}`;
+                    if (isAdmin) url += `&admin=1`;
                     return url;
                 };
 
@@ -2196,14 +2268,9 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
         limparBtn.style.cssText = 'padding: 8px 16px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
 
         aplicarBtn.onclick = () => {
-            console.log('aplicar clicado');
             const fromVal = deInput.value;
-            const toVal   = ateInput.value;
+            const toVal = ateInput.value;
             const isTableActive = chartContainer.style.display === 'none';
-            
-            console.log('isTableActive:', isTableActive);
-            console.log('fromVal:', fromVal, 'toVal:', toVal);
-
 
             if (!fromVal || !toVal) return;
             elements.tableBody.innerHTML = '';
@@ -2216,18 +2283,15 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                         const readings = data.data.readings;
                         elements.total.textContent = readings.length;
 
-                        // Atualiza tabela
+                        // Atualiza tabela com valores formatados
                         elements.tableBody.innerHTML = '';
                         readings.forEach(reading => {
                             const row = document.createElement('tr');
                             fieldsToShow.forEach(key => {
                                 const td = document.createElement('td');
                                 const value = reading[key];
-                                if (key === 'reading_datetime' && value) {
-                                    td.textContent = new Date(value).toLocaleString('pt-BR');
-                                } else {
-                                    td.textContent = value !== null && value !== '' ? value : '-';
-                                }
+                                const formattedValue = formatValueWithUnit(key, value);
+                                td.textContent = formattedValue;
                                 td.style.whiteSpace = 'nowrap';
                                 row.appendChild(td);
                             });
@@ -2254,7 +2318,6 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 });
         };
 
-
         limparBtn.onclick = () => {
             deInput.value = '';
             ateInput.value = '';
@@ -2276,11 +2339,8 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                             fieldsToShow.forEach(key => {
                                 const td = document.createElement('td');
                                 const value = reading[key];
-                                if (key === 'reading_datetime' && value) {
-                                    td.textContent = new Date(value).toLocaleString('pt-BR');
-                                } else {
-                                    td.textContent = value !== null && value !== '' ? value : '-';
-                                }
+                                const formattedValue = formatValueWithUnit(key, value);
+                                td.textContent = formattedValue;
                                 td.style.whiteSpace = 'nowrap';
                                 row.appendChild(td);
                             });
@@ -2314,7 +2374,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
     function createChartContainer() {
         const container = document.createElement('div');
         container.id = 'lrgsChartContainer';
-        container.style.cssText = 'display: none; width: 90%; height: 42%; margin: auto; position: relative;';
+        container.style.cssText = 'display: none; width: 90%; height: 40%; margin: auto; position: relative;';
 
         const canvas = document.createElement('canvas');
         canvas.id = 'lrgsChart';
@@ -2409,7 +2469,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 else if (fieldKey.includes('atmospheric_pressure')) return 'hPa';
                 return '';
             }
-        })(reversedReadings); // Usar readings invertidos
+        })(reversedReadings);
 
         if (numericFields.length === 0) {
             canvas.style.display = 'none';
@@ -2468,7 +2528,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                 type: 'linear',
                 display: true,
                 position: index === 0 ? 'left' : 'right',
-                min: 0, // início em 0
+                min: 0,
                 title: {
                     display: true,
                     text: dataset.label.split('(')[0].trim()
@@ -2502,15 +2562,7 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
                                 const index = context[0].dataIndex;
                                 const reading = reversedReadings[index];
                                 if (!reading?.reading_datetime) return `Registro ${index + 1}`;
-                                return new Date(reading.reading_datetime).toLocaleString('pt-BR', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    second: '2-digit',
-                                    hour12: false
-                                });
+                                return formatDateTimeToBrazilian(reading.reading_datetime);
                             }
                         }
                     }
@@ -2606,6 +2658,10 @@ if (document.readyState === 'loading') {
     initStationModal(lrgsModalConfig);
 }
 
+// ========================================
+// CNARH
+// ========================================
+
 // Configuração específica para CNARH
 const cnarhModalConfig = {
     modalId: 'cnarhReadingsModal',
@@ -2652,11 +2708,11 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     // Função para formatar data/hora para o padrão brasileiro
     function formatDateTimeToBrazilian(dateString) {
         if (!dateString || dateString === null || dateString === '') return dateString;
-        
+
         try {
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return dateString;
-            
+
             return date.toLocaleString('pt-BR', {
                 timeZone: 'America/Sao_Paulo',
                 day: '2-digit',
@@ -2689,7 +2745,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         'int_nu_siagas': 'Número De Registro SIAGAS',
         'int_nu_latitude': 'Latitude',
         'int_nu_longitude': 'Longitude',
-        
+
         // Município
         'ing_nu_ibgemunicipio': 'Código Ibge',
         'ing_sg_ufmunicipio': 'Uf',
@@ -2700,11 +2756,11 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         'ing_nm_comitefederal': 'Nome Comitê Federal',
         'ing_cd_ottobacia_trecho': 'Código Otto Bacia Trecho',
         'ing_cs_conama': 'Classe CONAMA',
-        
+
         // Corpo hídrico
         'int_nm_corpohidrico': 'Corpo Hídrico',
         'int_nm_corpohidricoalterado': 'Corpo Hídrico Alterado',
-        
+
         // Órgão e registro
         'int_ds_orgao': 'Nome Do Órgão',
         'int_cd_interferenciaoriginal': 'Código Da Interferência Original',
@@ -2714,7 +2770,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         'int_ds_opcional': 'Descrição',
         'int_cd_regla': 'Código REGLA',
         'int_cd_cnarh40': 'Código CNARH 40',
-        
+
         // Empreendimento e usuário
         'emp_nm_empreendimento': 'Nome Do Empreendimento',
         'emp_nm_usuario': 'Nome Do Usuário',
@@ -2731,16 +2787,16 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         'emp_nu_telefone': 'Número Do Telefone',
         'emp_sg_uf': 'Uf Do Responsável',
         'emp_nm_municipio': 'Munícipio Do Responsável',
-        
+
         // Vazões
         'int_qt_vazaomaxima': 'Vazão Máxima',
         'int_qt_vazaomedia': 'Vazão Media',
         'int_qt_volumeanual': 'Volume Anual',
-        
+
         // Finalidade
         'fin_tfn_ds': 'Tipo Da Finalidade Da Interferência',
         'fin_tfn_cd': 'Código da Finalidade',
-        
+
         // Outorga
         'out_tpo_ds': 'Tipo De Pedido De Outorga',
         'out_tpo_cd': 'Código do Pedido',
@@ -2753,7 +2809,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         'out_nu_ato': 'Número Do Ato De Outorga',
         'out_tp_outorga': 'Tipo de Outorga',
         'out_tp_situacaooutorga': 'Situação da Outorga',
-        
+
         // Dados mensais - Vazão
         'dad_qt_vazaodiajan': 'Atividade_JAN',
         'dad_qt_vazaodiafev': 'Atividade_FEV',
@@ -2767,7 +2823,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         'dad_qt_vazaodiaout': 'Atividade_OUT',
         'dad_qt_vazaodianov': 'Atividade_NOV',
         'dad_qt_vazaodiadez': 'Atividade_DEZ',
-        
+
         // Dados mensais - Horas
         'dad_qt_horasjan': 'Operação_JAN',
         'dad_qt_horasfev': 'Operação_FEV',
@@ -2781,7 +2837,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         'dad_qt_horasout': 'Operação_OUT',
         'dad_qt_horasnov': 'Operação_NOV',
         'dad_qt_horasdez': 'Operação_DEZ',
-        
+
         // Dados mensais - Dias
         'dad_qt_diajan': 'Atividade_Dias_JAN',
         'dad_qt_diafev': 'Atividade_Dias_FEV',
@@ -2795,7 +2851,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         'dad_qt_diaout': 'Atividade_Dias_OUT',
         'dad_qt_dianov': 'Atividade_Dias_NOV',
         'dad_qt_diadez': 'Atividade_Dias_DEZ',
-        
+
         // Dados do aquífero
         'asb_dt_instalacao': 'Data de Instalação',
         'asb_tnp_cd': 'Código Natureza do Ponto',
@@ -2813,7 +2869,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         'asb_nu_profundidadefinal': 'Profundidade Do Poço',
         'asb_nu_alturabocatubo': 'Altura Da Boca Da Tubulação',
         'asb_nu_cotaterreno': 'Altitude Do Terreno',
-        
+
         // Teste de bombeamento
         'tst_dt': 'Data Do Teste Do Bombeamento',
         'tst_ttb_ds': 'Tipo De Teste De Bombeamento',
@@ -2828,7 +2884,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         'tst_nu_transmissividade': 'Transmissividade',
         'tst_nu_condutividadehidraulica': 'Condutividade Hidraulica',
         'tst_nu_permeabilidade': 'Permeabilidade',
-        
+
         // Dados da qualidade da água
         'ama_dt_coleta': 'Data Da Coleta',
         'ama_dt_analise': 'Data Da Análise',
@@ -2851,7 +2907,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         'ama_qt_sodio': 'Parâmetro Sódio',
         'ama_qt_sulfato': 'Parâmetro Sulfato',
         'ama_qt_magnesio': 'Parâmetro Magnésio',
-        
+
         // Outros
         'data_extracao': 'Data de Extração',
         'created_at': 'Data de Criação',
@@ -2983,7 +3039,7 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     function renderTable(cnarhData) {
         // Manter a ordem original das chaves, filtrando apenas valores não nulos
         const entries = [];
-        
+
         for (const [key, value] of Object.entries(cnarhData)) {
             // Incluir apenas valores que não são null, undefined ou string vazia
             if (value !== null && value !== undefined && value !== '') {
@@ -2996,11 +3052,11 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
                         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
                         .join(' ');
                 }
-                
+
                 // Formatar o valor (primeiro data, depois unidade)
                 let formattedValue = formatValueWithDate(key, value);
                 formattedValue = formatValueWithUnit(key, formattedValue);
-                
+
                 entries.push([displayName, formattedValue]);
             }
         }

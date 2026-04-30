@@ -162,7 +162,7 @@
         background-color: #ffffff;
         color: black;
         text-align: center;
-        font-weight: bold;
+        font-weight: 600;
         font-size: 0.8rem;
         text-transform: uppercase;
         padding: 10px 20px;
