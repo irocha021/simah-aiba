@@ -534,6 +534,22 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
         'vazao_esta': 'm³/h'
     };
 
+    // Verificar se usuário está logado
+    const isLoggedIn = document.querySelector('meta[name="user-logged-in"]')?.getAttribute('content') === 'true';
+
+    // Lista de campos que devem ser ocultados para usuários não logados
+    const hiddenFieldsForNonLogged = [
+        'proprietar',
+        'perfurador',
+        'data_teste',
+        'surgencia',
+        'data_anali',
+        'data_colet',
+        'condutivid',
+        'cor',
+        'turbidez'
+    ];
+
     // Função para formatar valor com unidade
     function formatValueWithUnit(key, value) {
         if (value === null || value === undefined || value === '') return '-';
@@ -564,6 +580,13 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                 // Filtrar e mapear os dados com nomes personalizados
                 const entries = Object.entries(poco)
                     .filter(([key, value]) => value !== '' && value !== undefined)
+                    .filter(([key]) => {
+                        // Para usuário não logado, pular os campos da lista hiddenFieldsForNonLogged
+                        if (!isLoggedIn && hiddenFieldsForNonLogged.includes(key)) {
+                            return false;
+                        }
+                        return true;
+                    })
                     .map(([key, value]) => {
                         // Usar nome personalizado ou manter o original formatado
                         const displayName = nameMapping[key] || formatSiagasKey(key);
