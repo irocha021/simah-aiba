@@ -1,3 +1,9 @@
+@auth
+    <meta name="user-logged-in" content="true">
+@else
+    <meta name="user-logged-in" content="false">
+@endauth
+
 <!-- Modal para exibir leituras do poço RIMAS -->
 <div id="rimasReadingsModal" class="rimas-modal">
     <div class="rimas-modal-content">
@@ -34,10 +40,10 @@
             <table class="rimas-table">
                 <thead>
                     <tr>
-                        <th>Nº Medição</th>
+                        <th>Número do ponto</th>
                         <th>Data</th>
                         <th>Hora</th>
-                        <th>Nível da Água</th>
+                        <th>Nível da Água (m)</th>
                         <th>Observação</th>
                     </tr>
                 </thead>
@@ -165,7 +171,7 @@
         background-color: #ffffff;
         color: black;
         text-align: center;
-        font-weight: bold;
+        font-weight: 600;
         font-size: 0.8rem;
         text-transform: uppercase;
         padding: 10px 8px;

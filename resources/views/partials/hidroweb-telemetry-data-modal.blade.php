@@ -1,3 +1,9 @@
+@auth
+    <meta name="user-logged-in" content="true">
+@else
+    <meta name="user-logged-in" content="false">
+@endauth
+
 <!-- Modal para exibir dados HidroWeb Telemetria (Leituras + Previsões) -->
 <div id="hidrowebTelemetryDataModal" class="hidroweb-data-modal">
     <div class="hidroweb-data-modal-content">
@@ -48,9 +54,9 @@
                     <thead>
                         <tr>
                             <th>Data/Hora</th>
-                            <th>Chuva Adotada</th>
-                            <th>Cota Adotada</th>
-                            <th>Vazão Adotada</th>
+                            <th>Chuva Adotada (mm)</th>
+                            <th>Cota Adotada (m)</th>
+                            <th>Vazão Adotada (m³/s)</th>
                         </tr>
                     </thead>
                     <tbody id="leiturasTableBody"></tbody>
@@ -280,7 +286,7 @@
         background-color: #ffffff;
         color: black;
         text-align: center;
-        font-weight: bold;
+        font-weight: 600;
         font-size: 0.8rem;
         text-transform: uppercase;
         padding: 10px 8px;

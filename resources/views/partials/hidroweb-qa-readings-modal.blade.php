@@ -1,3 +1,9 @@
+@auth
+    <meta name="user-logged-in" content="true">
+@else
+    <meta name="user-logged-in" content="false">
+@endauth
+
 <!-- Modal para exibir leituras de qualidade da água HidroWeb -->
 <div id="hidrowebQaReadingsModal" class="hidroweb-qa-modal">
     <div class="hidroweb-qa-modal-content">
@@ -162,7 +168,7 @@
         background-color: #ffffff;
         color: black;
         text-align: center;
-        font-weight: bold;
+        font-weight: 600;
         font-size: 0.8rem;
         text-transform: uppercase;
         padding: 10px 20px;

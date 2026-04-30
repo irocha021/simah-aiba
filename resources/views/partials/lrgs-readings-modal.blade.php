@@ -1,3 +1,9 @@
+@auth
+    <meta name="user-logged-in" content="true">
+@else
+    <meta name="user-logged-in" content="false">
+@endauth
+
 <!-- Modal para exibir leituras LRGS Client (DCP) -->
 <div id="lrgsReadingsModal" class="lrgs-modal">
     <div class="lrgs-modal-content">
@@ -158,7 +164,7 @@
     }
 
     .lrgs-table-container {
-        max-height: 42%;
+        max-height: 35%;
         width: 92%;
         overflow-x: auto;
         overflow-y: auto;
@@ -179,7 +185,7 @@
         background-color: #ffffff;
         color: black;
         text-align: center;
-        font-weight: bold;
+        font-weight: 600;
         font-size: 0.8rem;
         text-transform: uppercase;
         padding: 10px 20px;

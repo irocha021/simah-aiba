@@ -4,7 +4,7 @@ function initLayerControl() {
   // Configurações das camadas
   const layerConfig = {
     'cnarh': {
-      name: 'CNARH',
+      name: 'CNARH - Outorgas',
       color: '#A47864',
       icon: 'fas fa-tint',
       endpoint: '/api/stations/cnarh'
@@ -22,13 +22,13 @@ function initLayerControl() {
       endpoint: '/api/stations/hidroweb-telemetria'
     },
     'hidroweb_telemetria_com_previsao': {
-      name: 'HidroWeb - Telemetria c/ Previsão',
+      name: 'Previsão de vazão',
       color: '#9933ff',
       icon: 'fas fa-chart-line',
       endpoint: '/api/stations/hidroweb-telemetria-previsao'
     },
     'lrgs_client': {
-      name: 'LRGS Client (DCP)',
+      name: 'Estações AIBA',
       color: '#ff7800',
       icon: 'fas fa-satellite',
       endpoint: '/api/stations/lrgs-client'
@@ -46,7 +46,7 @@ function initLayerControl() {
       endpoint: '/api/stations/pocos-siagas'
     },
     'pocos_simah': {
-      name: 'Poços SIMAH',
+      name: 'Poços AIBA',
       color: '#165B9C',
       icon: 'fas fa-water',
       endpoint: '/api/stations/pocos-simah'
@@ -99,7 +99,7 @@ function initLayerControl() {
         <span class="option-count" style="display: none;">0</span>
       `;
 
-      button.addEventListener('click', function(e) {
+      button.addEventListener('click', function (e) {
         e.stopPropagation();
         toggleLayerLazy(key, this);
       });
@@ -164,7 +164,7 @@ function initLayerControl() {
       const stations = data.data.stations;
 
       // Criar marcadores usando a função global do dashboard
-      stations.forEach(function(station) {
+      stations.forEach(function (station) {
         if (station.latitude && station.longitude) {
           const marker = window.createMarker(station);
           clusterGroups[layerKey].addLayer(marker);
@@ -204,32 +204,32 @@ function initLayerControl() {
 
   // Exportar funções específicas do controle de camadas
   window.layerControl = {
-      updateCounts: function() {
-        Object.keys(layerConfig).forEach(layerKey => {
-          const state = layerState[layerKey];
-          if (state.loaded && clusterGroups[layerKey]) {
-            const count = clusterGroups[layerKey].getLayers().length;
-            state.count = count;
+    updateCounts: function () {
+      Object.keys(layerConfig).forEach(layerKey => {
+        const state = layerState[layerKey];
+        if (state.loaded && clusterGroups[layerKey]) {
+          const count = clusterGroups[layerKey].getLayers().length;
+          state.count = count;
 
-            const countEl = document.querySelector(
-              `.select-option[data-layer="${layerKey}"] .option-count`
-            );
-            if (countEl) {
-              countEl.textContent = count;
-            }
+          const countEl = document.querySelector(
+            `.select-option[data-layer="${layerKey}"] .option-count`
+          );
+          if (countEl) {
+            countEl.textContent = count;
           }
-        });
-      },
-      refresh: createLayerButtons,
-      isLoaded: function(layerKey) {
-        return layerState[layerKey]?.loaded || false;
-      },
-      isVisible: function(layerKey) {
-        return layerState[layerKey]?.visible || false;
-      },
-      getCount: function(layerKey) {
-        return layerState[layerKey]?.count || 0;
-      }
+        }
+      });
+    },
+    refresh: createLayerButtons,
+    isLoaded: function (layerKey) {
+      return layerState[layerKey]?.loaded || false;
+    },
+    isVisible: function (layerKey) {
+      return layerState[layerKey]?.visible || false;
+    },
+    getCount: function (layerKey) {
+      return layerState[layerKey]?.count || 0;
+    }
   };
 }
 
