@@ -4136,6 +4136,7 @@ function loadHidrowebPrevisoesData(stationCode) {
     const errorMessage = document.getElementById('previsoesErrorMessage');
     const emptyMessage = document.getElementById('previsoesEmpty');
     const tableBody = document.getElementById('previsoesTableBody');
+    const tableHeader = document.querySelector('#previsoesTableContainer table thead tr');
 
     // Mostrar loading
     loadingSpinner.style.display = 'block';
@@ -4144,11 +4145,26 @@ function loadHidrowebPrevisoesData(stationCode) {
     emptyMessage.style.display = 'none';
     tableBody.innerHTML = '';
 
-    // Fetch dos dados (nova API que vamos criar)
+    // Verificar se o usuário está logado
+    const isLoggedIn = document.querySelector('meta[name="user-logged-in"]')?.getAttribute('content') === 'true';
+
+    // Esconder a coluna alfa_pond no cabeçalho se não estiver logado
+    if (!isLoggedIn && tableHeader) {
+        // A coluna alfa_pond é a 4ª coluna (índice 3, porque começa em 0)
+        if (tableHeader.children[3]) {
+            tableHeader.children[3].style.display = 'none';
+        }
+    } else if (isLoggedIn && tableHeader) {
+        // Garantir que esteja visível para usuário logado
+        if (tableHeader.children[3]) {
+            tableHeader.children[3].style.display = '';
+        }
+    }
+
+    // Fetch dos dados
     fetch(`/api/hidroweb-telemetria/${stationCode}/forecast`)
         .then(response => {
             if (response.status === 404) {
-                // Sem previsões
                 loadingSpinner.style.display = 'none';
                 emptyMessage.style.display = 'block';
                 return null;
@@ -4168,14 +4184,27 @@ function loadHidrowebPrevisoesData(stationCode) {
                 // Preencher tabela
                 data.data.forecasts.forEach(forecast => {
                     const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${forecast.forecast_year || '-'}</td>
-                        <td>${forecast.forecast_month || '-'}</td>
-                        <td>${forecast.predicted_flow || '-'}</td>
-                        <td>${forecast.alfa_pond || '-'}</td>
-                        <td>${forecast.q_noventa || '-'}</td>
-                        <td>${forecast.vsup || '-'}</td>
-                    `;
+                    
+                    if (isLoggedIn) {
+                        // Usuário logado: mostra todas as colunas
+                        row.innerHTML = `
+                            <td>${forecast.forecast_year || '-'}</td>
+                            <td>${forecast.forecast_month || '-'}</td>
+                            <td>${forecast.predicted_flow || '-'}</td>
+                            <td>${forecast.alfa_pond || '-'}</td>
+                            <td>${forecast.q_noventa || '-'}</td>
+                            <td>${forecast.vsup || '-'}</td>
+                        `;
+                    } else {
+                        // Usuário NÃO logado: NÃO inclui a coluna alfa_pond
+                        row.innerHTML = `
+                            <td>${forecast.forecast_year || '-'}</td>
+                            <td>${forecast.forecast_month || '-'}</td>
+                            <td>${forecast.predicted_flow || '-'}</td>
+                            <td>${forecast.q_noventa || '-'}</td>
+                            <td>${forecast.vsup || '-'}</td>
+                        `;
+                    }
                     tableBody.appendChild(row);
                 });
 
