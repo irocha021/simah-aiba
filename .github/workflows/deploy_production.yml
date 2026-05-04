@@ -55,7 +55,6 @@ jobs:
             rm -rf storage/logs/*
             chmod -R 777 lrgs
             docker rm -f 'mhb' || true
-            docker rm -f 'mhb_db' || true
             docker rm -f 'mhb_queue' || true
             docker rm -f 'mhb_cron' || true
             docker compose -f docker-compose.production.yml -p mhb up -d --build --force-recreate --remove-orphans
