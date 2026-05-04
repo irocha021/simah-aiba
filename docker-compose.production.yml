@@ -26,3 +26,14 @@ services:
             - 'host.docker.internal:host-gateway'
         depends_on:
             - mhb
+    cron:
+        image: mhb
+        container_name: 'mhb_cron'
+        restart: always
+        command: bash -c "crontab /etc/cron.d/crontab && cron -f"
+        volumes:
+            - './docker/production/crontab:/etc/cron.d/crontab:ro'
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - mhb
