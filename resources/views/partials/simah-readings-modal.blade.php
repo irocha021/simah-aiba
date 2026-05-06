@@ -26,6 +26,9 @@
                 &nbsp;&nbsp;
                 <span style="font-size:12px; color: #575F6E;">Total de Leituras:</span>
                 <span style="font-size:12px; color: #575F6E;" id="simahModalTotalReadings">-</span>
+                &nbsp;&nbsp;
+                <span style="font-size:12px; color: #575F6E;">Profundidade do Equipamento:</span>
+                <span style="font-size:12px; color: #575F6E;" id="simahModalDepth">-</span>
             </div>
         </div>
 

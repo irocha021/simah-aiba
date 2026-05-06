@@ -8,13 +8,16 @@ class DcpReadingService
 {
     private DcpReadingRepositoryInterface $dcpReadingRepository;
     private DcpMessageProcessor $messageProcessor;
+    private DcpJobLogger $logger;
 
     public function __construct(
         DcpReadingRepositoryInterface $dcpReadingRepository,
-        DcpMessageProcessor $messageProcessor
+        DcpMessageProcessor $messageProcessor,
+        DcpJobLogger $logger
     ) {
         $this->dcpReadingRepository = $dcpReadingRepository;
         $this->messageProcessor = $messageProcessor;
+        $this->logger = $logger;
     }
 
     /**
@@ -23,7 +26,7 @@ class DcpReadingService
      * @param array $messages
      * @return array Estatísticas do processamento + corrupted_headers array
      */
-    public function processAndInsertMessages(array $messages): array
+    public function processAndInsertMessages(array $messages, ?int $syncLogId = null, ?string $invocationId = null): array
     {
         $validReadings    = [];
         $corruptedHeaders = [];
@@ -50,11 +53,32 @@ class DcpReadingService
         }
 
         $insertedCount = 0;
+        $skippedDuplicate = 0;
 
         if (!empty($validReadings)) {
             foreach ($validReadings as $item) {
-                $inserted = $this->dcpReadingRepository->create($item['data']);
+                $result = $this->dcpReadingRepository->firstOrCreateForKey($item['data']);
+                $inserted = $result['model'];
+
+                if (!$result['created']) {
+                    $skippedDuplicate++;
+                    $this->logger->readingSkippedDuplicate(
+                        $invocationId,
+                        $syncLogId,
+                        (int) $item['data']['dcp_station_id'],
+                        (string) $item['data']['reading_datetime'],
+                        $result['restored'] ? 'restored_soft_deleted' : 'already_exists'
+                    );
+                    continue; // pula flow + null-fill em duplicatas
+                }
+
                 $insertedCount++;
+                $this->logger->readingInserted(
+                    $invocationId,
+                    $syncLogId,
+                    (int) $item['data']['dcp_station_id'],
+                    (string) $item['data']['reading_datetime']
+                );
 
                 // Grava rastreamento de flow se houver
                 if (!empty($item['flow'])) {
@@ -87,13 +111,14 @@ class DcpReadingService
             }
         }
 
-
         return [
             'total' => count($messages),
             'inserted' => $insertedCount,
+            'skipped_duplicate' => $skippedDuplicate,
             'corrupted' => count($corruptedHeaders),
             'corrupted_headers' => $corruptedHeaders,
         ];
+
     }
 
 

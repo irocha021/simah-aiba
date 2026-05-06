@@ -65,7 +65,9 @@ Route::prefix('jobs')->group(function () {
 Route::prefix('geobahia')->group(function(){
     Route::get('/import/{layer}/{minZoom?}/{maxZoom?}/{opacity?}', [GeobahiaImportController::class, 'import']);
     Route::get('/import-all', [GeobahiaImportController::class, 'importAll']);
+    Route::get('/import-async/{slug}', [GeobahiaImportController::class, 'importAsync']);
 });
+
 
 Route::get('/api-key', [App\Http\Controllers\Api\Public\ApiKeyController::class, 'showForm'])->name('api-key.form');
 Route::post('/api-key', [App\Http\Controllers\Api\Public\ApiKeyController::class, 'requestKey'])->name('api-key.request');
@@ -107,6 +109,13 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('cnarh')->group(function () {
             Route::get('/', [CnarhUploadController::class, 'index'])->name('cnarh.index');
             Route::post('/upload', [CnarhUploadController::class, 'store'])->name('cnarh.upload');
+        });
+
+        Route::prefix('lrgs-sync-logs')->group(function () {
+            Route::get('/',                [\App\Http\Controllers\DcpSyncLogController::class, 'index'])->name('lrgs-sync-logs.index');
+            Route::get('/log-file',        [\App\Http\Controllers\DcpSyncLogController::class, 'logFile'])->name('lrgs-sync-logs.log-file');
+            Route::post('/log-file/clean', [\App\Http\Controllers\DcpSyncLogController::class, 'cleanOldLogs'])->name('lrgs-sync-logs.log-file.clean');
+            Route::get('/{id}',            [\App\Http\Controllers\DcpSyncLogController::class, 'show'])->name('lrgs-sync-logs.show');
         });
 
         Route::prefix('lrgs-stations')->group(function () {

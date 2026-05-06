@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Jobs\Lrgs;
 
 use App\Http\Controllers\Controller;
 use App\Models\DcpStation;
+use App\Models\DcpSyncLog;
 use App\Services\DcpStationService;
 use App\Services\DcpSyncLogService;
+use App\Services\Lrgs\DcpJobLogger;
 use App\Services\Lrgs\DcpReadingService;
 use App\Services\Lrgs\LrgsService;
 use Illuminate\Http\JsonResponse;
@@ -18,51 +20,79 @@ class ReadDcpMessagesController extends Controller
     private DcpReadingService $dcpReadingService;
     private DcpStationService $dcpStationService;
     private DcpSyncLogService $dcpSyncLogService;
+    private DcpJobLogger $jobLogger;
 
     public function __construct(
         LrgsService $lrgsService,
         DcpReadingService $dcpReadingService,
         DcpStationService $dcpStationService,
-        DcpSyncLogService $dcpSyncLogService
+        DcpSyncLogService $dcpSyncLogService,
+        DcpJobLogger $jobLogger
     ) {
         $this->lrgsService = $lrgsService;
         $this->dcpReadingService = $dcpReadingService;
         $this->dcpStationService = $dcpStationService;
         $this->dcpSyncLogService = $dcpSyncLogService;
+        $this->jobLogger = $jobLogger;
     }
+
 
     /**
      * Retrieve messages for current period (last full hour)
      */
     public function retrieveMessages(): JsonResponse
-    {      
-      
+    {
+        $invocationId = $this->jobLogger->newInvocationId();
+        $jobStartedAt = microtime(true);
+
+        // Guarda de concorrência: aborta se houver outro job 'running' iniciado < 10min
+        $running = DcpSyncLog::where('status', 'running')
+            ->where('started_at', '>=', now()->subMinutes(10))
+            ->get();
+
+        if ($running->isNotEmpty()) {
+            $this->jobLogger->jobAlreadyRunning($invocationId, $running->pluck('id')->all());
+            return response()->json([
+                'success' => false,
+                'reason'  => 'already_running',
+                'invocation_id' => $invocationId,
+                'running_sync_logs' => $running->pluck('id'),
+                'message' => 'Outro job DCP iniciado há menos de 10 minutos ainda está em execução'
+            ], 409);
+        }
+
         try {
-            // Busca estações ativas
             $stations = (object) $this->dcpStationService->getActiveStations();
 
             if ($stations->isEmpty()) {
+                $this->jobLogger->jobStart($invocationId, ['active_stations' => 0]);
+                $this->jobLogger->jobEnd($invocationId, ['reason' => 'no_active_stations']);
                 return response()->json([
                     'success' => false,
                     'error' => 'Nenhuma estação ativa encontrada'
                 ], 404);
             }
 
-            // Calcula intervalo da última hora cheia
             $interval = $this->lrgsService->getLastFullHourInterval();
 
-            // Estatísticas consolidadas
+            $this->jobLogger->jobStart($invocationId, [
+                'active_stations' => count($stations),
+                'interval' => sprintf('%s → %s',
+                    $interval['start']->toDateTimeString(),
+                    $interval['end']->toDateTimeString()
+                ),
+                'caller_ip' => request()->ip(),
+            ]);
+
             $totalMessages = 0;
             $totalInserted = 0;
             $totalCorrupted = 0;
+            $totalSkipped = 0;
             $stationsStats = [];
 
-            // Define delimitadores
             $beforeDelimiter = config('lrgs.delimiters.before');
 
-            // Loop por cada estação
             foreach ($stations as $station) {
-                // Cria sync log em status 'pending'
                 $syncLog = $this->dcpSyncLogService->createLog(
                     $station->id,
                     $interval['start'],
@@ -70,51 +100,47 @@ class ReadDcpMessagesController extends Controller
                 );
 
                 try {
-                    Log::info('Processando estação DCP', [
-                        'station_id' => $station->id,
-                        'station_name' => $station->name,
-                        'dcp_address' => $station->dcp_address,
-                        'sync_log_id' => $syncLog->id
-                    ]);
+                    $this->jobLogger->stationStart(
+                        $invocationId,
+                        $syncLog->id,
+                        $station,
+                        $interval['start']->toDateTimeString(),
+                        $interval['end']->toDateTimeString()
+                    );
 
-                    // Marca como 'running' e incrementa attempts
                     $this->dcpSyncLogService->startLog($syncLog->id);
 
-                    // 1. Gera arquivo MessageBrowser.sc para esta estação
                     $this->lrgsService->generateSearchCriteria(
                         $station->dcp_address,
                         $interval['start'],
                         $interval['end']
                     );
 
-                    // 2. Busca mensagens
                     $filePath = $this->lrgsService->fetchMessages();
                     $fileContent = file_get_contents($filePath);
 
-                    // 3. Divide pelo delimitador
                     $parts = explode($beforeDelimiter, $fileContent);
 
-                    // Remove partes vazias
                     $messages = array_filter($parts, function($part) {
                         return !empty(trim($part));
                     });
 
-                    // Remove linhas de status/finalizacao
                     $filteredMessages = array_filter($messages, function($line) {
                         $line = trim($line);
                         return !empty($line) &&
                             !str_contains($line, 'Normal termination') &&
                             !str_contains($line, 'Until time reached') &&
-                            !str_contains($line, 'Missing message') &&        // NOVO
-                            !str_contains($line, 'Wrong channel') &&          // NOVO
-                            !str_contains($line, 'TESTE DE TRANSMISSAO');     // NOVO (opcional)
+                            !str_contains($line, 'Missing message') &&
+                            !str_contains($line, 'Wrong channel') &&
+                            !str_contains($line, 'TESTE DE TRANSMISSAO');
                     });
-            
 
-                    // 4. Processa e insere mensagens (agora retorna corrupted_headers)
-                    $stats = $this->dcpReadingService->processAndInsertMessages(array_values($filteredMessages));
+                    $stats = $this->dcpReadingService->processAndInsertMessages(
+                        array_values($filteredMessages),
+                        $syncLog->id,
+                        $invocationId
+                    );
 
-                    // 5. Completa o sync log com sucesso
                     $this->dcpSyncLogService->completeLog(
                         $syncLog->id,
                         $stats['total'],
@@ -123,10 +149,10 @@ class ReadDcpMessagesController extends Controller
                         $stats['corrupted_headers']
                     );
 
-                    // 6. Acumula estatísticas
                     $totalMessages += $stats['total'];
                     $totalInserted += $stats['inserted'];
                     $totalCorrupted += $stats['corrupted'];
+                    $totalSkipped += $stats['skipped_duplicate'] ?? 0;
 
                     $stationsStats[] = [
                         'station_id' => $station->id,
@@ -134,59 +160,59 @@ class ReadDcpMessagesController extends Controller
                         'address' => $station->dcp_address,
                         'messages' => $stats['total'],
                         'inserted' => $stats['inserted'],
+                        'skipped_duplicate' => $stats['skipped_duplicate'] ?? 0,
                         'corrupted' => $stats['corrupted'],
                         'file' => $filePath,
                         'sync_log_id' => $syncLog->id
                     ];
 
-                    Log::info('Estação DCP processada com sucesso', [
-                        'station_id' => $station->id,
-                        'sync_log_id' => $syncLog->id,
-                        'messages' => $stats['total'],
+                    $this->jobLogger->stationDone($invocationId, $syncLog->id, [
+                        'total'    => $stats['total'],
                         'inserted' => $stats['inserted'],
-                        'corrupted' => $stats['corrupted']
+                        'skipped'  => $stats['skipped_duplicate'] ?? 0,
+                        'corrupted'=> $stats['corrupted'],
                     ]);
 
                 } catch (\Exception $e) {
-                    Log::error('Erro ao processar estação DCP', [
+                    $this->jobLogger->error($invocationId, 'station_processing', $e, [
+                        'sync_log' => $syncLog->id,
                         'station_id' => $station->id,
                         'station_name' => $station->name,
-                        'sync_log_id' => $syncLog->id,
-                        'error' => $e->getMessage()
                     ]);
 
-                    // Marca sync log como 'failed'
                     $this->dcpSyncLogService->failLog($syncLog->id, $e->getMessage());
 
-                    // Adiciona estação com erro nas estatísticas
                     $stationsStats[] = [
                         'station_id' => $station->id,
                         'name' => $station->name,
                         'address' => $station->dcp_address,
                         'messages' => 0,
                         'inserted' => 0,
+                        'skipped_duplicate' => 0,
                         'corrupted' => 0,
                         'error' => $e->getMessage(),
                         'sync_log_id' => $syncLog->id
                     ];
 
-                    // Continua para próxima estação
                     continue;
                 }
             }
 
-            Log::info('Processamento de todas estações DCP concluído', [
-                'total_stations' => count($stations),
-                'total_messages' => $totalMessages,
-                'total_inserted' => $totalInserted,
-                'total_corrupted' => $totalCorrupted
-            ]);
+            $this->reprocessStuckJobs($invocationId);
 
-            // Após processar período corrente, tenta reprocessar logs pendentes/stuck
-            $this->reprocessStuckJobs();
+            $duration = round(microtime(true) - $jobStartedAt, 2);
+            $this->jobLogger->jobEnd($invocationId, [
+                'stations'  => count($stations),
+                'messages'  => $totalMessages,
+                'inserted'  => $totalInserted,
+                'skipped'   => $totalSkipped,
+                'corrupted' => $totalCorrupted,
+                'duration_s'=> $duration,
+            ]);
 
             return response()->json([
                 'success' => true,
+                'invocation_id' => $invocationId,
                 'interval' => [
                     'start' => $interval['start']->toDateTimeString(),
                     'end' => $interval['end']->toDateTimeString()
@@ -194,65 +220,50 @@ class ReadDcpMessagesController extends Controller
                 'total_stations' => count($stations),
                 'total_messages' => $totalMessages,
                 'total_inserted' => $totalInserted,
+                'total_skipped_duplicate' => $totalSkipped,
                 'total_corrupted' => $totalCorrupted,
                 'stations' => $stationsStats,
                 'summary' => [
                     'processed' => $totalMessages,
                     'valid' => $totalInserted,
+                    'skipped' => $totalSkipped,
                     'invalid' => $totalCorrupted,
                 ]
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Erro ao buscar mensagens DCP', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            $this->jobLogger->error($invocationId, 'job_top_level', $e);
 
             return response()->json([
                 'success' => false,
+                'invocation_id' => $invocationId,
                 'error' => $e->getMessage()
             ], 500);
         }
     }
 
+
     /**
      * Reprocess stuck or failed jobs (max 3 attempts)
      * Called at the end of normal processing
      */
-    private function reprocessStuckJobs(): void
+    private function reprocessStuckJobs(string $invocationId): void
     {
         try {
             $pendingForRetry = (object) $this->dcpSyncLogService->findPendingForRetry();
 
-          
             if ($pendingForRetry->isEmpty()) {
-                Log::info('Nenhum job pendente/stuck para reprocessar');
                 return;
             }
 
-            Log::info('Iniciando reprocessamento de jobs pendentes/stuck', [
-                'total_logs' => $pendingForRetry->count()
-            ]);
+            $this->jobLogger->reprocessStart($invocationId, $pendingForRetry->count());
 
             foreach ($pendingForRetry as $syncLog) {
                 try {
-                    // Verifica se ainda pode retentar
                     if (!$this->dcpSyncLogService->canRetry($syncLog->id)) {
-                        Log::warning('Sync log atingiu limite de tentativas', [
-                            'sync_log_id' => $syncLog->id,
-                            'attempts' => $syncLog->attempts
-                        ]);
                         continue;
                     }
 
-                    Log::info('Reprocessando sync log', [
-                        'sync_log_id' => $syncLog->id,
-                        'station_id' => $syncLog->dcp_station_id,
-                        'attempt' => $syncLog->attempts + 1
-                    ]);
-
-                    // Busca a estação
                     $station = $this->dcpStationService->getActiveStations()
                         ->firstWhere('id', $syncLog->dcp_station_id);
 
@@ -264,28 +275,23 @@ class ReadDcpMessagesController extends Controller
                         continue;
                     }
 
-                    // Soft delete readings antigos do período
                     $this->dcpReadingService->deleteByStationAndPeriod(
                         $syncLog->dcp_station_id,
                         $syncLog->start_time,
                         $syncLog->end_time
                     );
 
-                    // Marca como 'running' e incrementa attempts
                     $this->dcpSyncLogService->startLog($syncLog->id);
 
-                    // Gera search criteria
                     $this->lrgsService->generateSearchCriteria(
                         $station->dcp_address,
                         $syncLog->start_time,
                         $syncLog->end_time
                     );
 
-                    // Busca mensagens
                     $filePath = $this->lrgsService->fetchMessages();
                     $fileContent = file_get_contents($filePath);
 
-                    // Processa mensagens
                     $beforeDelimiter = config('lrgs.delimiters.before');
                     $parts = explode($beforeDelimiter, $fileContent);
 
@@ -298,16 +304,17 @@ class ReadDcpMessagesController extends Controller
                         return !empty($line) &&
                             !str_contains($line, 'Normal termination') &&
                             !str_contains($line, 'Until time reached') &&
-                            !str_contains($line, 'Missing message') &&        // NOVO
-                            !str_contains($line, 'Wrong channel') &&          // NOVO
-                            !str_contains($line, 'TESTE DE TRANSMISSAO');     // NOVO (opcional)
+                            !str_contains($line, 'Missing message') &&
+                            !str_contains($line, 'Wrong channel') &&
+                            !str_contains($line, 'TESTE DE TRANSMISSAO');
                     });
-            
 
-                    // Processa e insere
-                    $stats = $this->dcpReadingService->processAndInsertMessages(array_values($filteredMessages));
+                    $stats = $this->dcpReadingService->processAndInsertMessages(
+                        array_values($filteredMessages),
+                        $syncLog->id,
+                        $invocationId
+                    );
 
-                    // Completa o sync log
                     $this->dcpSyncLogService->completeLog(
                         $syncLog->id,
                         $stats['total'],
@@ -316,33 +323,22 @@ class ReadDcpMessagesController extends Controller
                         $stats['corrupted_headers']
                     );
 
-                    Log::info('Sync log reprocessado com sucesso', [
-                        'sync_log_id' => $syncLog->id,
-                        'messages' => $stats['total'],
-                        'inserted' => $stats['inserted'],
-                        'corrupted' => $stats['corrupted']
-                    ]);
-
                 } catch (\Exception $e) {
-                    Log::error('Erro ao reprocessar sync log', [
-                        'sync_log_id' => $syncLog->id,
-                        'error' => $e->getMessage()
+                    $this->jobLogger->error($invocationId, 'reprocess_sync_log', $e, [
+                        'sync_log' => $syncLog->id,
                     ]);
 
                     $this->dcpSyncLogService->failLog($syncLog->id, $e->getMessage());
                 }
             }
 
-            Log::info('Reprocessamento concluído', [
-                'total_processed' => $pendingForRetry->count()
-            ]);
+            $this->jobLogger->reprocessDone($invocationId, $pendingForRetry->count());
 
         } catch (\Exception $e) {
-            Log::error('Erro durante reprocessamento de jobs stuck', [
-                'error' => $e->getMessage()
-            ]);
+            $this->jobLogger->error($invocationId, 'reprocess_top_level', $e);
         }
     }
+
 
     /**
      * Manual reprocessing for specific station and time period

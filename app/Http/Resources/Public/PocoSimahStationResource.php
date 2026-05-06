@@ -14,6 +14,7 @@ class PocoSimahStationResource extends JsonResource
             'name'         => $this->name,
             'latitude'     => $this->latitude,
             'longitude'    => $this->longitude,
+            'depth'        => $this->depth,
             'ativa'        => $this->ativa,
         ];
     }

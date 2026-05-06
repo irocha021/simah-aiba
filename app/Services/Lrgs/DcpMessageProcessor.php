@@ -194,15 +194,15 @@ class DcpMessageProcessor
             'reception_source' => $header->receptionSource,
             'data_length' => $header->dataLength,
 
-            // Water level readings (indices 1-8)
-            'water_level_120min' => $this->parseNumericValue($parts[1] ?? null),
-            'water_level_105min' => $this->parseNumericValue($parts[2] ?? null),
-            'water_level_90min' => $this->parseNumericValue($parts[3] ?? null),
-            'water_level_75min' => $this->parseNumericValue($parts[4] ?? null),
-            'water_level_60min' => $waterLevel60 = $this->parseNumericValue($parts[5] ?? null),
-            'water_level_45min' => $waterLevel45 = $this->parseNumericValue($parts[6] ?? null),
-            'water_level_30min' => $waterLevel30 = $this->parseNumericValue($parts[7] ?? null),
-            'water_level_15min' => $waterLevel15 = $this->parseNumericValue($parts[8] ?? null),
+            // Water level readings (indices 1-8) — LRGS envia em cm, convertemos para metros
+            'water_level_120min' => $this->cmToMeters($this->parseNumericValue($parts[1] ?? null)),
+            'water_level_105min' => $this->cmToMeters($this->parseNumericValue($parts[2] ?? null)),
+            'water_level_90min'  => $this->cmToMeters($this->parseNumericValue($parts[3] ?? null)),
+            'water_level_75min'  => $this->cmToMeters($this->parseNumericValue($parts[4] ?? null)),
+            'water_level_60min'  => $waterLevel60 = $this->cmToMeters($this->parseNumericValue($parts[5] ?? null)),
+            'water_level_45min'  => $waterLevel45 = $this->cmToMeters($this->parseNumericValue($parts[6] ?? null)),
+            'water_level_30min'  => $waterLevel30 = $this->cmToMeters($this->parseNumericValue($parts[7] ?? null)),
+            'water_level_15min'  => $waterLevel15 = $this->cmToMeters($this->parseNumericValue($parts[8] ?? null)),
             'flow' => $this->calculateFlow(
                 $station, 
                 $readingDatetime, 
@@ -389,4 +389,14 @@ class DcpMessageProcessor
     {
         return !empty($value) ? $value : null;
     }
+
+    /**
+     * Converte valor de centímetros para metros.
+     * Mantém null se entrada for null.
+     */
+    private function cmToMeters(?float $cm): ?float
+    {
+        return $cm === null ? null : $cm / 100;
+    }
+
 }

@@ -142,6 +142,15 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label>Profundidade do equipamento (m)</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-ruler-vertical"></i>
+                            <input type="number" step="0.01" min="0" name="depth" id="depth" class="form-control"
+                                value="{{ old('depth') }}" placeholder="Ex: 120.50">
+                        </div>
+                    </div>
+
                     <p class="map-hint"><i class="fas fa-info-circle"></i> Clique no mapa para definir a localização ou edite os campos acima.</p>
 
                     <div class="btn-container">

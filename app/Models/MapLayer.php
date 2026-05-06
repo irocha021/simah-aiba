@@ -34,6 +34,7 @@ class MapLayer extends Model
         'border_buffer',
         'palette_text',
         'sql_mapping_json',
+        'label_field',
     ];
 
     protected $casts = [

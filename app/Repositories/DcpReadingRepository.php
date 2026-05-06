@@ -177,4 +177,33 @@ class DcpReadingRepository implements DcpReadingRepositoryInterface
         }
 
     }
+
+    /**
+     * Insere a leitura se ainda não existir para (dcp_station_id, reading_datetime).
+     * Considera registros soft-deleted: se encontrar um, restaura.
+     *
+     * @return array{model: DcpReading, created: bool, restored: bool}
+     */
+    public function firstOrCreateForKey(array $data): array
+    {
+        $existing = DcpReading::withTrashed()
+            ->where('dcp_station_id', $data['dcp_station_id'])
+            ->where('reading_datetime', $data['reading_datetime'])
+            ->first();
+
+        if ($existing) {
+            if ($existing->trashed()) {
+                $existing->restore();
+                return ['model' => $existing, 'created' => false, 'restored' => true];
+            }
+            return ['model' => $existing, 'created' => false, 'restored' => false];
+        }
+
+        return [
+            'model'    => DcpReading::create($data),
+            'created'  => true,
+            'restored' => false,
+        ];
+    }
+
 }

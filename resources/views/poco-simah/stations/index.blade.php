@@ -82,6 +82,7 @@
                         <th>Nome</th>
                         <th>Latitude</th>
                         <th>Longitude</th>
+                        <th>Profundidade (m)</th>
                         <th>Status</th>
                         <th>Ações</th>
                     </tr>
@@ -93,6 +94,7 @@
                             <td>{{ $station->name }}</td>
                             <td>{{ $station->latitude ?? '-' }}</td>
                             <td>{{ $station->longitude ?? '-' }}</td>
+                            <td>{{ $station->depth ? number_format($station->depth, 2, ',', '.') . ' m' : '-' }}</td>
                             <td>
                                 @if ($station->ativa)
                                     <span class="badge badge-ativa">Ativa</span>
