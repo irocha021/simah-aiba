@@ -491,34 +491,34 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
 
     // Mapeamento de nomes personalizados
     const nameMapping = {
-        'ponto': 'Número do ponto',
-        'localizaca': 'Localização',
-        'latitude_d': 'Latitude',
-        'longitude_': 'Longitude',
-        'utme': 'UTMe',
-        'utmn': 'UTMn',
-        'bacia': 'Bacia',
-        'municipio': 'Município',
-        'natureza': 'Natureza',
-        'nome': 'Nome',
-        'proprietar': 'Proprietário',
-        'subbacia': 'Sub-bacia',
-        'situacao': 'Situação',
+        'ponto': 'NÚMERO DO PONTO',
+        'localizaca': 'LOCALIZAÇÃO',
+        'latitude_d': 'LATITUDE',
+        'longitude_': 'LONGITUDE',
+        'utme': 'UTME',
+        'utmn': 'UTMN',
+        'bacia': 'BACIA',
+        'municipio': 'MUNICÍPIO',
+        'natureza': 'NATUREZA',
+        'nome': 'NOME',
+        'proprietar': 'PROPRIETÁRIO',
+        'subbacia': 'SUB-BACIA',
+        'situacao': 'SITUAÇÃO',
         'uf': 'UF',
-        'data_perfu': 'Data da perfuração',
-        'perfurador': 'Perfurador',
-        'profundida': 'Profundidade',
-        'profundi_1': 'Profundidade total',
-        'data_teste': 'Data do teste',
-        'surgencia': 'Surgência',
-        'nivel_dina': 'Nível dinâmico',
-        'nivel_esta': 'Nível estático',
-        'vazao_esta': 'Vazão estabilizada',
-        'data_anali': 'Data análise',
-        'data_colet': 'Data coleta',
-        'condutivid': 'Condutividade elétrica',
-        'cor': 'Cor',
-        'turbidez': 'Turbidez'
+        'data_perfu': 'DATA DA PERFURAÇÃO',
+        'perfurador': 'PERFURADOR',
+        'profundida': 'PROFUNDIDADE',
+        'profundi_1': 'PROFUNDIDADE TOTAL',
+        'data_teste': 'DATA DO TESTE',
+        'surgencia': 'SURGÊNCIA',
+        'nivel_dina': 'NÍVEL DINÂMICO',
+        'nivel_esta': 'NÍVEL ESTÁTICO',
+        'vazao_esta': 'VAZÃO ESTABILIZADA',
+        'data_anali': 'DATA ANÁLISE',
+        'data_colet': 'DATA COLETA',
+        'condutivid': 'CONDUTIVIDADE ELÉTRICA',
+        'cor': 'COR',
+        'turbidez': 'TURBIDEZ'
     };
 
     // Mapeamento de unidades de medida
@@ -553,7 +553,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
     // Função para formatar valor com unidade
     function formatValueWithUnit(key, value) {
         if (value === null || value === undefined || value === '') return '-';
-        
+
         // Se tiver unidade definida e for número
         const unit = unitMapping[key];
         if (unit) {
@@ -562,7 +562,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                 return `${numValue} ${unit}`;
             }
         }
-        
+
         return value;
     }
 
@@ -989,43 +989,55 @@ function openSimahReadingsModal(stationCode, stationName) {
     // Verificar se o usuário está logado
     const isLoggedIn = document.querySelector('meta[name="user-logged-in"]')?.getAttribute('content') === 'true';
 
-    // Esconder colunas no cabeçalho se não estiver logado
-    if (!isLoggedIn && tableHeader) {
-        // Esconder a primeira coluna (Nº)
-        if (tableHeader.children[0]) {
-            tableHeader.children[0].style.display = 'none';
+    // Configurar cabeçalhos da tabela com formatação correta
+    if (tableHeader) {
+        tableHeader.innerHTML = ''; // Limpar cabeçalho existente
+        
+        // Definir os cabeçalhos baseado no status de login
+        let headers = [];
+        
+        if (isLoggedIn) {
+            // Usuário logado: todas as colunas
+            headers = [
+                { label: 'NÚMERO DA MEDIÇÃO', unit: null },
+                { label: 'DATA/HORA LOCAL', unit: null },
+                { label: 'DATA/HORA UTC', unit: null },
+                { label: 'VARIAÇÃO DE PRESSÃO', unit: '(bar)' },
+                { label: 'PRESSÃO INTERNA', unit: '(bar)' },
+                { label: 'PRESSÃO EXTERNA', unit: '(bar)' },
+                { label: 'TEMPERATURA DA ÁGUA INTERNA', unit: '(°C)' },
+                { label: 'TEMPERATURA DA ÁGUA EXTERNA', unit: '(°C)' }
+            ];
+        } else {
+            // Usuário não logado: sem Nº e sem Data/Hora UTC
+            headers = [
+                { label: 'DATA/HORA LOCAL', unit: null },
+                { label: 'VARIAÇÃO DE PRESSÃO', unit: '(bar)' },
+                { label: 'PRESSÃO INTERNA', unit: '(bar)' },
+                { label: 'PRESSÃO EXTERNA', unit: '(bar)' },
+                { label: 'TEMPERATURA DA ÁGUA INTERNA', unit: '(°C)' },
+                { label: 'TEMPERATURA DA ÁGUA EXTERNA', unit: '(°C)' }
+            ];
         }
-        // Esconder a terceira coluna (Data/Hora UTC) - índice 2
-        if (tableHeader.children[2]) {
-            tableHeader.children[2].style.display = 'none';
-        }
-    } else if (isLoggedIn && tableHeader) {
-        // Garantir que as colunas estejam visíveis se estiver logado
-        if (tableHeader.children[0]) {
-            tableHeader.children[0].style.display = '';
-        }
-        if (tableHeader.children[2]) {
-            tableHeader.children[2].style.display = '';
-        }
+        
+        // Criar os elementos th com a formatação correta
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header.unit ? `${header.label} ${header.unit}` : header.label;
+            th.style.whiteSpace = 'nowrap';
+            th.style.padding = '12px';
+            th.style.fontWeight = '600';
+            tableHeader.appendChild(th);
+        });
     }
 
     document.getElementById('closeSimahModal').onclick = function () {
         modal.style.display = 'none';
-        // Restaurar visibilidade das colunas ao fechar o modal
-        if (tableHeader) {
-            if (tableHeader.children[0]) tableHeader.children[0].style.display = '';
-            if (tableHeader.children[2]) tableHeader.children[2].style.display = '';
-        }
     };
 
     window.onclick = function (event) {
         if (event.target === modal) {
             modal.style.display = 'none';
-            // Restaurar visibilidade das colunas ao fechar
-            if (tableHeader) {
-                if (tableHeader.children[0]) tableHeader.children[0].style.display = '';
-                if (tableHeader.children[2]) tableHeader.children[2].style.display = '';
-            }
         }
     };
 
@@ -1093,7 +1105,7 @@ function openSimahReadingsModal(stationCode, stationName) {
 
             readings.slice(0, 50).forEach(r => {
                 const row = document.createElement('tr');
-                
+
                 if (isLoggedIn) {
                     // Usuário logado: mostra todas as colunas
                     row.innerHTML = `
@@ -1410,7 +1422,7 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
         'deleted_at': ''
     };
 
-    // Função para filtrar e renomear dados APENAS para a tabela
+    // Função para filtrar e renomear dados apenas para a tabela
     function filterAndRenameForTable(readings) {
         const fieldMapping = {
             'id': 'ID',
@@ -2060,7 +2072,8 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
                 Object.keys(filteredTableData[0]).forEach(key => {
                     const th = document.createElement('th');
                     const unit = unitMapping[key];
-                    th.textContent = unit ? `${key} (${unit})` : key;
+                    const keyUpper = key.toUpperCase()
+                    th.textContent = unit ? `${keyUpper} (${unit})` : keyUpper;
                     th.style.whiteSpace = 'nowrap';
                     th.style.padding = '12px';
                     th.style.fontWeight = '600';
@@ -2444,14 +2457,14 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
 
     // Mapeamento dos nomes das colunas com suas unidades
     const columnMapping = {
-        'reading_datetime': 'Data/Hora',
-        'water_level': 'Nível de Água (m)',
-        'rain': 'Precipitação (mm)',
-        'water_temperature': 'Temperatura da Água (°C)',
-        'atmospheric_pressure': 'Pressão Atmosférica (hPa)',
-        'flow': 'Vazão (m³/s)',
-        'water_level_15min': 'Nível da Água 15min (m)',
-        'rain_15min': 'Precipitação 15min (mm)'
+        'reading_datetime': 'DATA/HORA',
+        'water_level': 'NÍVEL DE ÁGUA (m)',
+        'rain': 'PRECIPITAÇÃO (mm)',
+        'water_temperature': 'TEMPERATURA DA ÁGUA (°C)',
+        'atmospheric_pressure': 'PRESSÃO ATMOSFÉRICA (hPa)',
+        'flow': 'VAZÃO (m³/s)',
+        'water_level_15min': 'NÍVEL DA ÁGUA 15MIN (m)',
+        'rain_15min': 'PRECIPITAÇÃO 15MIN (mm)'
     };
 
     // Função para formatar data/hora no padrão brasileiro
@@ -3486,13 +3499,81 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     }
 
     function renderTable(cnarhData) {
-        // Manter a ordem original das chaves, filtrando apenas valores não nulos
+        // Lista de campos permitidos para usuários não logados
+        const allowedFieldsForNonLogged = [
+            'INT_TIN_DS',
+            'INT_TSU_DS',
+            'INT_TCH_DS',
+            'INT_TSI_DS',
+            'INT_NU_LATITUDE',
+            'INT_NU_LONGITUDE',
+            'ING_NM_MUNICIPIO',
+            'INT_NM_CORPOHIDRICO',
+            'OUT_TP_OUTORGA',
+            'OUT_TP_SITUACAOOUTORGA',
+            'OUT_DT_OUTORGAFINAL',
+            'OUT_DT_OUTORGAINICIAL',
+            'OUT_NU_PROCESSO',
+            'OUT_TP_ATO',
+            'OUT_NU_ATO',
+            'DAD_QT_VAZAODIAJAN',
+            'DAD_QT_VAZAODIAFEV',
+            'DAD_QT_VAZAODIAMAR',
+            'DAD_QT_VAZAODIAABR',
+            'DAD_QT_VAZAODIAMAI',
+            'DAD_QT_VAZAODIAJUN',
+            'DAD_QT_VAZAODIAJUL',
+            'DAD_QT_VAZAODIAAGO',
+            'DAD_QT_VAZAODIASET',
+            'DAD_QT_VAZAODIAOUT',
+            'DAD_QT_VAZAODIANOV',
+            'DAD_QT_VAZAODIADEZ',
+            'DAD_QT_HORASJAN',
+            'DAD_QT_HORASFEV',
+            'DAD_QT_HORASMAR',
+            'DAD_QT_HORASABR',
+            'DAD_QT_HORASMAI',
+            'DAD_QT_HORASJUN',
+            'DAD_QT_HORASJUL',
+            'DAD_QT_HORASAGO',
+            'DAD_QT_HORASSET',
+            'DAD_QT_HORASOUT',
+            'DAD_QT_HORASNOV',
+            'DAD_QT_HORASDEZ',
+            'DAD_QT_DIAJAN',
+            'DAD_QT_DIAFEV',
+            'DAD_QT_DIAMAR',
+            'DAD_QT_DIAABR',
+            'DAD_QT_DIAMAI',
+            'DAD_QT_DIAJUN',
+            'DAD_QT_DIAJUL',
+            'DAD_QT_DIAAGO',
+            'DAD_QT_DIASET',
+            'DAD_QT_DIAOUT',
+            'DAD_QT_DIANOV',
+            'DAD_QT_DIADEZ',
+            'INT_QT_VAZAOMAXIMA',
+            'INT_QT_VAZAOMEDIA',
+            'INT_QT_VOLUMEANUAL',
+            'FIN_TFN_DS',
+            'SIR_TSI_DS',
+            'ING_NM_COMITEESTADUAL'
+        ];
+
+        // Converter para minúsculas para comparação case-insensitive
+        const allowedFieldsLower = allowedFieldsForNonLogged.map(f => f.toLowerCase());
+
+        // Manter a ordem original das chaves, filtrando valores não nulos E aplicando permissões
         const entries = [];
 
         for (const [key, value] of Object.entries(cnarhData)) {
-            // Ocultar Campo para usuários não logados
-            if (!isLoggedIn && key === 'emp_nm_empreendimento') {
-                continue;
+            // Verificar permissões baseado no login
+            if (!isLoggedIn) {
+                // Para usuários não logados: mostrar apenas campos da whitelist
+                const keyLower = key.toLowerCase();
+                if (!allowedFieldsLower.includes(keyLower)) {
+                    continue; // Pula campos não permitidos
+                }
             }
             // Incluir apenas valores que não são null, undefined ou string vazia
             if (value !== null && value !== undefined && value !== '') {
@@ -3518,28 +3599,12 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         const itemsPerColumn = Math.ceil(totalItems / 2);
 
         let html = `
-            <div id="cnarhTableContainer" class="cnarh-table-container">
-                <div class="cnarh-table-column">
-        `;
+        <div id="cnarhTableContainer" class="cnarh-table-container">
+            <div class="cnarh-table-column">
+    `;
 
         // Primeira coluna (metade superior dos itens na ordem original)
         for (let i = 0; i < itemsPerColumn; i++) {
-            const [displayName, value] = entries[i];
-            html += `
-                <div class="cnarh-data-row">
-                    <div class="cnarh-data-label">${displayName}:</div>
-                    <div class="cnarh-data-value">${value}</div>
-                </div>
-            `;
-        }
-
-        html += `
-            </div>
-            <div class="cnarh-table-column">
-        `;
-
-        // Segunda coluna (metade inferior dos itens na ordem original)
-        for (let i = itemsPerColumn; i < totalItems; i++) {
             const [displayName, value] = entries[i];
             html += `
             <div class="cnarh-data-row">
@@ -3550,9 +3615,25 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         }
 
         html += `
-            </div>
-            </div>
-        `;
+        </div>
+        <div class="cnarh-table-column">
+    `;
+
+        // Segunda coluna (metade inferior dos itens na ordem original)
+        for (let i = itemsPerColumn; i < totalItems; i++) {
+            const [displayName, value] = entries[i];
+            html += `
+        <div class="cnarh-data-row">
+            <div class="cnarh-data-label">${displayName}:</div>
+            <div class="cnarh-data-value">${value}</div>
+        </div>
+    `;
+        }
+
+        html += `
+        </div>
+        </div>
+    `;
 
         document.getElementById('cnarhDataContent').innerHTML = html;
     }
@@ -4190,7 +4271,7 @@ function loadHidrowebPrevisoesData(stationCode) {
                 // Preencher tabela
                 data.data.forecasts.forEach(forecast => {
                     const row = document.createElement('tr');
-                    
+
                     if (isLoggedIn) {
                         // Usuário logado: mostra todas as colunas
                         row.innerHTML = `

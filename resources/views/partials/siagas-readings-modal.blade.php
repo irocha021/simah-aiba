@@ -12,7 +12,7 @@
             <div class="siagas-header-content">
                 <img src="{{ asset('images/logo-top-sigmah.svg') }}" alt="Logo SIGMAH" class="logo-siagas-modal" />
                 <div class="siagas-header-content-title">
-                    <h2>Dados SIAGAS</h2>
+                    <h2>Poços SIAGAS</h2>
                     <p>Informações detalhadas sobre poços artesianos e não artesianos no Brasil, coletados e
                         disponibilizados pelo Serviço Geológico do Brasil (SGB/CPRM).</p>
                 </div>
@@ -162,7 +162,6 @@
         width: 200px;
         flex-shrink: 0;
         color: black;
-        text-transform: uppercase;
         font-size: 0.8rem;
         letter-spacing: 0.5px;
     }

@@ -11,7 +11,7 @@
             <div class="simah-header-content">
                 <img src="{{ asset('images/logo-top-sigmah.svg') }}" alt="Logo SIGMAH" class="logo-simah-modal" />
                 <div class="simah-header-content-title">
-                    <h2>Leituras do Poço SIMAH</h2>
+                    <h2>Poços AIBA</h2>
                     <p>Monitoramento de poços do Sistema de Monitoramento Ambiental dos Recursos Hídricos.</p>
                 </div>
             </div>
@@ -176,7 +176,6 @@
         text-align: center;
         font-weight: 600;
         font-size: 0.8rem;
-        text-transform: uppercase;
         padding: 10px 8px;
         border: none;
         white-space: nowrap;

@@ -53,10 +53,10 @@
                 <table class="hidroweb-data-table">
                     <thead>
                         <tr>
-                            <th>Data/Hora</th>
-                            <th>Chuva Adotada (mm)</th>
-                            <th>Cota Adotada (m)</th>
-                            <th>Vazão Adotada (m³/s)</th>
+                            <th>DATA/HORA</th>
+                            <th>CHUVA ADORTADA (mm)</th>
+                            <th>COTA ADORTADA (m)</th>
+                            <th>VAZÃO ADORTADA (m³/s)</th>
                         </tr>
                     </thead>
                     <tbody id="leiturasTableBody"></tbody>
@@ -84,12 +84,12 @@
                 <table class="hidroweb-data-table">
                     <thead>
                         <tr>
-                            <th>Ano</th>
-                            <th>Mês</th>
-                            <th>Vazão Prevista (m³/s)</th>
-                            <th>Alfa Pond</th>
+                            <th>ANO</th>
+                            <th>MÊS</th>
+                            <th>VAZÃO PREVISTA (m³/s)</th>
+                            <th>ALFA POND</th>
                             <th>Q90</th>
-                            <th>Vsup</th>
+                            <th>VSUP</th>
                         </tr>
                     </thead>
                     <tbody id="previsoesTableBody"></tbody>
@@ -288,7 +288,6 @@
         text-align: center;
         font-weight: 600;
         font-size: 0.8rem;
-        text-transform: uppercase;
         padding: 10px 8px;
         border: none;
         white-space: nowrap;
