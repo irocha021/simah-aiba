@@ -170,7 +170,6 @@
         text-align: center;
         font-weight: 600;
         font-size: 0.8rem;
-        text-transform: uppercase;
         padding: 10px 20px;
         border: none;
         white-space: nowrap;

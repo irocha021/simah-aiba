@@ -40,11 +40,11 @@
             <table class="rimas-table">
                 <thead>
                     <tr>
-                        <th>Número do ponto</th>
-                        <th>Data</th>
-                        <th>Hora</th>
-                        <th>Nível da Água (m)</th>
-                        <th>Observação</th>
+                        <th>NÚMERO DO PONTO</th>
+                        <th>DATA</th>
+                        <th>HORA</th>
+                        <th>NÍVEL DA ÁGUA (m)</th>
+                        <th>OBSERVAÇÃO</th>
                     </tr>
                 </thead>
                 <tbody id="rimasReadingsTableBody"></tbody>
@@ -173,7 +173,6 @@
         text-align: center;
         font-weight: 600;
         font-size: 0.8rem;
-        text-transform: uppercase;
         padding: 10px 8px;
         border: none;
         white-space: nowrap;

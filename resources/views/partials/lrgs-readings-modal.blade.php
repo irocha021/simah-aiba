@@ -12,7 +12,7 @@
             <div class="lrgs-header-content">
                 <img src="{{ asset('images/logo-top-sigmah.svg') }}" alt="Logo SIGMAH" class="logo-lrgs-modal" />
                 <div class="lrgs-header-content-title">
-                    <h2>Leituras LRGS Client (DCP)</h2>
+                    <h2>Leituras Estação AIBA</h2>
                     <p>Dados de telemetria e parâmetros de recepção dos DCPs
                         Inclui nível d’água, chuva, temperatura, sinal, bateria e localização.</p>
                 </div>
@@ -187,7 +187,6 @@
         text-align: center;
         font-weight: 600;
         font-size: 0.8rem;
-        text-transform: uppercase;
         padding: 10px 20px;
         border: none;
         white-space: nowrap;

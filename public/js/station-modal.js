@@ -491,34 +491,34 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
 
     // Mapeamento de nomes personalizados
     const nameMapping = {
-        'ponto': 'Número do ponto',
-        'localizaca': 'Localização',
-        'latitude_d': 'Latitude',
-        'longitude_': 'Longitude',
-        'utme': 'UTMe',
-        'utmn': 'UTMn',
-        'bacia': 'Bacia',
-        'municipio': 'Município',
-        'natureza': 'Natureza',
-        'nome': 'Nome',
-        'proprietar': 'Proprietário',
-        'subbacia': 'Sub-bacia',
-        'situacao': 'Situação',
+        'ponto': 'NÚMERO DO PONTO',
+        'localizaca': 'LOCALIZAÇÃO',
+        'latitude_d': 'LATITUDE',
+        'longitude_': 'LONGITUDE',
+        'utme': 'UTME',
+        'utmn': 'UTMN',
+        'bacia': 'BACIA',
+        'municipio': 'MUNICÍPIO',
+        'natureza': 'NATUREZA',
+        'nome': 'NOME',
+        'proprietar': 'PROPRIETÁRIO',
+        'subbacia': 'SUB-BACIA',
+        'situacao': 'SITUAÇÃO',
         'uf': 'UF',
-        'data_perfu': 'Data da perfuração',
-        'perfurador': 'Perfurador',
-        'profundida': 'Profundidade',
-        'profundi_1': 'Profundidade total',
-        'data_teste': 'Data do teste',
-        'surgencia': 'Surgência',
-        'nivel_dina': 'Nível dinâmico',
-        'nivel_esta': 'Nível estático',
-        'vazao_esta': 'Vazão estabilizada',
-        'data_anali': 'Data análise',
-        'data_colet': 'Data coleta',
-        'condutivid': 'Condutividade elétrica',
-        'cor': 'Cor',
-        'turbidez': 'Turbidez'
+        'data_perfu': 'DATA DA PERFURAÇÃO',
+        'perfurador': 'PERFURADOR',
+        'profundida': 'PROFUNDIDADE',
+        'profundi_1': 'PROFUNDIDADE TOTAL',
+        'data_teste': 'DATA DO TESTE',
+        'surgencia': 'SURGÊNCIA',
+        'nivel_dina': 'NÍVEL DINÂMICO',
+        'nivel_esta': 'NÍVEL ESTÁTICO',
+        'vazao_esta': 'VAZÃO ESTABILIZADA',
+        'data_anali': 'DATA ANÁLISE',
+        'data_colet': 'DATA COLETA',
+        'condutivid': 'CONDUTIVIDADE ELÉTRICA',
+        'cor': 'COR',
+        'turbidez': 'TURBIDEZ'
     };
 
     // Mapeamento de unidades de medida
@@ -989,43 +989,55 @@ function openSimahReadingsModal(stationCode, stationName) {
     // Verificar se o usuário está logado
     const isLoggedIn = document.querySelector('meta[name="user-logged-in"]')?.getAttribute('content') === 'true';
 
-    // Esconder colunas no cabeçalho se não estiver logado
-    if (!isLoggedIn && tableHeader) {
-        // Esconder a primeira coluna (Nº)
-        if (tableHeader.children[0]) {
-            tableHeader.children[0].style.display = 'none';
+    // Configurar cabeçalhos da tabela com formatação correta
+    if (tableHeader) {
+        tableHeader.innerHTML = ''; // Limpar cabeçalho existente
+        
+        // Definir os cabeçalhos baseado no status de login
+        let headers = [];
+        
+        if (isLoggedIn) {
+            // Usuário logado: todas as colunas
+            headers = [
+                { label: 'NÚMERO DA MEDIÇÃO', unit: null },
+                { label: 'DATA/HORA LOCAL', unit: null },
+                { label: 'DATA/HORA UTC', unit: null },
+                { label: 'VARIAÇÃO DE PRESSÃO', unit: '(bar)' },
+                { label: 'PRESSÃO INTERNA', unit: '(bar)' },
+                { label: 'PRESSÃO EXTERNA', unit: '(bar)' },
+                { label: 'TEMPERATURA DA ÁGUA INTERNA', unit: '(°C)' },
+                { label: 'TEMPERATURA DA ÁGUA EXTERNA', unit: '(°C)' }
+            ];
+        } else {
+            // Usuário não logado: sem Nº e sem Data/Hora UTC
+            headers = [
+                { label: 'DATA/HORA LOCAL', unit: null },
+                { label: 'VARIAÇÃO DE PRESSÃO', unit: '(bar)' },
+                { label: 'PRESSÃO INTERNA', unit: '(bar)' },
+                { label: 'PRESSÃO EXTERNA', unit: '(bar)' },
+                { label: 'TEMPERATURA DA ÁGUA INTERNA', unit: '(°C)' },
+                { label: 'TEMPERATURA DA ÁGUA EXTERNA', unit: '(°C)' }
+            ];
         }
-        // Esconder a terceira coluna (Data/Hora UTC) - índice 2
-        if (tableHeader.children[2]) {
-            tableHeader.children[2].style.display = 'none';
-        }
-    } else if (isLoggedIn && tableHeader) {
-        // Garantir que as colunas estejam visíveis se estiver logado
-        if (tableHeader.children[0]) {
-            tableHeader.children[0].style.display = '';
-        }
-        if (tableHeader.children[2]) {
-            tableHeader.children[2].style.display = '';
-        }
+        
+        // Criar os elementos th com a formatação correta
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header.unit ? `${header.label} ${header.unit}` : header.label;
+            th.style.whiteSpace = 'nowrap';
+            th.style.padding = '12px';
+            th.style.fontWeight = '600';
+            tableHeader.appendChild(th);
+        });
     }
 
     document.getElementById('closeSimahModal').onclick = function () {
         modal.style.display = 'none';
-        // Restaurar visibilidade das colunas ao fechar o modal
-        if (tableHeader) {
-            if (tableHeader.children[0]) tableHeader.children[0].style.display = '';
-            if (tableHeader.children[2]) tableHeader.children[2].style.display = '';
-        }
     };
 
     window.onclick = function (event) {
         if (event.target === modal) {
             modal.style.display = 'none';
-            // Restaurar visibilidade das colunas ao fechar
-            if (tableHeader) {
-                if (tableHeader.children[0]) tableHeader.children[0].style.display = '';
-                if (tableHeader.children[2]) tableHeader.children[2].style.display = '';
-            }
         }
     };
 
@@ -1410,7 +1422,7 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
         'deleted_at': ''
     };
 
-    // Função para filtrar e renomear dados APENAS para a tabela
+    // Função para filtrar e renomear dados apenas para a tabela
     function filterAndRenameForTable(readings) {
         const fieldMapping = {
             'id': 'ID',
@@ -2060,7 +2072,8 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
                 Object.keys(filteredTableData[0]).forEach(key => {
                     const th = document.createElement('th');
                     const unit = unitMapping[key];
-                    th.textContent = unit ? `${key} (${unit})` : key;
+                    const keyUpper = key.toUpperCase()
+                    th.textContent = unit ? `${keyUpper} (${unit})` : keyUpper;
                     th.style.whiteSpace = 'nowrap';
                     th.style.padding = '12px';
                     th.style.fontWeight = '600';
@@ -2444,14 +2457,14 @@ function openLrgsReadingsModal(stationCode, stationName, latitude, longitude) {
 
     // Mapeamento dos nomes das colunas com suas unidades
     const columnMapping = {
-        'reading_datetime': 'Data/Hora',
-        'water_level': 'Nível de Água (m)',
-        'rain': 'Precipitação (mm)',
-        'water_temperature': 'Temperatura da Água (°C)',
-        'atmospheric_pressure': 'Pressão Atmosférica (hPa)',
-        'flow': 'Vazão (m³/s)',
-        'water_level_15min': 'Nível da Água 15min (m)',
-        'rain_15min': 'Precipitação 15min (mm)'
+        'reading_datetime': 'DATA/HORA',
+        'water_level': 'NÍVEL DE ÁGUA (m)',
+        'rain': 'PRECIPITAÇÃO (mm)',
+        'water_temperature': 'TEMPERATURA DA ÁGUA (°C)',
+        'atmospheric_pressure': 'PRESSÃO ATMOSFÉRICA (hPa)',
+        'flow': 'VAZÃO (m³/s)',
+        'water_level_15min': 'NÍVEL DA ÁGUA 15MIN (m)',
+        'rain_15min': 'PRECIPITAÇÃO 15MIN (mm)'
     };
 
     // Função para formatar data/hora no padrão brasileiro
