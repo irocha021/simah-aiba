@@ -53,6 +53,8 @@ jobs:
             cd /root/system/mhb
             chmod -R 777 storage
             rm -rf storage/logs/*
+            mkdir -p storage/logs/dcp
+            chmod -R 775 storage/logs/dcp
             chmod -R 777 lrgs
             docker rm -f 'mhb' || true
             docker rm -f 'mhb_queue' || true
