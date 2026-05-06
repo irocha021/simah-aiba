@@ -19,6 +19,10 @@ services:
         image: mhb
         container_name: 'mhb_queue'
         restart: always
+        # Roda como www-data (mesmo user do Apache) para que arquivos criados
+        # — em especial storage/logs/laravel.log — fiquem acessíveis aos demais
+        # processos PHP do projeto.
+        user: 'www-data'
         command: php artisan queue:work --timeout=3600 --tries=3
         volumes:
             - '.:/var/www/html'
