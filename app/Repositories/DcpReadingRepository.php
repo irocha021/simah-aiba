@@ -89,11 +89,11 @@ class DcpReadingRepository implements DcpReadingRepositoryInterface
 
     public function softDeleteByStationAndPeriod(int $stationId, $startTime, $endTime): int
     {
+        // Usa reading_datetime (intervalo real) — antes era um produto cartesiano de
+        // year/julian_day em whereBetween, que apagava registros fora da janela quando
+        // o período cruzava a virada de ano ou abrangia múltiplos dias.
         return DcpReading::where('dcp_station_id', $stationId)
-            ->where(function ($query) use ($startTime, $endTime) {
-                $query->whereBetween('year', [$startTime->year, $endTime->year])
-                    ->whereBetween('julian_day', [$startTime->dayOfYear, $endTime->dayOfYear]);
-            })
+            ->whereBetween('reading_datetime', [$startTime, $endTime])
             ->delete(); // SoftDeletes trait makes this a soft delete
     }
 

@@ -62,6 +62,9 @@ class DcpSyncLogRepository implements DcpSyncLogRepositoryInterface
 
     public function findPendingForRetry(): Collection
     {
+        // Filtro `created_at < now()-15min` impede que o reprocessador capture
+        // logs criados na invocação atual (uma estação que falhou no mesmo run
+        // não deve ser re-tentada imediatamente — fica para o próximo cron).
         return DcpSyncLog::where(function ($query) {
             $query->where('status', 'pending')
                 ->orWhere('status', 'failed')
@@ -71,6 +74,7 @@ class DcpSyncLogRepository implements DcpSyncLogRepositoryInterface
                 });
         })
             ->where('attempts', '<', 3)
+            ->where('created_at', '<', now()->subMinutes(15))
             ->orderBy('created_at', 'asc')
             ->get();
     }
