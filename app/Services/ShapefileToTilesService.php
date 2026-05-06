@@ -64,21 +64,54 @@ class ShapefileToTilesService
 
             // 4. Obter bounds do shapefile
             $bounds = $this->getBounds($geojsonFile);
-            
-            // 5. Converter GeoJSON para Raster (GeoTIFF)
-            Log::info("Convertendo GeoJSON para raster");
-            $rasterFile = $extractDir . '/' . $layerName . '.tif';
-            $this->geojsonToRaster($geojsonFile, $rasterFile);
-            
-            // 6. Gerar tiles PNG
-            Log::info("Gerando tiles PNG (zoom {$zoomMin}-{$zoomMax})");
-            $tilesDir = $this->tilesBaseDir . '/' . $layerName;
-            $this->generateTiles($rasterFile, $tilesDir, $zoomMin, $zoomMax);
 
-            // DEBUG: Copiar TIF final para public para análise
-            // $debugTif = public_path("debug_{$layerName}.tif");
-            // copy($rasterFile, $debugTif);
-            // Log::info("TIF copiado para: {$debugTif}");
+            $tilesDir = $this->tilesBaseDir . '/' . $layerName;
+            $bordersOnly = $this->layerConfig['borders_only'] ?? false;
+
+            if ($bordersOnly) {
+                // Modo borders_only: gera um raster por zoom com buffer escalado por zoom.
+                // A borda é mais fina nos zooms baixos e engrossa progressivamente nos altos,
+                // imitando o comportamento visual de mapas como GeoBahia.
+                $borderPixelsMax = $this->layerConfig['border_buffer'] ?? 2; // pixels no zoom mais alto
+                $borderPixelsMin = 0.3;                                       // pixels no zoom mais baixo
+
+                for ($z = $zoomMin; $z <= $zoomMax; $z++) {
+                    // Interpolação linear: 0 no zoomMin, 1 no zoomMax
+                    $factor = ($zoomMax > $zoomMin)
+                        ? ($z - $zoomMin) / ($zoomMax - $zoomMin)
+                        : 1.0;
+                    $borderPixels = $borderPixelsMin + ($borderPixelsMax - $borderPixelsMin) * $factor;
+
+                    $resolution = $this->metersPerPixel($z);
+                    $bufferMeters = $borderPixels * $resolution;
+
+                    Log::info("Zoom {$z}: pixels={$borderPixels}, resolução={$resolution} m/pixel, buffer={$bufferMeters} m");
+
+                    $rasterFile = $extractDir . '/' . $layerName . "_z{$z}.tif";
+                    $this->createBordersOnlyRaster($geojsonFile, $rasterFile, $resolution, $bufferMeters);
+
+                    // Roda gdal2tiles só para este zoom; os tiles caem em $tilesDir/{z}/...
+                    $this->generateTiles($rasterFile, $tilesDir, $z, $z);
+
+                    @unlink($rasterFile);
+                }
+            } else {
+                // Caminho antigo (camadas com preenchimento): inalterado.
+                Log::info("Convertendo GeoJSON para raster");
+                $rasterFile = $extractDir . '/' . $layerName . '.tif';
+                $this->geojsonToRaster($geojsonFile, $rasterFile);
+
+                Log::info("Gerando tiles PNG (zoom {$zoomMin}-{$zoomMax})");
+                $this->generateTiles($rasterFile, $tilesDir, $zoomMin, $zoomMax);
+            }
+
+            // 6.5. Gerar labels.geojson se a camada tem label_field configurado
+            $labelField = $this->layerConfig['label_field'] ?? null;
+            if ($labelField) {
+                Log::info("Gerando labels.geojson com campo '{$labelField}'");
+                $labelsFile = $tilesDir . '/labels.geojson';
+                $this->extractLabels($shpFile, $labelsFile, $labelField);
+            }
 
             // 7. Limpar arquivos temporários
             $this->cleanupTemp($extractDir);
@@ -194,25 +227,25 @@ class ShapefileToTilesService
     }
 
     private function geojsonToRaster(string $geojsonFile, string $rasterFile): void
-{
-    $bordersOnly = $this->layerConfig['borders_only'] ?? false;
-
-    if ($bordersOnly) {
-        // Modo apenas bordas: extrair boundaries e desenhar linhas
-        $this->createBordersOnlyRaster($geojsonFile, $rasterFile);
-    } else {
-        // Modo normal: preenchimento + bordas opcionais
+    {
+        // O caminho borders_only agora é tratado direto no convertToTiles() (loop por zoom).
+        // Aqui só chega o modo de preenchimento.
         $this->createFilledRaster($geojsonFile, $rasterFile);
     }
-}
 
-    private function createBordersOnlyRaster(string $geojsonFile, string $rasterFile): void
+
+    private function createBordersOnlyRaster(
+        string $geojsonFile,
+        string $rasterFile,
+        float $resolutionMeters,
+        float $bufferMeters
+    ): void
     {
         // 1. Extrair boundaries como LINESTRING com buffer para engrossar
         $boundariesFile = str_replace('.geojson', '_boundaries.geojson', $geojsonFile);
 
-        // Usar buffer para engrossar as linhas (padrão 500m, configurável)
-        $bufferSize = $this->layerConfig['border_buffer'] ?? 500;
+        // Buffer em metros calculado pelo zoom (vem do convertToTiles)
+        $bufferSize = $bufferMeters;
 
         $extractCommand = sprintf(
             'ogr2ogr -f GeoJSON -dialect SQLite -sql "SELECT ST_Buffer(ST_Boundary(geometry), %d) as geometry FROM \\"SELECT\\"" %s %s 2>&1',
@@ -229,8 +262,9 @@ class ShapefileToTilesService
 
         // 2. Criar raster RGBA transparente vazio
         $bounds = $this->getBounds($geojsonFile);
-        $width = ceil(($bounds['xmax'] - $bounds['xmin']) / 50);
-        $height = ceil(($bounds['ymax'] - $bounds['ymin']) / 50);
+        $width = ceil(($bounds['xmax'] - $bounds['xmin']) / $resolutionMeters);
+        $height = ceil(($bounds['ymax'] - $bounds['ymin']) / $resolutionMeters);
+
 
         $createCommand = sprintf(
             'gdal_create -of GTiff -outsize %d %d -a_srs EPSG:3857 -a_ullr %f %f %f %f -burn 0 -ot Byte -co COMPRESS=LZW -bands 4 %s 2>&1',
@@ -250,9 +284,14 @@ class ShapefileToTilesService
         }
 
         // 3. Desenhar apenas as linhas (bordas)
-        $borderColor = $this->layerConfig['border_color'] ?? [0, 0, 0];
+        // border_color vem como string "R,G,B" do banco — converte para array de ints.
+        $borderColorRaw = $this->layerConfig['border_color'] ?? '0,0,0';
+        $borderColor = is_string($borderColorRaw)
+            ? array_map('intval', explode(',', $borderColorRaw))
+            : $borderColorRaw;
 
         $borderCommand = sprintf(
+
             'gdal_rasterize -b 1 -b 2 -b 3 -b 4 -burn %d -burn %d -burn %d -burn 255 -at %s %s 2>&1',
             $borderColor[0],
             $borderColor[1],
@@ -269,6 +308,41 @@ class ShapefileToTilesService
 
         @unlink($boundariesFile);
     }
+
+    /**
+     * Extrai centroides + label de cada feature do shapefile e salva como GeoJSON.
+     *
+     * Usa ST_PointOnSurface (não ST_Centroid) para garantir que o ponto fique
+     * dentro do polígono mesmo em formas irregulares. Reprojeta para EPSG:4326
+     * (lat/lng), formato esperado pelo Leaflet.
+     */
+    private function extractLabels(string $shpFile, string $outputFile, string $fieldName): void
+    {
+        // Apaga arquivo anterior se existir (ogr2ogr não sobrescreve por padrão)
+        @unlink($outputFile);
+
+        $shpLayer = basename($shpFile, '.shp');
+
+        $sql = sprintf(
+            'SELECT ST_PointOnSurface(geometry) AS geometry, %s AS name FROM "%s"',
+            $fieldName,
+            $shpLayer
+        );
+
+        $command = sprintf(
+            'SHAPE_RESTORE_SHX=YES ogr2ogr -f GeoJSON -t_srs EPSG:4326 -dialect SQLite -sql %s %s %s 2>&1',
+            escapeshellarg($sql),
+            escapeshellarg($outputFile),
+            escapeshellarg($shpFile)
+        );
+
+        exec($command, $output, $returnCode);
+
+        if ($returnCode !== 0) {
+            Log::warning("Falha ao extrair labels: " . implode("\n", $output));
+        }
+    }
+
 
     private function createFilledRaster(string $geojsonFile, string $rasterFile): void
     {
@@ -444,4 +518,19 @@ PALETTE;
             rmdir($dir);
         }
     }
+
+    /**
+     * Resolução em metros/pixel de um tile Web Mercator (EPSG:3857) num dado zoom.
+     *
+     * Fórmula equatorial: 156543.03 m/pixel no zoom 0, dividido por 2^z.
+     * Para a latitude da Bahia o erro é ~3% — aceitável.
+     *
+     * Usada para: (a) definir a resolução do raster gerado para cada zoom,
+     * (b) converter "espessura desejada em pixels" em metros para o ST_Buffer.
+     */
+    private function metersPerPixel(int $zoom): float
+    {
+        return 156543.03 / pow(2, $zoom);
+    }
+
 }

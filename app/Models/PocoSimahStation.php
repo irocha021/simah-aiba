@@ -16,14 +16,17 @@ class PocoSimahStation extends Model
         'station_code',
         'latitude',
         'longitude',
+        'depth',
         'ativa',
     ];
 
     protected $casts = [
         'latitude'  => 'decimal:7',
         'longitude' => 'decimal:7',
+        'depth'     => 'decimal:2',
         'ativa'     => 'boolean',
     ];
+
 
     public function readings()
     {

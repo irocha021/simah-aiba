@@ -34,5 +34,5 @@ interface DcpReadingRepositoryInterface
 
     public function cursorByAddressAndDateRange(string $address, ?string $dateFrom, ?string $dateTo): \Generator;
 
-    
+    public function firstOrCreateForKey(array $data): array;
 }

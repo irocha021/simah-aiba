@@ -158,6 +158,29 @@
             background: #165b9c !important;
             transform: scale(1.1) !important;
         }
+
+        .map-label {
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            pointer-events: none;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            text-align: center;
+            transform: translateX(-50%);
+        }
+
+        body.mode-satellite .map-label {
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        body.mode-street .map-label {
+            color: rgba(40, 40, 40, 0.9);
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.9), 0 0 2px rgba(255, 255, 255, 0.9);
+        }
     </style>
 </head>
 
@@ -202,6 +225,7 @@
         // Satélite como padrão
         tileSatellite.addTo(map);
         var activeBaseTile = tileSatellite;
+        document.body.classList.add('mode-satellite');
 
         document.getElementById('btn-satellite').addEventListener('click', function() {
             map.removeLayer(activeBaseTile);
@@ -209,6 +233,8 @@
             activeBaseTile = tileSatellite;
             this.classList.add('active');
             document.getElementById('btn-street').classList.remove('active');
+            document.body.classList.remove('mode-street');
+            document.body.classList.add('mode-satellite');
             bringGeoMapLayersToFront();
         });
         document.getElementById('btn-street').addEventListener('click', function() {
@@ -217,6 +243,8 @@
             activeBaseTile = tileStreet;
             this.classList.add('active');
             document.getElementById('btn-satellite').classList.remove('active');
+            document.body.classList.remove('mode-satellite');
+            document.body.classList.add('mode-street');
             bringGeoMapLayersToFront();
         });
 

@@ -1079,6 +1079,12 @@ function openSimahReadingsModal(stationCode, stationName) {
             const readings = data.data.readings;
             totalReadings.textContent = data.data.total;
 
+            const depth = data.data.station?.depth;
+            const depthEl = document.getElementById('simahModalDepth');
+            if (depthEl) {
+                depthEl.textContent = depth ? `${Number(depth).toFixed(2).replace('.', ',')} m` : '-';
+            }
+
             if (!readings || readings.length === 0) {
                 errorText.textContent = 'Nenhuma leitura encontrada para este poço.';
                 errorMessage.style.display = 'block';

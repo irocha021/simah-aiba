@@ -40,6 +40,7 @@ class PocoSimahStationController extends Controller
             'station_code' => 'required|string|max:100|unique:poco_simah_stations,station_code',
             'latitude'     => 'nullable|numeric|between:-90,90',
             'longitude'    => 'nullable|numeric|between:-180,180',
+            'depth'        => 'nullable|numeric|min:0',
             'ativa'        => 'boolean',
         ], [
             'name.required'         => 'O nome da estação é obrigatório.',
@@ -47,6 +48,8 @@ class PocoSimahStationController extends Controller
             'station_code.unique'   => 'Este código de estação já está cadastrado.',
             'latitude.between'      => 'Latitude deve estar entre -90 e 90.',
             'longitude.between'     => 'Longitude deve estar entre -180 e 180.',
+            'depth.numeric'         => 'A profundidade deve ser um número.',
+            'depth.min'             => 'A profundidade não pode ser negativa.',
         ]);
 
         $validated['ativa'] = $request->has('ativa');
@@ -75,6 +78,7 @@ class PocoSimahStationController extends Controller
             'station_code' => 'required|string|max:100|unique:poco_simah_stations,station_code,' . $id,
             'latitude'     => 'nullable|numeric|between:-90,90',
             'longitude'    => 'nullable|numeric|between:-180,180',
+            'depth'        => 'nullable|numeric|min:0',
             'ativa'        => 'boolean',
         ], [
             'name.required'         => 'O nome da estação é obrigatório.',
@@ -82,6 +86,8 @@ class PocoSimahStationController extends Controller
             'station_code.unique'   => 'Este código de estação já está cadastrado.',
             'latitude.between'      => 'Latitude deve estar entre -90 e 90.',
             'longitude.between'     => 'Longitude deve estar entre -180 e 180.',
+            'depth.numeric'         => 'A profundidade deve ser um número.',
+            'depth.min'             => 'A profundidade não pode ser negativa.',
         ]);
 
         $validated['ativa'] = $request->has('ativa');

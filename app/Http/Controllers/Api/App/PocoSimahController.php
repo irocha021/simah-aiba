@@ -32,6 +32,7 @@ class PocoSimahController extends Controller
                     'station_code' => $station->station_code,
                     'latitude'     => $station->latitude,
                     'longitude'    => $station->longitude,
+                    'depth'        => $station->depth,
                 ],
                 'readings' => $readings,
                 'total'    => count($readings),

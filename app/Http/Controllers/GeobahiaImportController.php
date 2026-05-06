@@ -120,6 +120,26 @@ class GeobahiaImportController extends Controller
         }
     }
 
+    public function importAsync(string $slug): JsonResponse
+    {
+        $layer = $this->mapLayerService->getLayerBySlug($slug);
+
+        if (!$layer) {
+            return response()->json([
+                'status' => 'erro',
+                'mensagem' => 'Camada não encontrada.'
+            ], 404);
+        }
+
+        ImportLayerJob::dispatch($layer);
+
+        return response()->json([
+            'status' => 'sucesso',
+            'mensagem' => 'Camada [' . $slug . '] enviada para processamento em segundo plano.'
+        ]);
+    }
+
+
     public function importAll(): JsonResponse
     {
         $layers = $this->mapLayerService->getAllLayers();

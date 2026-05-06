@@ -255,7 +255,7 @@ function closeLegendPanel() {
 // ========== CRIAR LAYER A PARTIR DOS DADOS ==========
 function createLayerFromData(layerData) {
     if (layerData.type === 'tile') {
-        return L.tileLayer(layerData.url_pattern, {
+        var tileLayer = L.tileLayer(layerData.url_pattern, {
             attribution: layerData.attribution || '',
             maxZoom: 18,
             maxNativeZoom: layerData.max_zoom,
@@ -263,7 +263,51 @@ function createLayerFromData(layerData) {
             opacity: layerData.opacity,
             tms: layerData.tms,
         });
+
+        // Camadas com label_field têm um GeoJSON paralelo de centroides+nomes
+        // servido em /tiles/{slug}/labels.geojson. Carregamos e criamos um grupo
+        // de tooltips permanentes que aparecem só a partir do zoom mínimo de label.
+        if (layerData.label_field) {
+            var labelsGroup = L.layerGroup();
+            var labelsUrl = '/tiles/' + layerData.slug + '/labels.geojson';
+            var labelMinZoom = 8;
+
+            fetch(labelsUrl)
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    data.features.forEach(function (feature) {
+                        var coords = feature.geometry.coordinates;
+                        var name = feature.properties.name;
+                        if (!name) return;
+                        labelsGroup.addLayer(L.marker([coords[1], coords[0]], {
+                            icon: L.divIcon({ className: 'map-label', html: name, iconSize: null }),
+                            interactive: false
+                        }));
+                    });
+
+                    // Aqui o map já existe (fetch é assíncrono — quando o JSON volta,
+                    // o Blade já rodou o L.map e setMapReference). Registramos o listener
+                    // e aplicamos a visibilidade inicial.
+                    map.on('zoomend', function () {
+                        if (map.getZoom() >= labelMinZoom) {
+                            if (!map.hasLayer(labelsGroup)) map.addLayer(labelsGroup);
+                        } else {
+                            if (map.hasLayer(labelsGroup)) map.removeLayer(labelsGroup);
+                        }
+                    });
+
+                    // Aplica visibilidade na hora do load
+                    if (map.getZoom() >= labelMinZoom) map.addLayer(labelsGroup);
+                })
+                .catch(function (err) {
+                    console.warn('Falha ao carregar labels para', layerData.slug, err);
+                });
+        }
+
+        return tileLayer;
+
     } else if (layerData.type === 'geojson') {
+
         var layer = L.layerGroup();
         fetch(layerData.url_pattern)
             .then(response => response.json())
