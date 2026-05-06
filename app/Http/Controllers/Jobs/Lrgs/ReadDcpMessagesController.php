@@ -12,6 +12,7 @@ use App\Services\Lrgs\DcpReadingService;
 use App\Services\Lrgs\LrgsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class ReadDcpMessagesController extends Controller
@@ -45,12 +46,27 @@ class ReadDcpMessagesController extends Controller
         $invocationId = $this->jobLogger->newInvocationId();
         $jobStartedAt = microtime(true);
 
-        // Guarda de concorrência: aborta se houver outro job 'running' iniciado < 10min
+        // Lock atômico (cache driver = database). TTL 600s acomoda a iteração de todas as estações.
+        // Se outro processo já segura o lock, get() devolve false sem bloquear.
+        $lock = Cache::lock('lrgs:dcp-messages', 600);
+
+        if (!$lock->get()) {
+            $this->jobLogger->jobAlreadyRunning($invocationId, []);
+            return response()->json([
+                'success' => false,
+                'reason'  => 'lock_busy',
+                'invocation_id' => $invocationId,
+                'message' => 'Outra invocação do job DCP já está em execução (lock atômico)'
+            ], 409);
+        }
+
+        // Defesa em profundidade: mesmo com lock, valida sync logs em 'running' < 10min.
         $running = DcpSyncLog::where('status', 'running')
             ->where('started_at', '>=', now()->subMinutes(10))
             ->get();
 
         if ($running->isNotEmpty()) {
+            $lock->release();
             $this->jobLogger->jobAlreadyRunning($invocationId, $running->pluck('id')->all());
             return response()->json([
                 'success' => false,
@@ -239,6 +255,8 @@ class ReadDcpMessagesController extends Controller
                 'invocation_id' => $invocationId,
                 'error' => $e->getMessage()
             ], 500);
+        } finally {
+            optional($lock)->release();
         }
     }
 
@@ -348,6 +366,9 @@ class ReadDcpMessagesController extends Controller
      */
     public function retrieveMessagesManual(Request $request): JsonResponse
     {
+        $invocationId = $this->jobLogger->newInvocationId();
+        $lock = null;
+
         try {
             $request->validate([
                 'station_id' => 'required|integer|exists:dcp_stations,id',
@@ -355,9 +376,21 @@ class ReadDcpMessagesController extends Controller
                 'end_time' => 'required|date|after:start_time',
             ]);
 
-            $stationId = $request->input('station_id');
+            $stationId = (int) $request->input('station_id');
             $startTime = \Carbon\Carbon::parse($request->input('start_time'), 'America/Bahia')->utc();
             $endTime = \Carbon\Carbon::parse($request->input('end_time'), 'America/Bahia')->utc();
+
+            // Lock por estação: evita reprocessamentos concorrentes para a mesma estação,
+            // mas permite paralelismo entre estações diferentes.
+            $lock = Cache::lock('lrgs:dcp-messages:manual:' . $stationId, 600);
+            if (!$lock->get()) {
+                return response()->json([
+                    'success' => false,
+                    'reason'  => 'lock_busy',
+                    'invocation_id' => $invocationId,
+                    'message' => "Outro reprocessamento manual da estação {$stationId} já está em execução"
+                ], 409);
+            }
 
             // Busca a estação
             $station = $this->dcpStationService->getActiveStations()
@@ -371,6 +404,7 @@ class ReadDcpMessagesController extends Controller
             }
 
             Log::info('Reprocessamento manual iniciado', [
+                'invocation_id' => $invocationId,
                 'station_id' => $stationId,
                 'start_time' => $startTime->toDateTimeString(),
                 'end_time' => $endTime->toDateTimeString()
@@ -425,8 +459,12 @@ class ReadDcpMessagesController extends Controller
 
             $filteredMessages = array_reverse(array_values($filteredMessages));
 
-            // Processa e insere
-            $stats = $this->dcpReadingService->processAndInsertMessages(array_values($filteredMessages));
+            // Processa e insere (passa invocationId/syncLogId para tracing consistente com o cron)
+            $stats = $this->dcpReadingService->processAndInsertMessages(
+                array_values($filteredMessages),
+                $syncLog->id,
+                $invocationId
+            );
 
             // Completa o sync log
             $this->dcpSyncLogService->completeLog(
@@ -474,6 +512,7 @@ class ReadDcpMessagesController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Erro no reprocessamento manual', [
+                'invocation_id' => $invocationId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -484,8 +523,11 @@ class ReadDcpMessagesController extends Controller
 
             return response()->json([
                 'success' => false,
+                'invocation_id' => $invocationId,
                 'error' => $e->getMessage()
             ], 500);
+        } finally {
+            optional($lock)->release();
         }
     }
 }

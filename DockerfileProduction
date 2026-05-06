@@ -2,7 +2,7 @@ FROM php:8.3.20-apache
 
 LABEL maintainer="pedro.nascimento@lepoti.tech"
 
-ENV TZ="America/Cuiaba"
+ENV TZ="America/Bahia"
 
 COPY ./docker/php.ini /usr/local/etc/php/php.ini
 COPY ./docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
