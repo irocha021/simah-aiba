@@ -100,13 +100,13 @@
                                 <div class="select-box">
                                     <div class="select-options">
                                         <a href="{{ route('lrgs-stations.index') }}" class="select-link">
-                                            <span class="option-name">SIMAH</span>
+                                            <span class="option-name">Estações AIBA</span>
                                         </a>
                                         <a href="{{ route('poco-simah.stations.index') }}" class="select-link">
-                                            <span class="option-name">Poços SIMAH</span>
+                                            <span class="option-name">Poços AIBA</span>
                                         </a>
                                         <a href="{{ route('hw-inventory-stations.index') }}" class="select-link">
-                                            <span class="option-name">ANA/HidroWeb</span>
+                                            <span class="option-name">HidroWeb</span>
                                         </a>
                                     </div>
                                 </div>
