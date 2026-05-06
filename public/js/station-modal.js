@@ -553,7 +553,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
     // Função para formatar valor com unidade
     function formatValueWithUnit(key, value) {
         if (value === null || value === undefined || value === '') return '-';
-        
+
         // Se tiver unidade definida e for número
         const unit = unitMapping[key];
         if (unit) {
@@ -562,7 +562,7 @@ function openSiagasReadingsModal(idPonto, stationName, latitude, longitude) {
                 return `${numValue} ${unit}`;
             }
         }
-        
+
         return value;
     }
 
@@ -1093,7 +1093,7 @@ function openSimahReadingsModal(stationCode, stationName) {
 
             readings.slice(0, 50).forEach(r => {
                 const row = document.createElement('tr');
-                
+
                 if (isLoggedIn) {
                     // Usuário logado: mostra todas as colunas
                     row.innerHTML = `
@@ -3486,13 +3486,81 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
     }
 
     function renderTable(cnarhData) {
-        // Manter a ordem original das chaves, filtrando apenas valores não nulos
+        // Lista de campos permitidos para usuários não logados
+        const allowedFieldsForNonLogged = [
+            'INT_TIN_DS',
+            'INT_TSU_DS',
+            'INT_TCH_DS',
+            'INT_TSI_DS',
+            'INT_NU_LATITUDE',
+            'INT_NU_LONGITUDE',
+            'ING_NM_MUNICIPIO',
+            'INT_NM_CORPOHIDRICO',
+            'OUT_TP_OUTORGA',
+            'OUT_TP_SITUACAOOUTORGA',
+            'OUT_DT_OUTORGAFINAL',
+            'OUT_DT_OUTORGAINICIAL',
+            'OUT_NU_PROCESSO',
+            'OUT_TP_ATO',
+            'OUT_NU_ATO',
+            'DAD_QT_VAZAODIAJAN',
+            'DAD_QT_VAZAODIAFEV',
+            'DAD_QT_VAZAODIAMAR',
+            'DAD_QT_VAZAODIAABR',
+            'DAD_QT_VAZAODIAMAI',
+            'DAD_QT_VAZAODIAJUN',
+            'DAD_QT_VAZAODIAJUL',
+            'DAD_QT_VAZAODIAAGO',
+            'DAD_QT_VAZAODIASET',
+            'DAD_QT_VAZAODIAOUT',
+            'DAD_QT_VAZAODIANOV',
+            'DAD_QT_VAZAODIADEZ',
+            'DAD_QT_HORASJAN',
+            'DAD_QT_HORASFEV',
+            'DAD_QT_HORASMAR',
+            'DAD_QT_HORASABR',
+            'DAD_QT_HORASMAI',
+            'DAD_QT_HORASJUN',
+            'DAD_QT_HORASJUL',
+            'DAD_QT_HORASAGO',
+            'DAD_QT_HORASSET',
+            'DAD_QT_HORASOUT',
+            'DAD_QT_HORASNOV',
+            'DAD_QT_HORASDEZ',
+            'DAD_QT_DIAJAN',
+            'DAD_QT_DIAFEV',
+            'DAD_QT_DIAMAR',
+            'DAD_QT_DIAABR',
+            'DAD_QT_DIAMAI',
+            'DAD_QT_DIAJUN',
+            'DAD_QT_DIAJUL',
+            'DAD_QT_DIAAGO',
+            'DAD_QT_DIASET',
+            'DAD_QT_DIAOUT',
+            'DAD_QT_DIANOV',
+            'DAD_QT_DIADEZ',
+            'INT_QT_VAZAOMAXIMA',
+            'INT_QT_VAZAOMEDIA',
+            'INT_QT_VOLUMEANUAL',
+            'FIN_TFN_DS',
+            'SIR_TSI_DS',
+            'ING_NM_COMITEESTADUAL'
+        ];
+
+        // Converter para minúsculas para comparação case-insensitive
+        const allowedFieldsLower = allowedFieldsForNonLogged.map(f => f.toLowerCase());
+
+        // Manter a ordem original das chaves, filtrando valores não nulos E aplicando permissões
         const entries = [];
 
         for (const [key, value] of Object.entries(cnarhData)) {
-            // Ocultar Campo para usuários não logados
-            if (!isLoggedIn && key === 'emp_nm_empreendimento') {
-                continue;
+            // Verificar permissões baseado no login
+            if (!isLoggedIn) {
+                // Para usuários não logados: mostrar apenas campos da whitelist
+                const keyLower = key.toLowerCase();
+                if (!allowedFieldsLower.includes(keyLower)) {
+                    continue; // Pula campos não permitidos
+                }
             }
             // Incluir apenas valores que não são null, undefined ou string vazia
             if (value !== null && value !== undefined && value !== '') {
@@ -3518,28 +3586,12 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         const itemsPerColumn = Math.ceil(totalItems / 2);
 
         let html = `
-            <div id="cnarhTableContainer" class="cnarh-table-container">
-                <div class="cnarh-table-column">
-        `;
+        <div id="cnarhTableContainer" class="cnarh-table-container">
+            <div class="cnarh-table-column">
+    `;
 
         // Primeira coluna (metade superior dos itens na ordem original)
         for (let i = 0; i < itemsPerColumn; i++) {
-            const [displayName, value] = entries[i];
-            html += `
-                <div class="cnarh-data-row">
-                    <div class="cnarh-data-label">${displayName}:</div>
-                    <div class="cnarh-data-value">${value}</div>
-                </div>
-            `;
-        }
-
-        html += `
-            </div>
-            <div class="cnarh-table-column">
-        `;
-
-        // Segunda coluna (metade inferior dos itens na ordem original)
-        for (let i = itemsPerColumn; i < totalItems; i++) {
             const [displayName, value] = entries[i];
             html += `
             <div class="cnarh-data-row">
@@ -3550,9 +3602,25 @@ function openCnarhReadingsModal(cnarhCode, stationName, latitude, longitude) {
         }
 
         html += `
-            </div>
-            </div>
-        `;
+        </div>
+        <div class="cnarh-table-column">
+    `;
+
+        // Segunda coluna (metade inferior dos itens na ordem original)
+        for (let i = itemsPerColumn; i < totalItems; i++) {
+            const [displayName, value] = entries[i];
+            html += `
+        <div class="cnarh-data-row">
+            <div class="cnarh-data-label">${displayName}:</div>
+            <div class="cnarh-data-value">${value}</div>
+        </div>
+    `;
+        }
+
+        html += `
+        </div>
+        </div>
+    `;
 
         document.getElementById('cnarhDataContent').innerHTML = html;
     }
@@ -4190,7 +4258,7 @@ function loadHidrowebPrevisoesData(stationCode) {
                 // Preencher tabela
                 data.data.forecasts.forEach(forecast => {
                     const row = document.createElement('tr');
-                    
+
                     if (isLoggedIn) {
                         // Usuário logado: mostra todas as colunas
                         row.innerHTML = `
