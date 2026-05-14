@@ -1,54 +1,54 @@
 // layer-control.js
 
 function initLayerControl() {
-  // Configurações das camadas
+  // Configurações das camadas com ícones SVG
   const layerConfig = {
     'cnarh': {
       name: 'CNARH - Outorgas',
       color: '#A47864',
-      icon: 'fas fa-tint',
+      icon: '/images/icons/CNARH_Outorgas.svg',
       endpoint: '/api/stations/cnarh'
     },
     'hidroweb_qualidade_agua': {
       name: 'HidroWeb - Qualidade da Água',
       color: '#3388ff',
-      icon: 'fas fa-flask',
+      icon: '/images/icons/HidroWeb_Qualidade.svg',
       endpoint: '/api/stations/hidroweb-qualidade-agua'
     },
     'hidroweb_telemetria': {
       name: 'HidroWeb - Telemetria',
       color: '#00cc66',
-      icon: 'fas fa-satellite-dish',
+      icon: '/images/icons/HidroWeb_telemetria.svg',
       endpoint: '/api/stations/hidroweb-telemetria'
     },
     'hidroweb_telemetria_com_previsao': {
       name: 'Previsão de vazão',
       color: '#9933ff',
-      icon: 'fas fa-chart-line',
+      icon: '/images/icons/PREVISAO_VAZAO.svg',
       endpoint: '/api/stations/hidroweb-telemetria-previsao'
     },
     'lrgs_client': {
       name: 'Estações AIBA',
       color: '#ff7800',
-      icon: 'fas fa-satellite',
+      icon: '/images/icons/estacoes_AIBA.svg',
       endpoint: '/api/stations/lrgs-client'
     },
     'pocos_rimas': {
       name: 'Poços RIMAS',
       color: '#ff0000',
-      icon: 'fas fa-water',
+      icon: '/images/icons/Pocos_SIAGAS_e_RIMAS.svg',
       endpoint: '/api/stations/pocos-rimas'
     },
     'pocos_siagas': {
       name: 'Poços SIAGAS',
       color: '#e16ccf',
-      icon: 'fas fa-oil-well',
+      icon: '/images/icons/Pocos_SIAGAS_e_RIMAS.svg',
       endpoint: '/api/stations/pocos-siagas'
     },
     'pocos_simah': {
       name: 'Poços AIBA',
       color: '#165B9C',
-      icon: 'fas fa-water',
+      icon: '/images/icons/Pocos_AIBA.svg',
       endpoint: '/api/stations/pocos-simah'
     },
   };
@@ -86,12 +86,23 @@ function initLayerControl() {
 
     Object.entries(layerConfig).forEach(([key, config], index) => {
       const button = document.createElement('button');
-      button.className = 'select-option'; // Sem 'active' - começa desativado
+      button.className = 'select-option';
       button.dataset.layer = key;
       button.style.animationDelay = `${0.1 + (index * 0.05)}s`;
 
+      // Verifica se o ícone é SVG ou imagem
+      const isImageIcon = config.icon && (config.icon.endsWith('.svg'));
+
+      let iconHtml = '';
+      if (isImageIcon) {
+        iconHtml = `<img src="${config.icon}" class="layer-icon" alt="${config.name}" onerror="this.style.display='none'" />`;
+      } else {
+        iconHtml = `<i class="${config.icon}" style="margin-right: 8px;"></i>`;
+      }
+
       button.innerHTML = `
-        <span class="option-indicator" style="background: ${config.color}"></span>
+        
+        ${iconHtml}
         <span class="option-name">${config.name}</span>
         <span class="option-loading" style="display: none;">
           <i class="fas fa-spinner fa-spin"></i>
@@ -211,11 +222,12 @@ function initLayerControl() {
           const count = clusterGroups[layerKey].getLayers().length;
           state.count = count;
 
-          const countEl = document.querySelector(
-            `.select-option[data-layer="${layerKey}"] .option-count`
-          );
-          if (countEl) {
-            countEl.textContent = count;
+          const button = document.querySelector(`.select-option[data-layer="${layerKey}"]`);
+          if (button) {
+            const countEl = button.querySelector('.option-count');
+            if (countEl) {
+              countEl.textContent = count;
+            }
           }
         }
       });

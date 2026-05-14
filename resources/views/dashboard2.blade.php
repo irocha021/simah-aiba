@@ -276,12 +276,39 @@
             return styles[source] || styles['hidroweb_qualidade_agua'];
         }
 
+       // Função global para criar marcadores (usada pelo layer-control.js)
+        function createCustomIcon(source) {
+            const iconPaths = {
+                'cnarh': '/images/icons/CNARH_Outorgas.svg',
+                'hidroweb_qualidade_agua': '/images/icons/HidroWeb_Qualidade.svg',
+                'hidroweb_telemetria': '/images/icons/HidroWeb_telemetria.svg',
+                'hidroweb_telemetria_com_previsao': '/images/icons/PREVISAO_VAZAO.svg',
+                'lrgs_client': '/images/icons/estacoes_AIBA.svg',
+                'pocos_rimas': '/images/icons/Pocos_SIAGAS_e_RIMAS.svg',
+                'pocos_siagas': '/images/icons/Pocos_SIAGAS_e_RIMAS.svg',
+                'pocos_simah': '/images/icons/Pocos_AIBA.svg'
+            };
+            
+            const iconPath = iconPaths[source];
+            
+            // Criar ícone Leaflet a partir do SVG
+            return L.icon({
+                iconUrl: iconPath,
+                iconSize: [25, 25],  // Ajuste o tamanho conforme necessário
+                iconAnchor: [12, 12], // Ponto de ancoragem (centro do ícone)
+                popupAnchor: [0, -12], // Onde o popup vai aparecer
+                className: 'custom-svg-marker'
+            });
+        }
+
         // Função global para criar marcadores (usada pelo layer-control.js)
         window.createMarker = function(station) {
-            var style = getMarkerStyle(station.source);
-            var marker = L.circleMarker([station.latitude, station.longitude], style);
+            // Criar marcador com ícone SVG personalizado
+            var marker = L.marker([station.latitude, station.longitude], {
+                icon: createCustomIcon(station.source)
+            });
 
-            // Criar popup com botão para ver leituras/dados - ESTILIZADO
+            // Criar popup com botão para ver leituras/dados
             var popupContent = `
                 <div class="map-popup-content">
                     <div class="popup-header">
@@ -303,7 +330,7 @@
                 popupContent += `
                     <button onclick="openRimasReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
                             class="popup-button rimas">
-                        Ver Leituras (Últimas 50)
+                        <img class="layer-icon" src="/images/icons/Pocos_SIAGAS_e_RIMAS.svg" alt="Rimas" /> Ver Leituras (Últimas 50)
                     </button>
                 `;
             }
@@ -312,7 +339,7 @@
                 popupContent += `
                     <button onclick="openSiagasReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
                             class="popup-button siagas">
-                        Ver Dados do Poço
+                        <img class="layer-icon" src="/images/icons/Pocos_SIAGAS_e_RIMAS.svg" alt="SIAGAS" /> Ver Dados do Poço
                     </button>
                 `;
             }
@@ -321,7 +348,7 @@
                 popupContent += `
                     <button onclick="openHidrowebQaReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
                             class="popup-button hidroweb-qa">
-                        Ver Leituras (Últimas 50)
+                        <img class="layer-icon" src="/images/icons/HidroWeb_Qualidade.svg" alt="Qualidade da Água" /> Ver Leituras (Últimas 50)
                     </button>
                 `;
             }
@@ -330,18 +357,24 @@
                 popupContent += `
                     <button onclick="openLrgsReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
                             class="popup-button lrgs">
-                        Ver Leituras (Últimas 50)
+                        <img class="layer-icon" src="/images/icons/estacoes_AIBA.svg" alt="Estações AIBA" /> Ver Leituras (Últimas 72)
+                    </button>
+                `;
+            }
+            if (station.source === 'hidroweb_telemetria') {
+                popupContent += `
+                    <button onclick="openHidrowebTelemetryDataModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
+                            class="popup-button">
+                        <img class="layer-icon" src="/images/icons/HidroWeb_telemetria.svg" alt="Telemetria" /> Ver Dados de Telemetria
                     </button>
                 `;
             }
 
-            if (station.source === 'hidroweb_telemetria' || station.source === 'hidroweb_telemetria_com_previsao') {
-                var buttonClass = station.source === 'hidroweb_telemetria_com_previsao' ?
-                    'hidroweb-telemetria-previsao' : 'hidroweb-telemetria';
+            if (station.source === 'hidroweb_telemetria_com_previsao') {
                 popupContent += `
                     <button onclick="openHidrowebTelemetryDataModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
-                            class="popup-button ${buttonClass}">
-                        Ver Dados
+                            class="popup-button">
+                        <img class="layer-icon" src="/images/icons/PREVISAO_VAZAO.svg" alt="Previsão de Vazão" /> Ver Previsão de Vazão
                     </button>
                 `;
             }
@@ -350,7 +383,16 @@
                 popupContent += `
                     <button onclick="openCnarhReadingsModal('${station.code}', '${station.name}', '${station.latitude}', '${station.longitude}')" 
                             class="popup-button cnarh">
-                        Ver Dados CNARH
+                        <img class="layer-icon" src="/images/icons/CNARH_Outorgas.svg" alt="CNARH" /> Ver Dados CNARH
+                    </button>
+                `;
+            }
+
+            if (station.source === 'pocos_simah') {
+                popupContent += `
+                    <button onclick="openSimahReadingsModal('${station.code}', '${station.name}')" 
+                            class="popup-button simah">
+                        <img class="layer-icon" src="/images/icons/Pocos_AIBA.svg" alt="SIMAH" /> Ver Leituras (Últimas 50)
                     </button>
                 `;
             }
