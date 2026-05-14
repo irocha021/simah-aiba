@@ -1190,3 +1190,14 @@ a.select-link.active {
         transform: none;
     }
 }
+
+
+/* Estilos para os ícones SVG nos botões */
+.layer-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: middle;
+  display: inline-block;
+  object-fit: contain;
+}
