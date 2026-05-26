@@ -114,6 +114,9 @@ function openRimasReadingsModal(idPonto, stationName, latitude, longitude) {
 
     document.querySelector('.rimas-view-controls')?.remove();
     document.getElementById('rimasChartContainer')?.remove();
+    document.querySelector('.rimas-filter-container')?.remove();
+    document.querySelector('.rimas-export-btns')?.remove();
+
 
     // Resetar UI
     Object.values(elements).forEach(el => {
@@ -125,18 +128,21 @@ function openRimasReadingsModal(idPonto, stationName, latitude, longitude) {
         }
     });
 
-    // Criar elementos do gráfico e controles
+    // Criar elementos do gráfico, controles e filtro
     const chartContainer = createChartContainer();
     const controlsContainer = createControlsContainer();
+    const filterContainer = createFilterContainer();
 
     // Inserir no DOM
     const modalContent = document.querySelector('.rimas-modal-content');
     if (modalContent) {
+        modalContent.insertBefore(filterContainer, elements.tableContainer);
         modalContent.insertBefore(chartContainer, elements.tableContainer);
         modalContent.insertBefore(controlsContainer, elements.tableContainer.nextSibling);
     }
 
     let chartData = null;
+
 
     // Configurar visualizações
     const views = {
@@ -147,6 +153,9 @@ function openRimasReadingsModal(idPonto, stationName, latitude, longitude) {
             controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             elements.tableContainer.style.display = 'block';
             chartContainer.style.display = 'none';
+            filterContainer.style.display = 'flex';
+            const exportBtns = document.querySelector('.rimas-export-btns');
+            if (exportBtns) exportBtns.style.display = 'flex';
         },
         chart: () => {
             controlsContainer.children[0].className = 'rimas-view-btn';
@@ -155,11 +164,15 @@ function openRimasReadingsModal(idPonto, stationName, latitude, longitude) {
             controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             elements.tableContainer.style.display = 'none';
             chartContainer.style.display = 'block';
+            filterContainer.style.display = 'flex';
+            const exportBtns = document.querySelector('.rimas-export-btns');
+            if (exportBtns) exportBtns.style.display = 'none';
             if (chartData && (!window.rimasChartInstance || window.rimasChartInstance.canvas.id !== 'rimasChart')) {
                 createChart(chartData, idPonto, chartContainer);
             }
         }
     };
+
 
     controlsContainer.children[0].onclick = views.table;
     controlsContainer.children[1].onclick = views.chart;
@@ -221,6 +234,76 @@ function openRimasReadingsModal(idPonto, stationName, latitude, longitude) {
                 });
 
                 views.table();
+
+                // Botões de exportação
+                const buildExportUrl = (format) => {
+                    const dateFrom = document.getElementById('rimasFilterDateFrom')?.value || '';
+                    const dateTo   = document.getElementById('rimasFilterDateTo')?.value || '';
+                    let url = `/api/pocos-rimas/${idPonto}/export?format=${format}`;
+                    if (dateFrom) url += `&date_from=${dateFrom}`;
+                    if (dateTo)   url += `&date_to=${dateTo}`;
+                    return url;
+                };
+
+                const showExportSuccess = (msg) => {
+                    const toast = document.createElement('div');
+                    toast.textContent = msg;
+                    toast.style.cssText = 'position:fixed; bottom:30px; right:30px; background:#1e6e3e; color:#fff; padding:12px 20px; border-radius:6px; font-size:14px; font-weight:500; z-index:99999; box-shadow:0 4px 12px rgba(0,0,0,0.15); transition:opacity 0.5s;';
+                    document.body.appendChild(toast);
+                    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 3000);
+                };
+
+                const csvBtn = document.createElement('button');
+                csvBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>CSV`;
+                csvBtn.title = 'Exportar CSV';
+                csvBtn.style.cssText = 'padding: 6px 12px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px;';
+                const csvSvg = csvBtn.innerHTML;
+                csvBtn.onclick = () => {
+                    csvBtn.disabled = true;
+                    csvBtn.textContent = 'Exportando...';
+                    fetch(buildExportUrl('csv'))
+                        .then(r => r.blob())
+                        .then(blob => {
+                            const a = document.createElement('a');
+                            a.href = URL.createObjectURL(blob);
+                            a.download = `rimas_${idPonto}.csv`;
+                            a.click();
+                            URL.revokeObjectURL(a.href);
+                            showExportSuccess('✓ Download CSV concluído!');
+                        })
+                        .finally(() => { csvBtn.disabled = false; csvBtn.innerHTML = csvSvg; });
+                };
+
+                const xlsBtn = document.createElement('button');
+                xlsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13l2.5 4 2.5-4"/><path d="M8 17l2.5-4 2.5 4"/></svg>Excel`;
+                xlsBtn.title = 'Exportar Excel';
+                xlsBtn.style.cssText = 'padding: 6px 12px; background: #ffffff; color: #1e6e3e; border: 1px solid #1e6e3e; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px;';
+                const xlsSvg = xlsBtn.innerHTML;
+                xlsBtn.onclick = () => {
+                    xlsBtn.disabled = true;
+                    xlsBtn.textContent = 'Exportando...';
+                    fetch(buildExportUrl('excel'))
+                        .then(r => r.blob())
+                        .then(blob => {
+                            const a = document.createElement('a');
+                            a.href = URL.createObjectURL(blob);
+                            a.download = `rimas_${idPonto}.xlsx`;
+                            a.click();
+                            URL.revokeObjectURL(a.href);
+                            showExportSuccess('✓ Download Excel concluído!');
+                        })
+                        .finally(() => { xlsBtn.disabled = false; xlsBtn.innerHTML = xlsSvg; });
+                };
+
+                const existingExportBtns = modalContent?.querySelector('.rimas-export-btns');
+                if (existingExportBtns) existingExportBtns.remove();
+                const exportBtns = document.createElement('div');
+                exportBtns.className = 'rimas-export-btns';
+                exportBtns.style.cssText = 'display: flex; justify-content: flex-end; gap: 8px; padding: 6px 0; width: 92%; margin: 0 auto;';
+                exportBtns.appendChild(csvBtn);
+                exportBtns.appendChild(xlsBtn);
+                elements.tableContainer.parentNode.insertBefore(exportBtns, elements.tableContainer);
+
             } else {
                 showError('Nenhuma leitura encontrada.');
             }
@@ -267,6 +350,118 @@ function openRimasReadingsModal(idPonto, stationName, latitude, longitude) {
 
         return container;
     }
+
+    function createFilterContainer() {
+        const container = document.createElement('div');
+        container.className = 'rimas-filter-container';
+        container.style.cssText = 'display: none; justify-content: center; align-items: center; gap: 15px; padding: 15px 0; width: 92%; margin: 0 auto;';
+
+        const deLabel = document.createElement('label');
+        deLabel.textContent = 'De:';
+        deLabel.style.cssText = 'font-weight: 500; color: #333;';
+
+        const deInput = document.createElement('input');
+        deInput.type = 'date';
+        deInput.id = 'rimasFilterDateFrom';
+        deInput.style.cssText = 'padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; cursor: pointer;';
+
+        const ateLabel = document.createElement('label');
+        ateLabel.textContent = 'Até:';
+        ateLabel.style.cssText = 'font-weight: 500; color: #333;';
+
+        const ateInput = document.createElement('input');
+        ateInput.type = 'date';
+        ateInput.id = 'rimasFilterDateTo';
+        ateInput.style.cssText = 'padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; cursor: pointer;';
+
+        const aplicarBtn = document.createElement('button');
+        aplicarBtn.textContent = 'Aplicar';
+        aplicarBtn.style.cssText = 'padding: 8px 16px; background: #242731; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+        const limparBtn = document.createElement('button');
+        limparBtn.textContent = 'Limpar';
+        limparBtn.style.cssText = 'padding: 8px 16px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+        aplicarBtn.onclick = () => {
+            const fromVal = deInput.value;
+            const toVal   = ateInput.value;
+            if (!fromVal || !toVal) return;
+            elements.tableBody.innerHTML = '';
+            elements.loading.style.display = 'block';
+            fetch(`/api/pocos-rimas/${idPonto}/readings?date_from=${fromVal}&date_to=${toVal}`)
+                .then(r => r.json())
+                .then(data => {
+                    elements.loading.style.display = 'none';
+                    if (data.success && data.data?.readings?.length > 0) {
+                        const readings = data.data.readings;
+                        elements.total.textContent = readings.length;
+                        chartData = readings;
+                        elements.tableBody.innerHTML = '';
+                        readings.forEach(reading => {
+                            const row = document.createElement('tr');
+                            const tdNum = document.createElement('td'); tdNum.textContent = reading.numero_de || '-'; row.appendChild(tdNum);
+                            const tdDate = document.createElement('td'); tdDate.textContent = reading.data_da_me || '-'; row.appendChild(tdDate);
+                            const tdTime = document.createElement('td');
+                            if (reading.hora_da_me) { try { const time = reading.hora_da_me.split(' ')[1] || reading.hora_da_me; tdTime.textContent = time.substring(0, 8); } catch(e) { tdTime.textContent = reading.hora_da_me; } } else { tdTime.textContent = '-'; }
+                            row.appendChild(tdTime);
+                            const tdLevel = document.createElement('td'); if (reading.nivel_da_a) { const level = parseFloat(reading.nivel_da_a); tdLevel.textContent = isNaN(level) ? '-' : level.toFixed(2); } else { tdLevel.textContent = '-'; } row.appendChild(tdLevel);
+                            const tdObs = document.createElement('td'); tdObs.textContent = reading.field_8 || '-'; row.appendChild(tdObs);
+                            elements.tableBody.appendChild(row);
+                        });
+                    } else {
+                        elements.tableBody.innerHTML = '<tr><td colspan="5">Nenhuma leitura encontrada.</td></tr>';
+                        chartData = [];
+                    }
+                    // Atualiza gráfico com os dados filtrados
+                    if (window.rimasChartInstance) {
+                        window.rimasChartInstance.destroy();
+                        window.rimasChartInstance = null;
+                    }
+                    if (chartData.length > 0) {
+                        createChart(chartData, idPonto, chartContainer);
+                    }
+                });
+            };
+
+        limparBtn.onclick = () => {
+            deInput.value = '';
+            ateInput.value = '';
+            elements.tableBody.innerHTML = '';
+            elements.loading.style.display = 'block';
+            fetch(`/api/pocos-rimas/${idPonto}/readings`)
+                .then(r => r.json())
+                .then(data => {
+                    elements.loading.style.display = 'none';
+                    if (data.success && data.data?.readings?.length > 0) {
+                        const readings = data.data.readings;
+                        chartData = readings;
+                        elements.total.textContent = readings.length;
+                        elements.tableBody.innerHTML = '';
+                        readings.forEach(reading => {
+                            const row = document.createElement('tr');
+                            const tdNum = document.createElement('td'); tdNum.textContent = reading.numero_de || '-'; row.appendChild(tdNum);
+                            const tdDate = document.createElement('td'); tdDate.textContent = reading.data_da_me || '-'; row.appendChild(tdDate);
+                            const tdTime = document.createElement('td');
+                            if (reading.hora_da_me) { try { const time = reading.hora_da_me.split(' ')[1] || reading.hora_da_me; tdTime.textContent = time.substring(0, 8); } catch(e) { tdTime.textContent = reading.hora_da_me; } } else { tdTime.textContent = '-'; }
+                            row.appendChild(tdTime);
+                            const tdLevel = document.createElement('td'); if (reading.nivel_da_a) { const level = parseFloat(reading.nivel_da_a); tdLevel.textContent = isNaN(level) ? '-' : level.toFixed(2); } else { tdLevel.textContent = '-'; } row.appendChild(tdLevel);
+                            const tdObs = document.createElement('td'); tdObs.textContent = reading.field_8 || '-'; row.appendChild(tdObs);
+                            elements.tableBody.appendChild(row);
+                        });
+                    }
+                });
+        };
+
+        container.appendChild(deLabel);
+        container.appendChild(deInput);
+        container.appendChild(ateLabel);
+        container.appendChild(ateInput);
+        container.appendChild(aplicarBtn);
+        container.appendChild(limparBtn);
+
+        return container;
+    }
+
 
     function createChart(readings, idPonto, chartContainer) {
         if (window.rimasChartInstance) {
@@ -1004,16 +1199,17 @@ function openSimahReadingsModal(stationCode, stationName) {
                 { label: 'DATA/HORA UTC', unit: null },
                 { label: 'VARIAÇÃO DE PRESSÃO', unit: '(bar)' },
                 { label: 'PRESSÃO INTERNA', unit: '(bar)' },
+                { label: 'NÍVEL DE ÁGUA', unit: '(m)' },
                 { label: 'PRESSÃO EXTERNA', unit: '(bar)' },
                 { label: 'TEMPERATURA DA ÁGUA INTERNA', unit: '(°C)' },
                 { label: 'TEMPERATURA DA ÁGUA EXTERNA', unit: '(°C)' }
             ];
         } else {
-            // Usuário não logado: sem Nº e sem Data/Hora UTC
             headers = [
                 { label: 'DATA/HORA LOCAL', unit: null },
                 { label: 'VARIAÇÃO DE PRESSÃO', unit: '(bar)' },
                 { label: 'PRESSÃO INTERNA', unit: '(bar)' },
+                { label: 'NÍVEL DE ÁGUA', unit: '(m)' },
                 { label: 'PRESSÃO EXTERNA', unit: '(bar)' },
                 { label: 'TEMPERATURA DA ÁGUA INTERNA', unit: '(°C)' },
                 { label: 'TEMPERATURA DA ÁGUA EXTERNA', unit: '(°C)' }
@@ -1114,6 +1310,7 @@ function openSimahReadingsModal(stationCode, stationName) {
                         <td>${formatSimahDate(r.datetime_utc)}</td>
                         <td>${formatSimahNum(r.pd_bar)}</td>
                         <td>${formatSimahNum(r.p1_bar)}</td>
+                        <td>${formatSimahNum(r.water_level_meters)}</td>
                         <td>${formatSimahNum(r.p2_bar)}</td>
                         <td>${formatSimahNum(r.tob1_celsius)}</td>
                         <td>${formatSimahNum(r.tob2_celsius)}</td>
@@ -1124,11 +1321,13 @@ function openSimahReadingsModal(stationCode, stationName) {
                         <td>${formatSimahDate(r.datetime_local)}</td>
                         <td>${formatSimahNum(r.pd_bar)}</td>
                         <td>${formatSimahNum(r.p1_bar)}</td>
+                        <td>${formatSimahNum(r.water_level_meters)}</td>
                         <td>${formatSimahNum(r.p2_bar)}</td>
                         <td>${formatSimahNum(r.tob1_celsius)}</td>
                         <td>${formatSimahNum(r.tob2_celsius)}</td>
                     `;
                 }
+
                 tableBody.appendChild(row);
             });
 

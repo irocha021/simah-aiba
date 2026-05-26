@@ -181,6 +181,105 @@
             color: rgba(40, 40, 40, 0.9);
             text-shadow: 0 0 3px rgba(255, 255, 255, 0.9), 0 0 2px rgba(255, 255, 255, 0.9);
         }
+
+        /* ===== LABEL DO NOME DA ESTAÇÃO (junto ao ponto) ===== */
+        /* .map-point-label {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            font-size: 10px;
+            font-weight: 500;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+       
+        .map-point-label::before {
+            display: none !important;
+        }
+
+        body.mode-satellite .map-point-label {
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        body.mode-street .map-point-label {
+            color: rgba(40, 40, 40, 0.9);
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.9), 0 0 2px rgba(255, 255, 255, 0.9);
+        }
+
+       
+        body.hide-point-labels .map-point-label {
+            display: none !important;
+        } */
+
+        /* ===== LABEL DO NOME DA ESTAÇÃO (junto ao ponto) =====
+           3 estilos pra testar. Deixe APENAS UM bloco "ESTILO X" sem comentário
+           por vez. As 2 regras finais (hide-point-labels e ::before) valem
+           para todos e devem ficar sempre ativas. */
+
+        /* Base comum a todos os estilos */
+        .map-point-label {
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        /* ---------- ESTILO 1: PÍLULA ESCURA (ATIVO) ---------- */
+        /* .map-point-label {
+            background: rgba(26, 26, 26, 0.75) !important;
+            border: none !important;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+            padding: 3px 8px !important;
+            border-radius: 10px !important;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+        } */
+        /* ---------- FIM ESTILO 1 ---------- */
+
+        /* ---------- ESTILO 2: PÍLULA NA COR DA CAMADA ---------- */
+        /* .map-point-label {
+            background: rgba(26, 26, 26, 0.78) !important;
+            border: 1.5px solid #ff7800 !important;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+            padding: 3px 8px !important;
+            border-radius: 10px !important;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+        } */
+        /* ---------- FIM ESTILO 2 ---------- */
+
+        /* ---------- ESTILO 3: TEXTO COM MAIS PESO (sem caixa) ---------- */
+        .map-point-label {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        body.mode-satellite .map-point-label {
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.8);
+        }
+        body.mode-street .map-point-label {
+            color: #1a1a1a;
+            text-shadow: 0 0 4px rgba(255,255,255,1), 0 0 3px rgba(255,255,255,1);
+        }
+        /* ---------- FIM ESTILO 3 ---------- */
+
+        /* Remove a setinha padrão do tooltip do Leaflet (vale p/ todos) */
+        .map-point-label::before {
+            display: none !important;
+        }
+
+        /* Esconde os nomes no zoom baixo (vale p/ todos) */
+        body.hide-point-labels .map-point-label {
+            display: none !important;
+        }
+
     </style>
 </head>
 
@@ -213,6 +312,20 @@
 
         // Setar referência do mapa para o GEOMAP panel
         setMapReference(map);
+
+        
+        // Mostra os nomes das estações só a partir do zoom 8 (mesmo limiar
+        // usado nos labels de shapefile em geomap-panel.js). Abaixo disso,
+        // a classe no body esconde todos os labels via CSS — barato mesmo
+        // com muitos pontos, e não interfere no agrupamento dos clusters.
+        var POINT_LABEL_MIN_ZOOM = 8;
+        function updatePointLabelsVisibility() {
+            var hide = map.getZoom() < POINT_LABEL_MIN_ZOOM;
+            document.body.classList.toggle('hide-point-labels', hide);
+        }
+        map.on('zoomend', updatePointLabelsVisibility);
+        updatePointLabelsVisibility();
+
 
         // Tile layers
         var tileSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -474,6 +587,19 @@
             `;
 
             marker.bindPopup(popupContent);
+
+            // Nome da estação fixo ao lado do ponto. permanent:true faz o
+            // MarkerCluster esconder o label enquanto o ponto está agrupado
+            // e reexibi-lo quando ele se separa do cluster.
+            if (station.name) {
+                marker.bindTooltip(station.name, {
+                    permanent: true,
+                    direction: 'top',
+                    offset: [0, -6],
+                    className: 'map-point-label'
+                });
+            }
+
             return marker;
         };
 
