@@ -50,6 +50,10 @@ class GeobahiaImportController extends Controller
 
     private function importTile(array $layer, $minZoom = null, $maxZoom = null): JsonResponse
     {
+        // Geração de tiles é longa (raster por zoom). Sem limite de tempo para
+        // a requisição não morrer por timeout do PHP.
+        set_time_limit(0);
+
         $pathZip = base_path($layer['path_zip']);
 
         $parametros = [

@@ -26,6 +26,13 @@ class ShapefileToTilesService
         $this->mapLayerService = $mapLayerService;
     }
 
+    public function convertToTiles(string $zipPath, string $layerName, int $zoomMin = 5, int $zoomMax = 10): array
+    {
+        $config = $this->mapLayerService->getLayerBySlug($layerName);
+        return $this->convertToTilesWithConfig($zipPath, $layerName, $config, $zoomMin, $zoomMax);
+    }
+
+
     /**
      * Converte um shapefile ZIP para tiles PNG
      *
@@ -35,15 +42,15 @@ class ShapefileToTilesService
      * @param int $zoomMax Zoom máximo
      * @return array Resultado da conversão
      */
-    public function convertToTiles(string $zipPath, string $layerName, int $zoomMin = 5, int $zoomMax = 10): array
+    public function convertToTilesWithConfig(string $zipPath, string $layerName, array $config, int $zoomMin = 5, int $zoomMax = 10): array
     {   
-        try {
+    try {
 
-            // Carregar configuração da camada
-            $this->layerConfig = $this->mapLayerService->getLayerBySlug($layerName);
+        // Configuração injetada (banco ou caller direto)
+        $this->layerConfig = $config;
 
-            // 1. Extrair ZIP
-            Log::info("Extraindo shapefile ZIP: {$zipPath}");
+        // 1. Extrair ZIP
+        Log::info("Extraindo shapefile ZIP: {$zipPath}");
             $extractDir = $this->extractZip($zipPath);
 
             // 2. Encontrar arquivo .shp
@@ -95,7 +102,79 @@ class ShapefileToTilesService
 
                     @unlink($rasterFile);
                 }
+            } elseif ($this->layerConfig['translucent_fill'] ?? false) {
+                // Modo translucent_fill: preenchimento pálido translúcido + borda
+                // colorida nítida. Usa o MESMO loop por-zoom do borders_only
+                // (1 raster por zoom, espessura de borda escalada por zoom) para
+                // a borda não ficar enorme nos zooms baixos.
+                // Espessura da linha em PIXELS na tela, constante em todos os
+                // zooms (cálculo dinâmico: o buffer em metros é recalculado por
+                // zoom via metersPerPixel, então a linha tem sempre a mesma
+                // grossura visual). border_buffer do banco = espessura em px.
+                $borderThicknessPx = $this->layerConfig['border_buffer'] ?? 1.5;
+
+                // Piso de espessura: garante linha visível em qualquer zoom.
+                // 0.75px: com -at a linha não some mesmo fina (ALL_TOUCHED
+                // pinta o pixel tocado), então dá pra ir bem mais fino que
+                // 1.5 sem o problema de sumir no zoom baixo.
+                $minThicknessPx = 0.5;
+
+                // TETO do buffer em metros. No zoom baixo metros/pixel é enorme
+                // (4891 m/px no z5) => buffer dinâmico explodia para ~7 km e o
+                // ST_Buffer de 7 km em 339 feições matava o processo por falta
+                // de memória (exit 137). Acima de ~500 m de espessura real não
+                // há ganho visual — só risco de OOM. Com -at a linha aparece
+                // mesmo com buffer pequeno no zoom baixo.
+                $maxBufferMeters = 500;
+
+                Log::info("[translucent_fill] === INÍCIO geração '{$layerName}' zooms {$zoomMin}-{$zoomMax} ===");
+
+                for ($z = $zoomMin; $z <= $zoomMax; $z++) {
+                    $resolution = $this->metersPerPixel($z);
+
+                    // ST_Buffer engorda a linha para OS DOIS lados => raio do
+                    // buffer = METADE da espessura. Cálculo dinâmico por zoom,
+                    // limitado pelo teto para não estourar memória no zoom baixo.
+                    $effectiveThicknessPx = max($borderThicknessPx, $minThicknessPx);
+                    $bufferMeters = min(($effectiveThicknessPx / 2.0) * $resolution, $maxBufferMeters);
+
+                    Log::info("[translucent_fill] Zoom {$z}: espessura={$effectiveThicknessPx}px, resolução={$resolution} m/pixel, buffer={$bufferMeters} m (teto={$maxBufferMeters})");
+
+                    $rasterFile = $extractDir . '/' . $layerName . "_z{$z}.tif";
+                    $this->createFilledTranslucentRasterForZoom($geojsonFile, $rasterFile, $resolution, $bufferMeters);
+
+                    $this->generateTiles($rasterFile, $tilesDir, $z, $z);
+
+                    @unlink($rasterFile);
+
+                    Log::info("[translucent_fill] Zoom {$z} CONCLUÍDO ({$z}/{$zoomMax})");
+                }
+
+                    Log::info("[translucent_fill] ===== FINALIZADO '{$layerName}': todos os zooms {$zoomMin}-{$zoomMax} gerados com sucesso =====");
+            } elseif ($this->layerConfig['line_style'] ?? false) {
+                // Camada de LINHA (rios/hidrografia): rasteriza o traço direto,
+                // sem ST_Boundary/ST_Buffer (que são pra polígono). 1 raster
+                // por zoom pra a linha não engrossar no zoom afastado.
+                Log::info("[line_style] === INÍCIO geração '{$layerName}' zooms {$zoomMin}-{$zoomMax} ===");
+
+                for ($z = $zoomMin; $z <= $zoomMax; $z++) {
+                    $resolution = $this->metersPerPixel($z);
+                    Log::info("[line_style] Zoom {$z}: resolução={$resolution} m/pixel");
+
+                    $rasterFile = $extractDir . '/' . $layerName . "_z{$z}.tif";
+                    $this->createLineRaster($geojsonFile, $rasterFile, $resolution);
+
+                    $this->generateTiles($rasterFile, $tilesDir, $z, $z);
+
+                    @unlink($rasterFile);
+
+                    Log::info("[line_style] Zoom {$z} CONCLUÍDO ({$z}/{$zoomMax})");
+                }
+
+                Log::info("[line_style] ===== FINALIZADO '{$layerName}': todos os zooms {$zoomMin}-{$zoomMax} gerados com sucesso =====");
             } else {
+
+                
                 // Caminho antigo (camadas com preenchimento): inalterado.
                 Log::info("Convertendo GeoJSON para raster");
                 $rasterFile = $extractDir . '/' . $layerName . '.tif';
@@ -108,9 +187,18 @@ class ShapefileToTilesService
             // 6.5. Gerar labels.geojson se a camada tem label_field configurado
             $labelField = $this->layerConfig['label_field'] ?? null;
             if ($labelField) {
-                Log::info("Gerando labels.geojson com campo '{$labelField}'");
+                Log::info("[labels] === INÍCIO geração labels.geojson com campo '{$labelField}' ===");
                 $labelsFile = $tilesDir . '/labels.geojson';
                 $this->extractLabels($shpFile, $labelsFile, $labelField);
+
+                // Conta quantos labels saíram (útil pra ver se o dedup
+                // funcionou — milhares = sem agrupamento; centenas = ok).
+                $count = 0;
+                if (file_exists($labelsFile)) {
+                    $json = json_decode(file_get_contents($labelsFile), true);
+                    $count = isset($json['features']) ? count($json['features']) : 0;
+                }
+                Log::info("[labels] ===== FINALIZADO labels.geojson: {$count} labels gerados =====");
             }
 
             // 7. Limpar arquivos temporários
@@ -158,12 +246,19 @@ class ShapefileToTilesService
 
     private function shapefileToGeoJSON(string $shpFile, string $geojsonFile): void
     {
-        $isSingleColor = $this->layerConfig['single_color'] ?? false;
+        $isSingleColor     = $this->layerConfig['single_color'] ?? false;
+        $isColorPerFeature = $this->layerConfig['color_per_feature'] ?? false;
+        $paletteSize       = $this->layerConfig['palette_size'] ?? 50;
 
+        $tableName = basename($shpFile, '.shp');
 
-        if ($isSingleColor) {
+        if ($isColorPerFeature) {
+            // Cada feature recebe um color_id ciclando entre 1 e palette_size.
+            // OGR_FID é único por feature e começa em 0 no SQLite dialect do ogr2ogr.
+            $sql = "SELECT *, (OGR_FID % {$paletteSize}) + 1 AS color_id FROM \"{$tableName}\"";
+        } elseif ($isSingleColor) {
             // Camada de cor única: todos features recebem color_id = 1
-            $sql = "SELECT *, 1 AS color_id FROM \"" . basename($shpFile, '.shp') . "\"";
+            $sql = "SELECT *, 1 AS color_id FROM \"{$tableName}\"";
         } else {
             // Gerar SQL CASE baseado na configuração ou usar padrão
             $field = $this->layerConfig['field_name'] ?? 'gid';
@@ -171,7 +266,7 @@ class ShapefileToTilesService
 
             if (empty($sqlMapping)) {
                 // Fallback: usar SQL simples sem CASE
-                $sql = "SELECT * FROM \"" . basename($shpFile, '.shp') . "\"";
+                $sql = "SELECT * FROM \"{$tableName}\"";
             } else {
                 // Gerar SQL CASE dinamicamente
                 $caseStatements = [];
@@ -179,7 +274,7 @@ class ShapefileToTilesService
                     $caseStatements[] = "WHEN {$field}='{$value}' THEN {$colorId}";
                 }
                 $caseSQL = implode(' ', $caseStatements);
-                $sql = "SELECT *, CASE {$caseSQL} ELSE 0 END AS color_id FROM \"" . basename($shpFile, '.shp') . "\"";
+                $sql = "SELECT *, CASE {$caseSQL} ELSE 0 END AS color_id FROM \"{$tableName}\"";
             }
         }
 
@@ -309,6 +404,191 @@ class ShapefileToTilesService
         @unlink($boundariesFile);
     }
 
+        /**
+     * Cria um raster RGBA (4 bandas) para um zoom específico com:
+     *  - INTERIOR preenchido com cor pálida e ALPHA BAIXO (translúcido) e
+     *  - BORDA desenhada por cima com cor sólida e ALPHA 255 (nítida).
+     *
+     * Usado pelo modo translucent_fill. Modelado em createBordersOnlyRaster():
+     * a translucidez fica ASSADA no PNG, sem depender da opacidade do Leaflet.
+     *
+     * NÃO usa applyColorPalette()/gdaldem de propósito — color-relief ignora a
+     * coluna de alpha da paleta (gera alpha binário 0/255). Aqui o palette_text
+     * é lido só como fonte do RGBA do preenchimento (linha "1 R G B A").
+     */
+    private function createFilledTranslucentRasterForZoom(
+        string $geojsonFile,
+        string $rasterFile,
+        float $resolutionMeters,
+        float $bufferMeters
+    ): void
+    {
+        // 1. Cor do preenchimento: lê a linha "1 R G B A" do palette_text.
+        $fill = [250, 248, 210, 90]; // fallback: amarelo pálido translúcido
+        $paletteText = $this->layerConfig['palette_text'] ?? '';
+        // palette_text no banco vem com "\n" LITERAL (2 chars), não quebra
+        // real. Normaliza ambos os casos antes de separar as linhas.
+        $paletteText = str_replace('\n', "\n", $paletteText);
+        foreach (preg_split('/\r\n|\r|\n/', $paletteText) as $line) {
+            $parts = preg_split('/\s+/', trim($line));
+            if (count($parts) >= 5 && $parts[0] === '1') {
+                $fill = [(int)$parts[1], (int)$parts[2], (int)$parts[3], (int)$parts[4]];
+                break;
+            }
+        }
+
+        // 2. Cor da borda: border_color vem como "R,G,B" do banco.
+        $borderColorRaw = $this->layerConfig['border_color'] ?? '0,0,0';
+        $borderColor = is_string($borderColorRaw)
+            ? array_map('intval', explode(',', $borderColorRaw))
+            : $borderColorRaw;
+
+        // 3. Criar raster RGBA transparente vazio na resolução DESTE zoom.
+        $bounds = $this->getBounds($geojsonFile);
+        $width = ceil(($bounds['xmax'] - $bounds['xmin']) / $resolutionMeters);
+        $height = ceil(($bounds['ymax'] - $bounds['ymin']) / $resolutionMeters);
+
+        $createCommand = sprintf(
+            'gdal_create -of GTiff -outsize %d %d -a_srs EPSG:3857 -a_ullr %f %f %f %f -burn 0 -ot Byte -co COMPRESS=LZW -bands 4 %s 2>&1',
+            $width,
+            $height,
+            $bounds['xmin'],
+            $bounds['ymax'],
+            $bounds['xmax'],
+            $bounds['ymin'],
+            escapeshellarg($rasterFile)
+        );
+
+        exec($createCommand, $createOutput, $createCode);
+
+        if ($createCode !== 0) {
+            throw new \Exception("Erro ao criar raster vazio: " . implode("\n", $createOutput));
+        }
+
+        // 4. Preencher o INTERIOR (polígono inteiro) com cor pálida + alpha baixo.
+        //    SEM -at: -at sangraria o preenchimento para fora do polígono.
+        $fillCommand = sprintf(
+            'gdal_rasterize -b 1 -b 2 -b 3 -b 4 -burn %d -burn %d -burn %d -burn %d %s %s 2>&1',
+            $fill[0],
+            $fill[1],
+            $fill[2],
+            $fill[3],
+            escapeshellarg($geojsonFile),
+            escapeshellarg($rasterFile)
+        );
+
+        exec($fillCommand, $fillOutput, $fillCode);
+
+        if ($fillCode !== 0) {
+            throw new \Exception("Erro ao preencher interior: " . implode("\n", $fillOutput));
+        }
+
+        // 5. Extrair a borda como buffer da boundary (espessura escalada por zoom).
+        $boundariesFile = str_replace('.geojson', '_boundaries.geojson', $geojsonFile);
+
+        $extractCommand = sprintf(
+            'ogr2ogr -f GeoJSON -dialect SQLite -sql "SELECT ST_Buffer(ST_Boundary(geometry), %f) as geometry FROM \\"SELECT\\"" %s %s 2>&1',
+            $bufferMeters,
+            escapeshellarg($boundariesFile),
+            escapeshellarg($geojsonFile)
+        );
+
+        exec($extractCommand, $extractOutput, $extractCode);
+
+        if ($extractCode !== 0 || !file_exists($boundariesFile)) {
+            throw new \Exception("Erro ao extrair boundaries: " . implode("\n", $extractOutput));
+        }
+
+        // 6. Desenhar a BORDA por cima do fill, alpha 255 (nítida). COM -at:
+        //    sem -at a linha some no zoom baixo (buffer com teto vira sub-pixel
+        //    e o GDAL não acha centro de pixel para pintar). -at pinta todo
+        //    pixel tocado => aparece em TODOS os zooms 5-12. Combinado com o
+        //    teto de buffer (não estoura memória) é a combinação estável. Vem
+        //    DEPOIS do fill: a borda opaca sobrescreve o fill nas arestas.
+        $borderCommand = sprintf(
+            'gdal_rasterize -b 1 -b 2 -b 3 -b 4 -burn %d -burn %d -burn %d -burn 255 -at %s %s 2>&1',
+            $borderColor[0],
+            $borderColor[1],
+            $borderColor[2],
+            escapeshellarg($boundariesFile),
+            escapeshellarg($rasterFile)
+        );
+
+        exec($borderCommand, $borderOutput, $borderCode);
+
+        if ($borderCode !== 0) {
+            throw new \Exception("Erro ao desenhar bordas: " . implode("\n", $borderOutput));
+        }
+
+        @unlink($boundariesFile);
+    }
+
+    
+    /**
+     * Rasteriza uma geometria de LINHA (rios/hidrografia) para um zoom.
+     *
+     * Diferente dos métodos de polígono (createBordersOnlyRaster /
+     * createFilledTranslucentRasterForZoom), NÃO usa ST_Boundary nem
+     * ST_Buffer — a linha é desenhada DIRETO do GeoJSON. Sem buffer não há
+     * o gargalo de memória/lentidão que os polígonos tinham.
+     *
+     * -at (ALL_TOUCHED) é obrigatório: sem ele a linha fina vira sub-pixel
+     * no zoom afastado e o GDAL não a desenha (some). A cor vem de
+     * border_color ("R,G,B" do banco), reaproveitando a coluna existente.
+     */
+    private function createLineRaster(
+        string $geojsonFile,
+        string $rasterFile,
+        float $resolutionMeters
+    ): void
+    {
+        // 1. Extent + tamanho do raster na resolução DESTE zoom.
+        $bounds = $this->getBounds($geojsonFile);
+        $width  = ceil(($bounds['xmax'] - $bounds['xmin']) / $resolutionMeters);
+        $height = ceil(($bounds['ymax'] - $bounds['ymin']) / $resolutionMeters);
+
+        // 2. Cor da linha: border_color vem como "R,G,B" do banco.
+        $lineColorRaw = $this->layerConfig['border_color'] ?? '0,100,200';
+        $lineColor = is_string($lineColorRaw)
+            ? array_map('intval', explode(',', $lineColorRaw))
+            : $lineColorRaw;
+
+        // 3. Criar raster RGBA transparente vazio.
+        $createCommand = sprintf(
+            'gdal_create -of GTiff -outsize %d %d -a_srs EPSG:3857 -a_ullr %f %f %f %f -burn 0 -ot Byte -co COMPRESS=LZW -bands 4 %s 2>&1',
+            $width,
+            $height,
+            $bounds['xmin'],
+            $bounds['ymax'],
+            $bounds['xmax'],
+            $bounds['ymin'],
+            escapeshellarg($rasterFile)
+        );
+
+        exec($createCommand, $createOutput, $createCode);
+
+        if ($createCode !== 0) {
+            throw new \Exception("Erro ao criar raster vazio: " . implode("\n", $createOutput));
+        }
+
+        // 4. Desenhar a LINHA direto do GeoJSON (sem ST_Boundary/ST_Buffer).
+        //    -at garante que a linha fina não suma no zoom afastado.
+        $lineCommand = sprintf(
+            'gdal_rasterize -b 1 -b 2 -b 3 -b 4 -burn %d -burn %d -burn %d -burn 255 -at %s %s 2>&1',
+            $lineColor[0],
+            $lineColor[1],
+            $lineColor[2],
+            escapeshellarg($geojsonFile),
+            escapeshellarg($rasterFile)
+        );
+
+        exec($lineCommand, $lineOutput, $lineCode);
+
+        if ($lineCode !== 0) {
+            throw new \Exception("Erro ao desenhar linha: " . implode("\n", $lineOutput));
+        }
+    }
+
     /**
      * Extrai centroides + label de cada feature do shapefile e salva como GeoJSON.
      *
@@ -323,11 +603,31 @@ class ShapefileToTilesService
 
         $shpLayer = basename($shpFile, '.shp');
 
-        $sql = sprintf(
-            'SELECT ST_PointOnSurface(geometry) AS geometry, %s AS name FROM "%s"',
-            $fieldName,
-            $shpLayer
-        );
+        $isLine = $this->layerConfig['line_style'] ?? false;
+
+        if ($isLine) {
+            // Camada de LINHA (rios): o shapefile quebra cada rio em MUITOS
+            // segmentos, todos com o mesmo NOME. Sem agrupar, gera 1 label
+            // por segmento => milhares de nomes repetidos sobrepostos (trava
+            // o mapa). Solução cartográfica padrão: fundir os segmentos por
+            // nome (ST_LineMerge+ST_Collect) e gerar 1 ponto por rio, no
+            // ponto sobre a geometria fundida. Ignora nomes vazios/nulos.
+            $sql = sprintf(
+                'SELECT ST_PointOnSurface(ST_LineMerge(ST_Collect(geometry))) AS geometry, %1$s AS name '
+                . 'FROM "%2$s" WHERE %1$s IS NOT NULL AND %1$s <> \'\' GROUP BY %1$s',
+                $fieldName,
+                $shpLayer
+            );
+        } else {
+            // Camada de polígono (ex.: Municípios SEI): 1 feição = 1 label.
+            // Comportamento ORIGINAL inalterado.
+            $sql = sprintf(
+                'SELECT ST_PointOnSurface(geometry) AS geometry, %s AS name FROM "%s"',
+                $fieldName,
+                $shpLayer
+            );
+        }
+
 
         $command = sprintf(
             'SHAPE_RESTORE_SHX=YES ogr2ogr -f GeoJSON -t_srs EPSG:4326 -dialect SQLite -sql %s %s %s 2>&1',
@@ -487,6 +787,20 @@ PALETTE;
             mkdir($tilesDir, 0755, true);
         }
         
+        // Comando ORIGINAL (mantido para referência — não usar com exec()
+        // porque exec() só devolve a saída no final, sem progresso):
+        //   'gdal2tiles.py -z %d-%d -w none --processes=4 %s %s 2>&1'
+        //   exec($command, $output, $returnCode);
+        //   if ($returnCode !== 0) {
+        //       throw new \Exception("Erro ao gerar tiles: " . implode("\n", $output));
+        //   }
+
+        // Sem o pipe `| while ...; exit ${PIPESTATUS}`: popen() roda via
+        // /bin/sh (não bash), onde ${PIPESTATUS} não existe -> o `exit`
+        // falhava com código 2 mesmo o gdal2tiles terminando OK (0..100),
+        // o que abortava a geração no meio dos zooms. O popen()+fgets()
+        // abaixo já lê linha a linha em tempo real (o while do shell era
+        // redundante), e o pclose() retorna o código REAL do gdal2tiles.
         $command = sprintf(
             'gdal2tiles.py -z %d-%d -w none --processes=4 %s %s 2>&1',
             $zoomMin,
@@ -494,12 +808,31 @@ PALETTE;
             escapeshellarg($rasterFile),
             escapeshellarg($tilesDir)
         );
-        
-        exec($command, $output, $returnCode);
-        
-        if ($returnCode !== 0) {
-            throw new \Exception("Erro ao gerar tiles: " . implode("\n", $output));
+
+        // popen lê a saída do gdal2tiles linha a linha ENQUANTO ele roda,
+        // então a barra de progresso nativa do GDAL vai pro log em tempo
+        // real (exec() só devolveria tudo no final). O 2>&1 já está no
+        // $command acima, não duplicar aqui.
+        $handle = popen($command, 'r');
+        if ($handle === false) {
+            throw new \Exception("Erro ao iniciar gdal2tiles");
         }
+
+        $lastLine = '';
+        while (($line = fgets($handle)) !== false) {
+            $line = trim($line);
+            if ($line !== '') {
+                $lastLine = $line;
+                Log::info("[gdal2tiles z{$zoomMin}] {$line}");
+            }
+        }
+
+        $returnCode = pclose($handle);
+
+        if ($returnCode !== 0) {
+            throw new \Exception("Erro ao gerar tiles (código {$returnCode}): {$lastLine}");
+        }
+
     }
 
     private function cleanupTemp(string $dir): void

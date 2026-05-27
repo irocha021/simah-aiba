@@ -138,7 +138,7 @@ class HwStationReadingQaRepository implements HwStationReadingQaInterface
     public function getReadingsByStationCodeAndDateRange(string $stationCode, ?string $dateFrom, ?string $dateTo)
     {
         $query = $this->model->where('station_code', $stationCode)
-            ->orderBy('data_hora_dado', 'asc');
+            ->orderBy('data_hora_dado', 'desc');
 
         if ($dateFrom) {
             $query->where('data_hora_dado', '>=', $dateFrom . ' 00:00:00');
@@ -149,6 +149,31 @@ class HwStationReadingQaRepository implements HwStationReadingQaInterface
         }
 
         return $query->get();
+    }
+
+    public function cursorByStationCodeAndDateRange(string $stationCode, ?string $dateFrom, ?string $dateTo): \Generator
+    {
+        $query = $this->model->where('station_code', $stationCode)
+            ->when($dateFrom, fn($q) => $q->where('data_hora_dado', '>=', $dateFrom . ' 00:00:00'))
+            ->when($dateTo,   fn($q) => $q->where('data_hora_dado', '<=', $dateTo   . ' 23:59:59'))
+            ->orderBy('data_hora_dado', 'desc');
+
+        if (!$dateFrom && !$dateTo) {
+            $query->limit(50);
+        }
+
+        foreach ($query->cursor() as $record) {
+            yield $record;
+        }
+    }
+
+    public function paginateReadings(string $stationCode, ?string $dateFrom, ?string $dateTo, int $page, int $perPage)
+    {
+        return $this->model->where('station_code', $stationCode)
+            ->when($dateFrom, fn($q) => $q->where('data_hora_dado', '>=', $dateFrom . ' 00:00:00'))
+            ->when($dateTo,   fn($q) => $q->where('data_hora_dado', '<=', $dateTo   . ' 23:59:59'))
+            ->orderBy('data_hora_dado', 'desc')
+            ->paginate($perPage, ['*'], 'page', $page);
     }
 
 }

@@ -46,11 +46,13 @@
                         <th>Data/Hora UTC</th>
                         <th>Variação de Pressão (bar)</th>
                         <th>Pressão Interna (bar)</th>
+                        <th>Nível de Água (m)</th>
                         <th>Pressão Externa (bar)</th>
                         <th>Temperatura da Água Interna (°C)</th>
                         <th>Temperatura da Água Externa (°C)</th>
                     </tr>
                 </thead>
+
                 <tbody id="simahReadingsTableBody"></tbody>
             </table>
         </div>
@@ -159,6 +161,7 @@
         overflow-x: auto;
         overflow-y: auto;
         margin: auto;
+        margin-bottom: 60px;
         position: relative;
     }
 

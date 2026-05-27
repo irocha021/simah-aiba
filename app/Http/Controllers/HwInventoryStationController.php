@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\GenerateHwStationDrainageTilesJob;
 use App\Models\HwInventoryStationData;
+use App\Models\HwStationDrainageLayer;
 use App\Services\API_Hidroweb\HidrowebService;
 use App\Services\HidroInventoryStationService;
 use App\Services\HidroStationQaImportService;
 use App\Services\HidroStationTelemetryImportService;
 use Illuminate\Http\Request;
+use ZipArchive;
 
 class HwInventoryStationController extends Controller
 {
@@ -130,9 +133,11 @@ class HwInventoryStationController extends Controller
         }
 
         $stationData = HwInventoryStationData::where('station_code', $code)->first();
+        $drainage = HwStationDrainageLayer::where('station_code', $code)->first();
 
-        return view('hw-inventory-stations.edit', compact('station', 'stationData'));
+        return view('hw-inventory-stations.edit', compact('station', 'stationData', 'drainage'));
     }
+
 
     public function update(Request $request, int $code)
     {
@@ -189,4 +194,83 @@ class HwInventoryStationController extends Controller
             ->with('success', 'Estação removida com sucesso!');
     }
 
+    public function uploadDrainage(Request $request, int $code)
+    {
+        $request->validate([
+            'zip_file' => 'required|file|mimes:zip|max:51200', // 50MB
+        ]);
+
+        $station = $this->stationService->getByStationCode($code);
+        if (!$station) {
+            return redirect()->route('hw-inventory-stations.index')
+                ->withErrors(['Estação não encontrada.']);
+        }
+
+        $targetDir = storage_path('app/hw_station_drainages');
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0755, true);
+        }
+
+        $targetPath = "$targetDir/$code.zip";
+        $request->file('zip_file')->move($targetDir, "$code.zip");
+
+        // Valida que o ZIP contém os 4 arquivos do shapefile
+        $zip = new ZipArchive;
+        if ($zip->open($targetPath) !== true) {
+            @unlink($targetPath);
+            return back()->withErrors(['zip_file' => 'Não foi possível abrir o ZIP.']);
+        }
+
+        $exts = [];
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $exts[] = strtolower(pathinfo($zip->getNameIndex($i), PATHINFO_EXTENSION));
+        }
+        $zip->close();
+
+        foreach (['shp', 'shx', 'dbf', 'prj'] as $required) {
+            if (!in_array($required, $exts)) {
+                @unlink($targetPath);
+                return back()->withErrors(['zip_file' => "ZIP precisa conter arquivo .$required"]);
+            }
+        }
+
+        HwStationDrainageLayer::updateOrCreate(
+            ['station_code' => $code],
+            [
+                'zip_path'       => "storage/app/hw_station_drainages/$code.zip",
+                'status'         => 'pending',
+                'status_message' => null,
+            ]
+        );
+
+        GenerateHwStationDrainageTilesJob::dispatch($code);
+
+        return back()->with('success', 'Shapefile enviado. A área de drenagem está sendo gerada.');
+    }
+
+    public function regenerateDrainage(int $code)
+    {
+        $row = HwStationDrainageLayer::where('station_code', $code)->first();
+
+        if (!$row || !$row->zip_path) {
+            return back()->withErrors(['Drenagem não encontrada — faça upload do shapefile primeiro.']);
+        }
+
+        $row->update(['status' => 'pending', 'status_message' => null]);
+
+        GenerateHwStationDrainageTilesJob::dispatch($code);
+
+        return back()->with('success', 'Geração da área de drenagem reiniciada.');
+    }
+
+    public function drainageStatus(int $code)
+    {
+        $d = HwStationDrainageLayer::where('station_code', $code)->first();
+
+        return response()->json([
+            'status'             => $d?->status,
+            'status_message'     => $d?->status_message,
+            'tiles_generated_at' => $d?->tiles_generated_at?->format('d/m/Y H:i'),
+        ]);
+    }
 }

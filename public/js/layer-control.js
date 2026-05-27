@@ -53,6 +53,63 @@ function initLayerControl() {
     },
   };
 
+  // ===== Áreas de drenagem (HidroWeb) =====
+  //const HIDROWEB_KEYS = ['hidroweb_telemetria', 'hidroweb_qualidade_agua'];
+  const HIDROWEB_KEYS = [];
+  let drainageLayers = null;     // array de L.tileLayer
+  let drainageLoaded = false;    // já fez fetch na API?
+  let drainageRefCount = 0;      // quantos toggles HidroWeb estão ativos
+
+  async function ensureDrainageLayers() {
+    if (drainageLoaded) return;
+    try {
+      const resp = await fetch('/api/hw-station-drainages/ready');
+      const json = await resp.json();
+      const items = json.data || [];
+
+      // Ordena por área (maior área primeiro). As estações de jusante têm áreas
+      // de drenagem que englobam as de montante; renderizar as maiores embaixo
+      // garante que as menores fiquem visíveis por cima.
+      items.forEach(d => {
+        const b = d.bounds_latlng_json;
+        d._area = b ? (b.east - b.west) * (b.north - b.south) : 0;
+      });
+      items.sort((a, b) => b._area - a._area);
+
+      drainageLayers = items.map((d, idx) => {
+        const opts = {
+          opacity: 1.0,
+          minZoom: d.min_zoom,
+          maxZoom: 18,
+          maxNativeZoom: d.max_zoom,
+          tms: true,
+          zIndex: 50 + idx, // maiores embaixo, menores em cima
+        };
+        if (d.bounds_latlng_json) {
+          opts.bounds = L.latLngBounds(
+            [d.bounds_latlng_json.south, d.bounds_latlng_json.west],
+            [d.bounds_latlng_json.north, d.bounds_latlng_json.east]
+          );
+        }
+        return L.tileLayer(d.url_pattern, opts);
+      });
+      drainageLoaded = true;
+      console.log(`Áreas de drenagem carregadas: ${drainageLayers.length}`);
+    } catch (err) {
+      console.warn('Falha ao carregar áreas de drenagem', err);
+      drainageLayers = [];
+      drainageLoaded = true;
+    }
+  }
+
+  function addDrainagesToMap() {
+    if (drainageLayers) drainageLayers.forEach(l => l.addTo(map));
+  }
+
+  function removeDrainagesFromMap() {
+    if (drainageLayers) drainageLayers.forEach(l => map.removeLayer(l));
+  }
+
   // Estado de cada camada
   let layerState = {};
   Object.keys(layerConfig).forEach(key => {
@@ -134,11 +191,18 @@ function initLayerControl() {
       map.removeLayer(clusterGroups[layerKey]);
       button.classList.remove('active');
       state.visible = false;
+
+      // Hook drenagem: se desativou um toggle HidroWeb, decrementa refcount
+      if (HIDROWEB_KEYS.includes(layerKey)) {
+        drainageRefCount = Math.max(0, drainageRefCount - 1);
+        if (drainageRefCount === 0 && drainageLoaded) {
+          removeDrainagesFromMap();
+        }
+      }
     } else {
       // Ativar
       if (!state.loaded) {
         // Primeira vez - carregar dados da API
-        // Nota: loadLayerData não foi definido neste snippet, certifique-se que existe no escopo
         await loadLayerData(layerKey, button);
       }
 
@@ -147,9 +211,19 @@ function initLayerControl() {
         map.addLayer(clusterGroups[layerKey]);
         button.classList.add('active');
         state.visible = true;
+
+        // Hook drenagem: se ativou um toggle HidroWeb, garante drenagens visíveis
+        if (HIDROWEB_KEYS.includes(layerKey)) {
+          await ensureDrainageLayers();
+          if (drainageRefCount === 0) {
+            addDrainagesToMap();
+          }
+          drainageRefCount++;
+        }
       }
     }
   }
+
 
   async function loadLayerData(layerKey, button) {
     const state = layerState[layerKey];

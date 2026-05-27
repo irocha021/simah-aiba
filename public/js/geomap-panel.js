@@ -270,7 +270,17 @@ function createLayerFromData(layerData) {
         if (layerData.label_field) {
             var labelsGroup = L.layerGroup();
             var labelsUrl = '/tiles/' + layerData.slug + '/labels.geojson';
-            var labelMinZoom = 8;
+            // Zoom mínimo configurável por camada (label_min_zoom no banco).
+            // Default 8 mantém o comportamento original p/ camadas antigas.
+            var labelMinZoom = layerData.label_min_zoom || 8;
+
+            // Labels só aparecem se: (a) tileLayer estiver ATIVO no mapa E
+            // (b) zoom atual >= labelMinZoom. Recalcula em zoom/add/remove.
+            function updateLabelsVisibility() {
+                var shouldShow = map.hasLayer(tileLayer) && map.getZoom() >= labelMinZoom;
+                if (shouldShow && !map.hasLayer(labelsGroup)) map.addLayer(labelsGroup);
+                if (!shouldShow && map.hasLayer(labelsGroup)) map.removeLayer(labelsGroup);
+            }
 
             fetch(labelsUrl)
                 .then(function (response) { return response.json(); })
@@ -285,23 +295,18 @@ function createLayerFromData(layerData) {
                         }));
                     });
 
-                    // Aqui o map já existe (fetch é assíncrono — quando o JSON volta,
-                    // o Blade já rodou o L.map e setMapReference). Registramos o listener
-                    // e aplicamos a visibilidade inicial.
-                    map.on('zoomend', function () {
-                        if (map.getZoom() >= labelMinZoom) {
-                            if (!map.hasLayer(labelsGroup)) map.addLayer(labelsGroup);
-                        } else {
-                            if (map.hasLayer(labelsGroup)) map.removeLayer(labelsGroup);
-                        }
-                    });
+                    // Re-avalia em mudança de zoom OU quando a camada tile é
+                    // adicionada/removida do mapa (toggle da checkbox).
+                    map.on('zoomend', updateLabelsVisibility);
+                    tileLayer.on('add', updateLabelsVisibility);
+                    tileLayer.on('remove', updateLabelsVisibility);
 
-                    // Aplica visibilidade na hora do load
-                    if (map.getZoom() >= labelMinZoom) map.addLayer(labelsGroup);
+                    updateLabelsVisibility(); // aplica no load
                 })
                 .catch(function (err) {
                     console.warn('Falha ao carregar labels para', layerData.slug, err);
                 });
+
         }
 
         return tileLayer;

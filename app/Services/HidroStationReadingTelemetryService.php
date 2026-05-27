@@ -40,8 +40,24 @@ class HidroStationReadingTelemetryService
     }
 
     public function getReadingsByStationCode(string $stationCode, int $limit = 50)
-{
-    return $this->repository->getReadingsByStationCode($stationCode, $limit);
-}
+    {
+        return $this->repository->getReadingsByStationCode($stationCode, $limit);
+    }
+
+    public function getReadingsByStationCodeAndDateRange(string $stationCode, ?string $dateFrom, ?string $dateTo)
+    {
+        return $this->repository->getReadingsByStationCodeAndDateRange($stationCode, $dateFrom, $dateTo);
+    }
+
+    public function cursorReadingsByStationCodeAndDateRange(string $stationCode, ?string $dateFrom, ?string $dateTo): \Generator
+    {
+        return $this->repository->cursorByStationCodeAndDateRange($stationCode, $dateFrom, $dateTo);
+    }
+
+    public function paginateReadings(string $stationCode, ?string $dateFrom, ?string $dateTo, int $page, int $perPage)
+    {
+        return $this->repository->paginateReadings($stationCode, $dateFrom, $dateTo, $page, $perPage);
+    }
+
 
 }

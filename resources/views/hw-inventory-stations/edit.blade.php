@@ -124,6 +124,24 @@
 
         .info-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 18px 0; }
 
+        /* Drenagem */
+        .drainage-status { padding: 12px 16px; border-radius: 12px; margin-bottom: 14px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
+        .drainage-status small { opacity: 0.7; font-weight: 400; }
+        .drainage-status-pending    { background: #fff8e1; border: 1px solid #ffe082; color: #8a6d00; }
+        .drainage-status-processing { background: #e3f2fd; border: 1px solid #90caf9; color: #0d47a1; }
+        .drainage-status-ready      { background: #e8f5e9; border: 1px solid #81c784; color: #1b5e20; }
+        .drainage-status-failed     { background: #ffebee; border: 1px solid #ef9a9a; color: #b71c1c; }
+        .drainage-error { margin-top: 8px; font-size: 0.82rem; opacity: 0.85; }
+        .drainage-file-input { display: block; width: 100%; padding: 10px 12px; border: 1.5px dashed #cde3f7; border-radius: 12px; background: #f8fbff; font-size: 0.9rem; cursor: pointer; }
+        .drainage-file-input:hover { border-color: #165b9c; }
+        .drainage-btn { padding: 12px 22px; border: none; border-radius: 25px; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
+        .drainage-btn-primary { background: #165b9c; color: white; }
+        .drainage-btn-primary:hover { background: #0e4278; transform: translateY(-2px); }
+        .drainage-btn-secondary { background: #6c757d; color: white; margin-top: 8px; }
+        .drainage-btn-secondary:hover { background: #5a6268; }
+        .drainage-info-message { margin-top: -6px; margin-bottom: 16px; padding: 12px 14px; background: #f0f7ff; border: 1px solid #cde3f7; border-radius: 10px; font-size: 0.85rem; color: #165b9c; display: flex; gap: 10px; align-items: flex-start; line-height: 1.4; }
+        .drainage-info-message i { margin-top: 2px; flex-shrink: 0; }
+
         @media (max-width: 900px) { .edit-container { flex-direction: column; } .edit-form-section { max-width: 100%; } .edit-info-section { display: none; } body { overflow: auto; height: auto; } }
         @media (max-width: 600px) { .form-scrollable-wrapper { padding: 24px 16px; } }
     </style>
@@ -149,6 +167,12 @@
                         <h1><i class="fas fa-pen" style="color:#165b9c;font-size:1.4rem;"></i> Editar Estação</h1>
                         <p>{{ $station->station_code }} — {{ $station->station_name ?? 'Sem nome' }}</p>
                     </div>
+
+                    @if (session('success'))
+                        <div class="alert-errors" style="background:#e8f5e9; color:#1b5e20; border-color:#a5d6a7;">
+                            <i class="fas fa-check-circle"></i> {{ session('success') }}
+                        </div>
+                    @endif
 
                     @if ($errors->any())
                         <div class="alert-errors">
@@ -213,6 +237,75 @@
                         </div>
 
                     </form>
+
+                    {{-- ===== ÁREA DE DRENAGEM ===== --}}
+                    <div class="form-section-header">
+                        <h3><i class="fas fa-map"></i> Área de Drenagem</h3>
+                    </div>
+
+                    @if ($drainage)
+                        @php
+                            $statusIcons = [
+                                'pending'    => 'fa-clock',
+                                'processing' => 'fa-spinner fa-spin',
+                                'ready'      => 'fa-check-circle',
+                                'failed'     => 'fa-exclamation-circle',
+                            ];
+                            $statusLabels = [
+                                'pending'    => 'Aguardando processamento',
+                                'processing' => 'Gerando área de drenagem...',
+                                'ready'      => 'Área de drenagem disponível',
+                                'failed'     => 'Falha ao gerar área de drenagem',
+                            ];
+                        @endphp
+                        <div class="drainage-status drainage-status-{{ $drainage->status }}">
+                            <i class="fas {{ $statusIcons[$drainage->status] ?? 'fa-info-circle' }}"></i>
+                            <div style="flex:1;">
+                                <strong>{{ $statusLabels[$drainage->status] ?? ucfirst($drainage->status) }}</strong>
+                                @if ($drainage->tiles_generated_at)
+                                    <small> — gerado em {{ $drainage->tiles_generated_at->format('d/m/Y H:i') }}</small>
+                                @endif
+                                @if ($drainage->status === 'failed' && $drainage->status_message)
+                                    <div class="drainage-error">{{ $drainage->status_message }}</div>
+                                @endif
+                            </div>
+                        </div>
+
+                        @if (in_array($drainage->status, ['pending', 'processing']))
+                            <div class="drainage-info-message">
+                                <i class="fas fa-info-circle"></i>
+                                <span>
+                                    A área de drenagem está sendo gerada e isso pode levar alguns minutos.
+                                    Você pode sair desta página e voltar depois — atualizamos o status automaticamente enquanto estiver aqui.
+                                </span>
+                            </div>
+                        @endif
+                    @endif
+
+                    <form method="POST"
+                        action="{{ route('hw-inventory-stations.drainage.upload', $station->station_code) }}"
+                        enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group">
+                            <label>Shapefile ZIP <small style="opacity:0.6">(.shp + .shx + .dbf + .prj)</small></label>
+                            <input type="file" name="zip_file" accept=".zip" required class="drainage-file-input">
+                        </div>
+                        <button type="submit" class="drainage-btn drainage-btn-primary">
+                            <i class="fas fa-upload"></i>
+                            {{ $drainage ? 'Substituir shapefile' : 'Enviar shapefile' }}
+                        </button>
+                    </form>
+
+                    @if ($drainage && $drainage->status === 'ready')
+                        <form method="POST"
+                            action="{{ route('hw-inventory-stations.drainage.regenerate', $station->station_code) }}">
+                            @csrf
+                            <button type="submit" class="drainage-btn drainage-btn-secondary">
+                                <i class="fas fa-redo"></i> Regerar área de drenagem
+                            </button>
+                        </form>
+                    @endif
+
                 </div>
             </div>
         </div>
@@ -335,6 +428,32 @@
         cbTelemetry.addEventListener('change', updateUI);
         cbWater.addEventListener('change', updateUI);
         updateUI();
+
+        // ===== Polling do status da área de drenagem =====
+        (function () {
+            const statusBox = document.querySelector('.drainage-status');
+            if (!statusBox) return;
+
+            const isProcessing = statusBox.classList.contains('drainage-status-pending')
+                              || statusBox.classList.contains('drainage-status-processing');
+            if (!isProcessing) return;
+
+            const code = {{ $station->station_code }};
+            const url = `/hw-inventory-stations/${code}/drainage/status`;
+
+            const interval = setInterval(async () => {
+                try {
+                    const r = await fetch(url);
+                    const d = await r.json();
+                    if (d.status === 'ready' || d.status === 'failed') {
+                        clearInterval(interval);
+                        window.location.reload();
+                    }
+                } catch (err) {
+                    console.warn('Falha ao consultar status da área de drenagem', err);
+                }
+            }, 3000);
+        })();
     </script>
 </body>
 

@@ -68,23 +68,23 @@ class HwInventoryStation extends Model
         return $this->belongsTo(HwEntity::class, 'responsible_code', 'entity_code');
     }
 
-    public function shapefile()
-    {
-        return $this->belongsTo(File::class, 'file_id_shapefile', 'id');
-    }
+    // public function shapefile()
+    // {
+    //     return $this->belongsTo(File::class, 'file_id_shapefile', 'id');
+    // }
 
-    public function geojson()
-    {
-        return $this->belongsTo(File::class, 'file_id_geojson', 'id');
-    }
+    // public function geojson()
+    // {
+    //     return $this->belongsTo(File::class, 'file_id_geojson', 'id');
+    // }
 
-    public function currentFlow()
-    {
-        return $this->hasOne(HwStationReading::class, 'station_code', 'station_code')
-            ->where('adopted_flow', '>', 0)
-            ->whereNotNull('adopted_flow')
-            ->orderByDesc('measurement_datetime');
-    }
+    // public function currentFlow()
+    // {
+    //     return $this->hasOne(HwStationReading::class, 'station_code', 'station_code')
+    //         ->where('adopted_flow', '>', 0)
+    //         ->whereNotNull('adopted_flow')
+    //         ->orderByDesc('measurement_datetime');
+    // }
 
     public function qaImport()
     {
@@ -100,4 +100,10 @@ class HwInventoryStation extends Model
     {
         return $this->hasOne(HwInventoryStationData::class, 'station_code', 'station_code');
     }
+
+    public function drainageLayer()
+    {
+        return $this->hasOne(HwStationDrainageLayer::class, 'station_code', 'station_code');
+    }
+
 }

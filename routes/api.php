@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\App\HwStationReadingQaController;
 use App\Http\Controllers\Api\App\HwStationReadingTelemetryController;
 use App\Http\Controllers\Api\App\LrgsClientController;
 use App\Http\Controllers\Api\App\CnarhController;
+use App\Http\Controllers\Api\App\HwStationDrainageController;
 use App\Http\Controllers\Api\App\PocoSimahController;
 
 // Rotas de API com middleware 'api' aplicado automaticamente
@@ -39,12 +40,17 @@ Route::get('/stations/lrgs-client', [StationController::class, 'getLrgsClient'])
     ->name('api.stations.lrgs-client');
 Route::get('/stations/pocos-simah', [StationController::class, 'getPocosSimah'])
     ->name('api.stations.pocos-simah');
+
 Route::get('/pocos-simah/{station_code}/readings', [PocoSimahController::class, 'getReadings']);
+Route::get('/pocos-simah/{station_code}/export', [PocoSimahController::class, 'exportReadings']);
 
 
 Route::get('/pocos-rimas/{id_ponto}/readings', [PocoRimasController::class, 'getReadings']);
+Route::get('/pocos-rimas/{id_ponto}/export', [PocoRimasController::class, 'exportReadings']);
+
 Route::get('/pocos-siagas/{id_ponto}/readings', [PocoSiagasController::class, 'getReadings']);
 Route::get('/hidroweb-qualidade-agua/{station_code}/readings', [HwStationReadingQaController::class, 'getReadings']);
+Route::get('/hidroweb-qualidade-agua/{station_code}/export', [HwStationReadingQaController::class, 'exportReadings']);
 
 Route::prefix('lrgs-client')->group(function () {
     Route::get('/stations',                [LrgsClientController::class, 'stations'])->name('api.lrgs.stations');
@@ -53,9 +59,14 @@ Route::prefix('lrgs-client')->group(function () {
 });
 
 Route::get('/hidroweb-telemetria/{station_code}/readings', [HwStationReadingTelemetryController::class, 'getReadings']);
+Route::get('/hidroweb-telemetria/{station_code}/export', [HwStationReadingTelemetryController::class, 'exportReadings']);
 Route::get('/hidroweb-telemetria/{station_code}/forecast', [App\Http\Controllers\Jobs\HidroWeb\HidroFlowForecastController::class, 'getForecastForStation']);
 Route::get('/cnarh/{int_cd_cnarh40}/readings', [CnarhController::class, 'getReadings']);
 
 
 Route::post('/auth/request-key', [App\Http\Controllers\Api\Public\ApiKeyController::class, 'store'])
     ->name('api.auth.request-key');
+
+// Drenagens das estações HidroWeb (tiles prontos)
+Route::get('/hw-station-drainages/ready', [HwStationDrainageController::class, 'ready'])
+    ->name('api.hw-station-drainages.ready');

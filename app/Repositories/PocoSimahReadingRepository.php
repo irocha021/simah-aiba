@@ -33,7 +33,7 @@ class PocoSimahReadingRepository implements PocoSimahReadingRepositoryInterface
                 PocoSimahReading::upsert(
                     $chunk,
                     ['poco_simah_station_id', 'datetime_utc'],
-                    ['number', 'datetime_local', 'pd_bar', 'p1_bar', 'p2_bar', 'tob1_celsius', 'tob2_celsius', 'updated_at']
+                    ['number', 'datetime_local', 'pd_bar', 'p1_bar', 'water_level_meters', 'p2_bar', 'tob1_celsius', 'tob2_celsius', 'updated_at']
                 );
             }
 
@@ -73,5 +73,22 @@ class PocoSimahReadingRepository implements PocoSimahReadingRepositoryInterface
             ->orderBy('datetime_local', 'asc')
             ->get();
     }
+
+    public function cursorByStationAndDateRange(int $stationId, ?string $dateFrom, ?string $dateTo): \Generator
+    {
+        $query = PocoSimahReading::where('poco_simah_station_id', $stationId)
+            ->when($dateFrom, fn($q) => $q->where('datetime_local', '>=', $dateFrom . ' 00:00:00'))
+            ->when($dateTo,   fn($q) => $q->where('datetime_local', '<=', $dateTo   . ' 23:59:59'))
+            ->orderBy('datetime_local', 'desc');
+
+        if (!$dateFrom && !$dateTo) {
+            $query->limit(100);
+        }
+
+        foreach ($query->cursor() as $record) {
+            yield $record;
+        }
+    }
+
 
 }

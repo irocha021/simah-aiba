@@ -53,4 +53,15 @@ class HidroStationReadingQaService
     {
         return $this->repository->getReadingsByStationCode($stationCode, $limit);
     }
+
+    public function cursorReadingsByStationCodeAndDateRange(string $stationCode, ?string $dateFrom, ?string $dateTo): \Generator
+    {
+        return $this->repository->cursorByStationCodeAndDateRange($stationCode, $dateFrom, $dateTo);
+    }
+
+    public function paginateReadings(string $stationCode, ?string $dateFrom, ?string $dateTo, int $page, int $perPage)
+    {
+        return $this->repository->paginateReadings($stationCode, $dateFrom, $dateTo, $page, $perPage);
+    }
+
 }

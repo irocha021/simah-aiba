@@ -46,16 +46,20 @@ class PocoSimahImportService
                     continue;
                 }
 
+                $p1Bar = $this->parseDecimal($cols[4]);
+
                 $records[] = [
-                    'number'         => isset($cols[0]) ? (int) trim($cols[0]) : null,
-                    'datetime_local' => $datetimeLocal,
-                    'datetime_utc'   => $datetimeUtc,
-                    'pd_bar'         => $this->parseDecimal($cols[3]),
-                    'p1_bar'         => $this->parseDecimal($cols[4]),
-                    'p2_bar'         => $this->parseDecimal($cols[5]),
-                    'tob1_celsius'   => $this->parseDecimal($cols[6]),
-                    'tob2_celsius'   => $this->parseDecimal($cols[7]),
+                    'number'             => isset($cols[0]) ? (int) trim($cols[0]) : null,
+                    'datetime_local'     => $datetimeLocal,
+                    'datetime_utc'       => $datetimeUtc,
+                    'pd_bar'             => $this->parseDecimal($cols[3]),
+                    'p1_bar'             => $p1Bar,
+                    'water_level_meters' => $p1Bar !== null ? $p1Bar * 10.2 : null,
+                    'p2_bar'             => $this->parseDecimal($cols[5]),
+                    'tob1_celsius'       => $this->parseDecimal($cols[6]),
+                    'tob2_celsius'       => $this->parseDecimal($cols[7]),
                 ];
+
 
             } catch (\Exception $e) {
                 $errors[] = "Linha " . ($lineNumber + 2) . ": " . $e->getMessage();
