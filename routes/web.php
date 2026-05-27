@@ -18,6 +18,8 @@ use App\Http\Controllers\Jobs\HidroWeb\HidroSerieQaReadingController;
 use App\Http\Controllers\Jobs\Lrgs\ReadDcpMessagesController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\LrgsStationController;
+use App\Http\Controllers\HwStationDrainageController;
+
 
 
 // ============================
@@ -66,6 +68,10 @@ Route::prefix('geobahia')->group(function(){
     Route::get('/import/{layer}/{minZoom?}/{maxZoom?}/{opacity?}', [GeobahiaImportController::class, 'import']);
     Route::get('/import-all', [GeobahiaImportController::class, 'importAll']);
     Route::get('/import-async/{slug}', [GeobahiaImportController::class, 'importAsync']);
+});
+
+Route::prefix('hw-station-drainages')->group(function () {
+    Route::get('/import-all', [HwStationDrainageController::class, 'importAll']);
 });
 
 
@@ -144,12 +150,16 @@ Route::middleware(['auth'])->group(function () {
         });
 
         Route::prefix('hw-inventory-stations')->group(function () {
-            Route::get('/',            [HwInventoryStationController::class, 'index'])->name('hw-inventory-stations.index');
-            Route::get('/create',      [HwInventoryStationController::class, 'create'])->name('hw-inventory-stations.create');
-            Route::post('/',           [HwInventoryStationController::class, 'store'])->name('hw-inventory-stations.store');
-            Route::get('/{code}/edit', [HwInventoryStationController::class, 'edit'])->name('hw-inventory-stations.edit');
-            Route::post('/{code}',     [HwInventoryStationController::class, 'update'])->name('hw-inventory-stations.update');
-            Route::delete('/{code}',   [HwInventoryStationController::class, 'destroy'])->name('hw-inventory-stations.destroy');
+            Route::get('/',                            [HwInventoryStationController::class, 'index'])->name('hw-inventory-stations.index');
+            Route::get('/create',                      [HwInventoryStationController::class, 'create'])->name('hw-inventory-stations.create');
+            Route::post('/',                           [HwInventoryStationController::class, 'store'])->name('hw-inventory-stations.store');
+            Route::get('/{code}/edit',                 [HwInventoryStationController::class, 'edit'])->name('hw-inventory-stations.edit');
+            Route::post('/{code}',                     [HwInventoryStationController::class, 'update'])->name('hw-inventory-stations.update');
+            Route::delete('/{code}',                   [HwInventoryStationController::class, 'destroy'])->name('hw-inventory-stations.destroy');
+            Route::post('/{code}/drainage',            [HwInventoryStationController::class, 'uploadDrainage'])->name('hw-inventory-stations.drainage.upload');
+            Route::post('/{code}/drainage/regenerate', [HwInventoryStationController::class, 'regenerateDrainage'])->name('hw-inventory-stations.drainage.regenerate');
+            Route::get('/{code}/drainage/status',      [HwInventoryStationController::class, 'drainageStatus'])->name('hw-inventory-stations.drainage.status');
         });
+
     });
 });

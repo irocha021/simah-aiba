@@ -58,7 +58,7 @@ class PocoSimahController extends Controller
      *
      * @response {
      *   "data": [
-     *     {"number": 1, "datetime_local": "2026-04-07T17:25:29.000000Z", "datetime_utc": "2026-04-07T20:25:29.000000Z", "pd_bar": "0.00075674057", "p1_bar": "0.96156311035", "p2_bar": "0.96080017090", "tob1_celsius": "25.15673828125", "tob2_celsius": "24.51025390625"}
+     *     {"number": 1, "datetime_local": "2026-04-07T17:25:29.000000Z", "datetime_utc": "2026-04-07T20:25:29.000000Z", "pd_bar": "0.00075674057", "p1_bar": "0.96156311035", "water_level_meters": "9.807943725570000", "p2_bar": "0.96080017090", "tob1_celsius": "25.15673828125", "tob2_celsius": "24.51025390625"}
      *   ],
      *   "meta": {"station_code": "1676349", "total": 1, "period": {"from": "2026-04-01", "to": "2026-04-30"}, "retrieved_at": "2026-04-25T10:00:00-03:00"}
      * }

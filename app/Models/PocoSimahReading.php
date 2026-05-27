@@ -18,19 +18,21 @@ class PocoSimahReading extends Model
         'datetime_utc',
         'pd_bar',
         'p1_bar',
+        'water_level_meters',
         'p2_bar',
         'tob1_celsius',
         'tob2_celsius',
     ];
 
     protected $casts = [
-        'datetime_local' => 'datetime',
-        'datetime_utc'   => 'datetime',
-        'pd_bar'         => 'decimal:15',
-        'p1_bar'         => 'decimal:15',
-        'p2_bar'         => 'decimal:15',
-        'tob1_celsius'   => 'decimal:15',
-        'tob2_celsius'   => 'decimal:15',
+        'datetime_local'     => 'datetime',
+        'datetime_utc'       => 'datetime',
+        'pd_bar'             => 'decimal:15',
+        'p1_bar'             => 'decimal:15',
+        'water_level_meters' => 'decimal:15',
+        'p2_bar'             => 'decimal:15',
+        'tob1_celsius'       => 'decimal:15',
+        'tob2_celsius'       => 'decimal:15',
     ];
 
     public function station()

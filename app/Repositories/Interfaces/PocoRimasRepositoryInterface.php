@@ -33,4 +33,6 @@ interface PocoRimasRepositoryInterface
 
     public function getReadingsByIdPontoAndDateRange(int $idPonto, ?string $dateFrom, ?string $dateTo): Collection;
 
+    public function cursorByIdPontoAndDateRange(string $idPonto, ?string $dateFrom, ?string $dateTo): \Generator;
+
 }

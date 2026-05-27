@@ -448,6 +448,12 @@ function openRimasReadingsModal(idPonto, stationName, latitude, longitude) {
                             const tdObs = document.createElement('td'); tdObs.textContent = reading.field_8 || '-'; row.appendChild(tdObs);
                             elements.tableBody.appendChild(row);
                         });
+                        // Reseta o gráfico com os dados originais
+                        if (window.rimasChartInstance) {
+                            window.rimasChartInstance.destroy();
+                            window.rimasChartInstance = null;
+                        }
+                        createChart(chartData, idPonto, chartContainer);
                     }
                 });
         };
@@ -1329,45 +1335,193 @@ function openSimahReadingsModal(stationCode, stationName) {
                 return;
             }
 
-            readings.slice(0, 50).forEach(r => {
-                const row = document.createElement('tr');
-
-                if (isLoggedIn) {
-                    // Usuário logado: mostra todas as colunas
-                    row.innerHTML = `
-                        <td>${r.number ?? '-'}</td>
-                        <td>${formatSimahDate(r.datetime_local)}</td>
-                        <td>${formatSimahDate(r.datetime_utc)}</td>
-                        <td>${formatSimahNum(r.pd_bar)}</td>
-                        <td>${formatSimahNum(r.p1_bar)}</td>
-                        <td>${formatSimahNum(r.water_level_meters)}</td>
-                        <td>${formatSimahNum(r.p2_bar)}</td>
-                        <td>${formatSimahNum(r.tob1_celsius)}</td>
-                        <td>${formatSimahNum(r.tob2_celsius)}</td>
-                    `;
-                } else {
-                    // Usuário não logado: NÃO inclui as colunas Nº e Data/Hora UTC
-                    row.innerHTML = `
-                        <td>${formatSimahDate(r.datetime_local)}</td>
-                        <td>${formatSimahNum(r.pd_bar)}</td>
-                        <td>${formatSimahNum(r.p1_bar)}</td>
-                        <td>${formatSimahNum(r.water_level_meters)}</td>
-                        <td>${formatSimahNum(r.p2_bar)}</td>
-                        <td>${formatSimahNum(r.tob1_celsius)}</td>
-                        <td>${formatSimahNum(r.tob2_celsius)}</td>
-                    `;
-                }
-
-                tableBody.appendChild(row);
-            });
+            renderSimahRows(readings.slice(0, 50));
 
             tableContainer.style.display = 'block';
+
+            // Criar filtro por data
+            const filterContainer = createSimahFilterContainer();
+            tableContainer.parentNode.insertBefore(filterContainer, tableContainer);
+            filterContainer.style.display = 'flex';
+
+            // Botões de exportação
+            const buildExportUrl = (format) => {
+                const dateFrom = document.getElementById('simahFilterDateFrom')?.value || '';
+                const dateTo   = document.getElementById('simahFilterDateTo')?.value || '';
+                let url = `/api/pocos-simah/${stationCode}/export?format=${format}`;
+                if (dateFrom) url += `&date_from=${dateFrom}`;
+                if (dateTo)   url += `&date_to=${dateTo}`;
+                return url;
+            };
+
+            const showExportSuccess = (msg) => {
+                const toast = document.createElement('div');
+                toast.textContent = msg;
+                toast.style.cssText = 'position:fixed; bottom:30px; right:30px; background:#1e6e3e; color:#fff; padding:12px 20px; border-radius:6px; font-size:14px; font-weight:500; z-index:99999; box-shadow:0 4px 12px rgba(0,0,0,0.15); transition:opacity 0.5s;';
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 3000);
+            };
+
+            const csvBtn = document.createElement('button');
+            csvBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>CSV`;
+            csvBtn.title = 'Exportar CSV';
+            csvBtn.style.cssText = 'padding: 6px 12px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px;';
+            const csvSvg = csvBtn.innerHTML;
+            csvBtn.onclick = () => {
+                csvBtn.disabled = true; csvBtn.textContent = 'Exportando...';
+                fetch(buildExportUrl('csv')).then(r => r.blob()).then(blob => {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `simah_${stationCode}.csv`;
+                    a.click(); URL.revokeObjectURL(a.href);
+                    showExportSuccess('✓ Download CSV concluído!');
+                }).finally(() => { csvBtn.disabled = false; csvBtn.innerHTML = csvSvg; });
+            };
+
+            const xlsBtn = document.createElement('button');
+            xlsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13l2.5 4 2.5-4"/><path d="M8 17l2.5-4 2.5 4"/></svg>Excel`;
+            xlsBtn.title = 'Exportar Excel';
+            xlsBtn.style.cssText = 'padding: 6px 12px; background: #ffffff; color: #1e6e3e; border: 1px solid #1e6e3e; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px;';
+            const xlsSvg = xlsBtn.innerHTML;
+            xlsBtn.onclick = () => {
+                xlsBtn.disabled = true; xlsBtn.textContent = 'Exportando...';
+                fetch(buildExportUrl('excel')).then(r => r.blob()).then(blob => {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `simah_${stationCode}.xlsx`;
+                    a.click(); URL.revokeObjectURL(a.href);
+                    showExportSuccess('✓ Download Excel concluído!');
+                }).finally(() => { xlsBtn.disabled = false; xlsBtn.innerHTML = xlsSvg; });
+            };
+
+            const existingExportBtns = tableContainer.parentNode.querySelector('.simah-export-btns');
+            if (existingExportBtns) existingExportBtns.remove();
+            const exportBtns = document.createElement('div');
+            exportBtns.className = 'simah-export-btns';
+            exportBtns.style.cssText = 'display: flex; justify-content: flex-end; gap: 8px; padding: 6px 0; width: 92%; margin: 0 auto;';
+            exportBtns.appendChild(csvBtn);
+            exportBtns.appendChild(xlsBtn);
+            tableContainer.parentNode.insertBefore(exportBtns, tableContainer);
+
         })
         .catch(err => {
             loading.style.display = 'none';
             errorText.textContent = err.message;
             errorMessage.style.display = 'block';
         });
+
+    function renderSimahRows(readings) {
+        tableBody.innerHTML = '';
+        readings.forEach(r => {
+            const row = document.createElement('tr');
+            if (isLoggedIn) {
+                row.innerHTML = `
+                    <td>${r.number ?? '-'}</td>
+                    <td>${formatSimahDate(r.datetime_local)}</td>
+                    <td>${formatSimahDate(r.datetime_utc)}</td>
+                    <td>${formatSimahNum(r.pd_bar)}</td>
+                    <td>${formatSimahNum(r.p1_bar)}</td>
+                    <td>${formatSimahNum(r.water_level_meters)}</td>
+                    <td>${formatSimahNum(r.p2_bar)}</td>
+                    <td>${formatSimahNum(r.tob1_celsius)}</td>
+                    <td>${formatSimahNum(r.tob2_celsius)}</td>
+                `;
+            } else {
+                row.innerHTML = `
+                    <td>${formatSimahDate(r.datetime_local)}</td>
+                    <td>${formatSimahNum(r.pd_bar)}</td>
+                    <td>${formatSimahNum(r.p1_bar)}</td>
+                    <td>${formatSimahNum(r.water_level_meters)}</td>
+                    <td>${formatSimahNum(r.p2_bar)}</td>
+                    <td>${formatSimahNum(r.tob1_celsius)}</td>
+                    <td>${formatSimahNum(r.tob2_celsius)}</td>
+                `;
+            }
+            tableBody.appendChild(row);
+        });
+    }
+
+    function createSimahFilterContainer() {
+        const existing = document.querySelector('.simah-filter-container');
+        if (existing) existing.remove();
+
+        const container = document.createElement('div');
+        container.className = 'simah-filter-container';
+        container.style.cssText = 'display: none; justify-content: center; align-items: center; gap: 15px; padding: 15px 0; width: 92%; margin: 0 auto;';
+
+        const deLabel = document.createElement('label');
+        deLabel.textContent = 'De:';
+        deLabel.style.cssText = 'font-weight: 500; color: #333;';
+
+        const deInput = document.createElement('input');
+        deInput.type = 'date';
+        deInput.id = 'simahFilterDateFrom';
+        deInput.style.cssText = 'padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; cursor: pointer;';
+
+        const ateLabel = document.createElement('label');
+        ateLabel.textContent = 'Até:';
+        ateLabel.style.cssText = 'font-weight: 500; color: #333;';
+
+        const ateInput = document.createElement('input');
+        ateInput.type = 'date';
+        ateInput.id = 'simahFilterDateTo';
+        ateInput.style.cssText = 'padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; cursor: pointer;';
+
+        const aplicarBtn = document.createElement('button');
+        aplicarBtn.textContent = 'Aplicar';
+        aplicarBtn.style.cssText = 'padding: 8px 16px; background: #242731; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+        const limparBtn = document.createElement('button');
+        limparBtn.textContent = 'Limpar';
+        limparBtn.style.cssText = 'padding: 8px 16px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+        aplicarBtn.onclick = () => {
+            const fromVal = deInput.value;
+            const toVal   = ateInput.value;
+            if (!fromVal || !toVal) return;
+            loading.style.display = 'block';
+            tableContainer.style.display = 'none';
+            fetch(`/api/pocos-simah/${stationCode}/readings?date_from=${fromVal}&date_to=${toVal}`)
+                .then(r => r.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    const readings = data.data?.readings || [];
+                    totalReadings.textContent = readings.length;
+                    if (readings.length > 0) {
+                        renderSimahRows(readings);
+                        tableContainer.style.display = 'block';
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="9">Nenhuma leitura encontrada.</td></tr>';
+                        tableContainer.style.display = 'block';
+                    }
+                });
+        };
+
+        limparBtn.onclick = () => {
+            deInput.value = '';
+            ateInput.value = '';
+            loading.style.display = 'block';
+            tableContainer.style.display = 'none';
+            fetch(`/api/pocos-simah/${stationCode}/readings`)
+                .then(r => r.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    const readings = data.data?.readings || [];
+                    totalReadings.textContent = readings.length;
+                    renderSimahRows(readings);
+                    tableContainer.style.display = 'block';
+                });
+        };
+
+        container.appendChild(deLabel);
+        container.appendChild(deInput);
+        container.appendChild(ateLabel);
+        container.appendChild(ateInput);
+        container.appendChild(aplicarBtn);
+        container.appendChild(limparBtn);
+
+        return container;
+    }
 }
 
 // ========================================
@@ -1414,6 +1568,9 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
     }
 
     document.querySelector('.hidroweb-qa-view-controls')?.remove();
+    document.querySelector('.qa-filter-container')?.remove();
+    document.querySelector('.qa-export-btns')?.remove();
+    document.querySelector('.qa-pagination')?.remove();
     document.getElementById('hidrowebQaChartContainer')?.remove();
     document.getElementById('hidrowebQaChart')?.remove();
 
@@ -1431,33 +1588,45 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
     // Verificar se o usuário está logado
     const isLoggedIn = document.querySelector('meta[name="user-logged-in"]')?.getAttribute('content') === 'true';
 
-    // Criar elementos do gráfico e controles
+    // Criar elementos do gráfico e controles — ordem: filtro, export, gráfico, controles tabela/gráfico, tabela
     const chartContainer = createChartContainer();
     const controlsContainer = createControlsContainer();
-    elements.tableContainer.parentNode.insertBefore(chartContainer, elements.tableContainer);
-    elements.tableContainer.parentNode.insertBefore(controlsContainer, elements.tableContainer.nextSibling);
+    // Inserções serão feitas após criação do filtro (em loadInitialQaReadings)
 
     let chartData = null;
     let filteredTableData = null;
+    let currentPage = 1;
+    let paginationMeta = null;
+    let activeView = 'table';
 
     // Configurar visualizações
     const views = {
         table: () => {
+            activeView = 'table';
             controlsContainer.children[0].className = 'hidroweb-qa-view-btn active';
             controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             controlsContainer.children[1].className = 'hidroweb-qa-view-btn';
             controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             elements.tableContainer.style.display = 'block';
             chartContainer.style.display = 'none';
+            qaFilterContainer.style.display = 'flex';
+            const exportBtns = document.querySelector('.qa-export-btns');
+            if (exportBtns) exportBtns.style.display = 'flex';
+            renderQaPagination();
         },
         chart: () => {
+            activeView = 'chart';
             controlsContainer.children[0].className = 'hidroweb-qa-view-btn';
             controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #333; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             controlsContainer.children[1].className = 'hidroweb-qa-view-btn active';
             controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             elements.tableContainer.style.display = 'none';
             chartContainer.style.display = 'block';
-            if (chartData && (!window.hidrowebQaChartInstance || window.hidrowebQaChartInstance.canvas.id !== 'hidrowebQaChart')) {
+            qaFilterContainer.style.display = 'flex';
+            const exportBtns = document.querySelector('.qa-export-btns');
+            if (exportBtns) exportBtns.style.display = 'none';
+            document.querySelector('.qa-pagination')?.remove();
+            if (chartData) {
                 createChart(chartData);
             }
         }
@@ -2281,59 +2450,233 @@ function openHidrowebQaReadingsModal(stationCode, stationName, latitude, longitu
         });
     }
 
-    // Buscar dados
-    fetch(`/api/hidroweb-qualidade-agua/${stationCode}/readings`)
-        .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar leituras'))
-        .then(data => {
-            elements.loading.style.display = 'none';
+    // Filtro
+    const qaFilterContainer = createQaFilterContainer();
+    const parent = elements.tableContainer.parentNode;
+    // Mesma ordem da Telemetria:
+    // filtro → chartContainer → tableContainer → controlsContainer (TABELA/GRÁFICO)
+    parent.insertBefore(qaFilterContainer, elements.tableContainer);
+    parent.insertBefore(chartContainer, elements.tableContainer);
+    // controlsContainer fica DEPOIS do tableContainer
+    if (elements.tableContainer.nextSibling) {
+        parent.insertBefore(controlsContainer, elements.tableContainer.nextSibling);
+    } else {
+        parent.appendChild(controlsContainer);
+    }
+    // Esconder até dados carregarem
+    qaFilterContainer.style.display = 'none';
+    chartContainer.style.display = 'none';
+    controlsContainer.style.display = 'none';
 
-            if (data.success && data.data?.readings?.length > 0) {
-                // Dados originais para o gráfico
-                chartData = data.data.readings;
+    function createQaFilterContainer() {
+        const existing = document.querySelector('.qa-filter-container');
+        if (existing) existing.remove();
+        const container = document.createElement('div');
+        container.className = 'qa-filter-container';
+        container.style.cssText = 'display: none; justify-content: center; align-items: center; gap: 15px; padding: 15px 0; width: 100%; margin: 0 auto;';
 
-                // Dados filtrados e renomeados apenas para a tabela
-                filteredTableData = filterAndRenameForTable(data.data.readings);
+        const deLabel = document.createElement('label');
+        deLabel.textContent = 'De:';
+        deLabel.style.cssText = 'font-weight: 500; color: #333;';
+        const deInput = document.createElement('input');
+        deInput.type = 'date'; deInput.id = 'qaFilterDateFrom';
+        deInput.style.cssText = 'padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; cursor: pointer;';
 
-                elements.total.textContent = data.data.readings.length;
+        const ateLabel = document.createElement('label');
+        ateLabel.textContent = 'Até:';
+        ateLabel.style.cssText = 'font-weight: 500; color: #333;';
+        const ateInput = document.createElement('input');
+        ateInput.type = 'date'; ateInput.id = 'qaFilterDateTo';
+        ateInput.style.cssText = 'padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; cursor: pointer;';
 
-                // Criar cabeçalho da tabela com unidades de medida
-                const headerRow = document.createElement('tr');
-                Object.keys(filteredTableData[0]).forEach(key => {
-                    const th = document.createElement('th');
-                    const unit = unitMapping[key];
-                    const keyUpper = key.toUpperCase()
-                    th.textContent = unit ? `${keyUpper} (${unit})` : keyUpper;
-                    th.style.whiteSpace = 'nowrap';
-                    th.style.padding = '12px';
-                    th.style.fontWeight = '600';
-                    headerRow.appendChild(th);
-                });
-                elements.tableHeader.appendChild(headerRow);
+        const aplicarBtn = document.createElement('button');
+        aplicarBtn.textContent = 'Aplicar';
+        aplicarBtn.style.cssText = 'padding: 8px 16px; background: #242731; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
 
-                // Criar linhas da tabela com dados formatados
-                filteredTableData.forEach(reading => {
-                    const row = document.createElement('tr');
-                    Object.keys(reading).forEach(key => {
-                        const td = document.createElement('td');
-                        const value = reading[key];
-                        td.textContent = value !== null && value !== '' ? value : '-';
-                        td.style.whiteSpace = 'nowrap';
-                        td.style.padding = '8px 12px';
-                        row.appendChild(td);
-                    });
-                    elements.tableBody.appendChild(row);
-                });
+        const limparBtn = document.createElement('button');
+        limparBtn.textContent = 'Limpar';
+        limparBtn.style.cssText = 'padding: 8px 16px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
 
-                views.table();
-            } else {
-                showError('Nenhuma leitura encontrada.');
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao carregar leituras:', error);
-            elements.loading.style.display = 'none';
-            showError(error.message || error);
+        aplicarBtn.onclick = () => {
+            if (!deInput.value || !ateInput.value) return;
+            currentPage = 1;
+            fetchQaPage(1);
+            fetchQaChartData(deInput.value, ateInput.value);
+        };
+        limparBtn.onclick = () => {
+            deInput.value = ''; ateInput.value = '';
+            currentPage = 1; paginationMeta = null; chartData = null;
+            if (window.hidrowebQaChartInstance) { window.hidrowebQaChartInstance.destroy(); window.hidrowebQaChartInstance = null; }
+            loadInitialQaReadings();
+        };
+
+        container.appendChild(deLabel); container.appendChild(deInput);
+        container.appendChild(ateLabel); container.appendChild(ateInput);
+        container.appendChild(aplicarBtn); container.appendChild(limparBtn);
+        return container;
+    }
+
+    function renderQaPagination() {
+        document.querySelector('.qa-pagination')?.remove();
+        if (!paginationMeta || !paginationMeta.last_page || paginationMeta.last_page <= 1) return;
+        const { current_page, last_page, total } = paginationMeta;
+        const div = document.createElement('div');
+        div.className = 'qa-pagination';
+        div.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 12px; padding: 10px 0 6px; font-size: 13px;';
+        const prevBtn = document.createElement('button');
+        prevBtn.textContent = '← Anterior'; prevBtn.disabled = current_page <= 1;
+        prevBtn.style.cssText = `padding: 6px 14px; background: #fff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: ${current_page <= 1 ? 'default' : 'pointer'}; font-size: 13px; opacity: ${current_page <= 1 ? '0.4' : '1'};`;
+        prevBtn.onclick = () => { if (current_page > 1) fetchQaPage(current_page - 1); };
+        const info = document.createElement('span');
+        info.textContent = `Página ${current_page} de ${last_page} (${total} registros)`;
+        info.style.cssText = 'color: #555; font-weight: 500;';
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = 'Próximo →'; nextBtn.disabled = current_page >= last_page;
+        nextBtn.style.cssText = `padding: 6px 14px; background: #fff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: ${current_page >= last_page ? 'default' : 'pointer'}; font-size: 13px; opacity: ${current_page >= last_page ? '0.4' : '1'};`;
+        nextBtn.onclick = () => { if (current_page < last_page) fetchQaPage(current_page + 1); };
+        div.appendChild(prevBtn); div.appendChild(info); div.appendChild(nextBtn);
+        elements.tableContainer.parentNode.insertBefore(div, elements.tableContainer.nextSibling);
+    }
+
+    function renderQaTable(readings) {
+        elements.tableHeader.innerHTML = '';
+        elements.tableBody.innerHTML = '';
+        filteredTableData = filterAndRenameForTable(readings);
+        if (!filteredTableData.length) return;
+        const headerRow = document.createElement('tr');
+        Object.keys(filteredTableData[0]).forEach(key => {
+            const th = document.createElement('th');
+            const unit = unitMapping[key];
+            th.textContent = unit ? `${key.toUpperCase()} (${unit})` : key.toUpperCase();
+            th.style.cssText = 'white-space: nowrap; padding: 12px; font-weight: 600;';
+            headerRow.appendChild(th);
         });
+        elements.tableHeader.appendChild(headerRow);
+        filteredTableData.forEach(reading => {
+            const row = document.createElement('tr');
+            Object.keys(reading).forEach(key => {
+                const td = document.createElement('td');
+                const value = reading[key];
+                td.textContent = value !== null && value !== '' ? value : '-';
+                td.style.cssText = 'white-space: nowrap; padding: 8px 12px;';
+                row.appendChild(td);
+            });
+            elements.tableBody.appendChild(row);
+        });
+    }
+
+    function renderQaExportButtons() {
+        if (elements.tableContainer.parentNode.querySelector('.qa-export-btns')) return;
+        const buildUrl = (format) => {
+            const from = document.getElementById('qaFilterDateFrom')?.value || '';
+            const to   = document.getElementById('qaFilterDateTo')?.value || '';
+            let url = `/api/hidroweb-qualidade-agua/${stationCode}/export?format=${format}`;
+            if (from) url += `&date_from=${from}`;
+            if (to)   url += `&date_to=${to}`;
+            return url;
+        };
+        const showToast = (msg) => {
+            const t = document.createElement('div');
+            t.textContent = msg;
+            t.style.cssText = 'position:fixed;bottom:30px;right:30px;background:#1e6e3e;color:#fff;padding:12px 20px;border-radius:6px;font-size:14px;font-weight:500;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,.15);transition:opacity .5s;';
+            document.body.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 3000);
+        };
+        const csvBtn = document.createElement('button');
+        csvBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>CSV`;
+        csvBtn.style.cssText = 'padding: 6px 12px; background: #fff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px;';
+        const csvSvg = csvBtn.innerHTML;
+        csvBtn.onclick = () => {
+            csvBtn.disabled = true; csvBtn.textContent = 'Exportando...';
+            fetch(buildUrl('csv')).then(r => r.blob()).then(blob => {
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+                a.download = `hidroweb_qualidade_agua_${stationCode}.csv`; a.click(); URL.revokeObjectURL(a.href);
+                showToast('✓ Download CSV concluído!');
+            }).finally(() => { csvBtn.disabled = false; csvBtn.innerHTML = csvSvg; });
+        };
+        const xlsBtn = document.createElement('button');
+        xlsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13l2.5 4 2.5-4"/><path d="M8 17l2.5-4 2.5 4"/></svg>Excel`;
+        xlsBtn.style.cssText = 'padding: 6px 12px; background: #fff; color: #1e6e3e; border: 1px solid #1e6e3e; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px;';
+        const xlsSvg = xlsBtn.innerHTML;
+        xlsBtn.onclick = () => {
+            xlsBtn.disabled = true; xlsBtn.textContent = 'Exportando...';
+            fetch(buildUrl('excel')).then(r => r.blob()).then(blob => {
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+                a.download = `hidroweb_qualidade_agua_${stationCode}.xlsx`; a.click(); URL.revokeObjectURL(a.href);
+                showToast('✓ Download Excel concluído!');
+            }).finally(() => { xlsBtn.disabled = false; xlsBtn.innerHTML = xlsSvg; });
+        };
+        const exportBtns = document.createElement('div');
+        exportBtns.className = 'qa-export-btns';
+        exportBtns.style.cssText = 'display: flex; justify-content: flex-end; gap: 8px; padding: 6px 0; width: 92%; margin: 0 auto;';
+        exportBtns.appendChild(csvBtn); exportBtns.appendChild(xlsBtn);
+        elements.tableContainer.parentNode.insertBefore(exportBtns, elements.tableContainer);
+    }
+
+    function fetchQaChartData(dateFrom, dateTo) {
+        if (window.hidrowebQaChartInstance) { window.hidrowebQaChartInstance.destroy(); window.hidrowebQaChartInstance = null; }
+        chartData = null;
+        let url = `/api/hidroweb-qualidade-agua/${stationCode}/readings?page=1&per_page=9999`;
+        if (dateFrom) url += `&date_from=${dateFrom}`;
+        if (dateTo)   url += `&date_to=${dateTo}`;
+        fetch(url).then(r => r.json()).then(data => {
+            if (data.success && data.data?.readings?.length > 0) {
+                chartData = data.data.readings;
+                if (activeView === 'chart') createChart(chartData);
+            }
+        }).catch(() => {});
+    }
+
+    function fetchQaPage(page) {
+        currentPage = page;
+        const dateFrom = document.getElementById('qaFilterDateFrom')?.value || '';
+        const dateTo   = document.getElementById('qaFilterDateTo')?.value || '';
+        let url = `/api/hidroweb-qualidade-agua/${stationCode}/readings?page=${page}`;
+        if (dateFrom) url += `&date_from=${dateFrom}`;
+        if (dateTo)   url += `&date_to=${dateTo}`;
+        document.querySelector('.qa-pagination')?.remove();
+        if (activeView === 'table') { elements.loading.style.display = 'block'; elements.tableContainer.style.display = 'none'; }
+        fetch(url).then(r => r.json()).then(data => {
+            if (activeView === 'table') elements.loading.style.display = 'none';
+            if (data.success && data.data?.readings?.length > 0) {
+                paginationMeta = data.meta || null;
+                elements.total.textContent = paginationMeta ? paginationMeta.total : data.data.readings.length;
+                renderQaTable(data.data.readings);
+                if (activeView === 'table') { controlsContainer.style.display = 'flex'; elements.tableContainer.style.display = 'block'; renderQaExportButtons(); renderQaPagination(); }
+            } else {
+                elements.tableBody.innerHTML = '<tr><td colspan="5">Nenhuma leitura encontrada.</td></tr>';
+                paginationMeta = null;
+                if (activeView === 'table') { elements.tableContainer.style.display = 'block'; renderQaPagination(); }
+            }
+        }).catch(() => {
+            if (activeView === 'table') { elements.loading.style.display = 'none'; elements.tableContainer.style.display = 'block'; }
+        });
+    }
+
+    function loadInitialQaReadings() {
+        elements.tableHeader.innerHTML = ''; elements.tableBody.innerHTML = '';
+        elements.loading.style.display = 'block'; elements.tableContainer.style.display = 'none';
+        document.querySelector('.qa-pagination')?.remove();
+        fetch(`/api/hidroweb-qualidade-agua/${stationCode}/readings?per_page=50`)
+            .then(r => r.ok ? r.json() : Promise.reject('Erro'))
+            .then(data => {
+                elements.loading.style.display = 'none';
+                if (data.success && data.data?.readings?.length > 0) {
+                    chartData = data.data.readings;
+                    elements.total.textContent = data.data.readings.length;
+                    renderQaTable(data.data.readings);
+                    controlsContainer.style.display = 'flex';
+                    qaFilterContainer.style.display = 'flex';
+                    views.table();
+                    renderQaExportButtons();
+                } else {
+                    showError('Nenhuma leitura encontrada.');
+                }
+            })
+            .catch(err => { elements.loading.style.display = 'none'; showError(err.message || err); });
+    }
+
+    loadInitialQaReadings();
 
     function showError(message) {
         elements.error.style.display = 'block';
@@ -3302,43 +3645,6 @@ function openLrgsFullDataModal(reading) {
     };
 }
 
-// Função para abrir sub-modal de dados completos (admin)
-function openLrgsFullDataModal(reading) {
-    const fullModal = document.getElementById('lrgsFullDataModal');
-    const fullBody = document.getElementById('lrgsFullDataBody');
-    const closeBtn = document.getElementById('closeLrgsFullModal');
-
-    if (!fullModal || !fullBody) return;
-
-    const dl = document.createElement('dl');
-    Object.entries(reading).forEach(([key, value]) => {
-        if (value === null || value === '' || value === undefined) return;
-
-        const dt = document.createElement('dt');
-        dt.textContent = key;
-
-        const dd = document.createElement('dd');
-        dd.textContent = value;
-
-        dl.appendChild(dt);
-        dl.appendChild(dd);
-    });
-
-    fullBody.innerHTML = '';
-    fullBody.appendChild(dl);
-    fullModal.style.display = 'block';
-
-    if (closeBtn) {
-        closeBtn.onclick = () => { fullModal.style.display = 'none'; };
-    }
-
-    fullModal.onclick = (e) => {
-        if (e.target === fullModal) {
-            fullModal.style.display = 'none';
-        }
-    };
-}
-
 // Inicializar modal LRGS
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => initStationModal(lrgsModalConfig));
@@ -4183,6 +4489,8 @@ function loadHidrowebLeiturasData(stationCode) {
     document.querySelector('.view-controls')?.remove();
     document.getElementById('leiturasChartContainer')?.remove();
     document.getElementById('leiturasChart')?.remove();
+    document.querySelector('.leituras-filter-container')?.remove();
+    document.querySelector('.leituras-export-btns')?.remove();
 
     // Resetar UI
     Object.values(elements).forEach(el => {
@@ -4194,33 +4502,48 @@ function loadHidrowebLeiturasData(stationCode) {
         }
     });
 
-    // Criar elementos do gráfico e controles
+    // Criar elementos do gráfico, controles e filtro
     const chartContainer = createChartContainer();
     const controlsContainer = createControlsContainer();
+    const filterContainer = createLeiturasFilterContainer();
+    elements.tableContainer.parentNode.insertBefore(filterContainer, elements.tableContainer);
     elements.tableContainer.parentNode.insertBefore(chartContainer, elements.tableContainer);
     elements.tableContainer.parentNode.insertBefore(controlsContainer, elements.tableContainer.nextSibling);
 
     let chartData = null;
+    let currentPage = 1;
+    let paginationMeta = null;
+    let activeView = 'table'; // rastreia view ativa
 
     // Configurar visualizações
     const views = {
         table: () => {
+            activeView = 'table';
             controlsContainer.children[0].className = 'view-btn active';
             controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             controlsContainer.children[1].className = 'view-btn';
             controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             elements.tableContainer.style.display = 'block';
             chartContainer.style.display = 'none';
+            filterContainer.style.display = 'flex';
+            const exportBtns = document.querySelector('.leituras-export-btns');
+            if (exportBtns) exportBtns.style.display = 'flex';
+            renderPagination();
         },
         chart: () => {
+            activeView = 'chart';
             controlsContainer.children[0].className = 'view-btn';
             controlsContainer.children[0].style.cssText = 'padding: 10px 20px; background: #ffffff; color: #333; border: 1px solid #79808F; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             controlsContainer.children[1].className = 'view-btn active';
             controlsContainer.children[1].style.cssText = 'padding: 10px 20px; background: #242731; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;';
             elements.tableContainer.style.display = 'none';
             chartContainer.style.display = 'block';
-            if (chartData && (!window.leiturasChartInstance || window.leiturasChartInstance.canvas.id !== 'leiturasChart')) {
-                createChart(chartData);
+            filterContainer.style.display = 'flex';
+            const exportBtns = document.querySelector('.leituras-export-btns');
+            if (exportBtns) exportBtns.style.display = 'none';
+            document.querySelector('.leituras-pagination')?.remove();
+            if (chartData) {
+                createChart(chartData); // usa os dados completos já carregados
             }
         }
     };
@@ -4228,45 +4551,284 @@ function loadHidrowebLeiturasData(stationCode) {
     controlsContainer.children[0].onclick = views.table;
     controlsContainer.children[1].onclick = views.chart;
 
-    // Buscar dados
-    fetch(`/api/hidroweb-telemetria/${stationCode}/readings`)
-        .then(response => response.ok ? response.json() : Promise.reject('Erro ao buscar leituras'))
-        .then(data => {
-            elements.loading.style.display = 'none';
+    // Renderiza controles de paginação abaixo da tabela
+    function renderPagination() {
+        document.querySelector('.leituras-pagination')?.remove();
+        if (!paginationMeta || !paginationMeta.last_page || paginationMeta.last_page <= 1) return;
 
-            if (data.success && data.data?.readings?.length > 0) {
-                chartData = data.data.readings;
-                elements.total.textContent = data.data.readings.length;
+        const { current_page, last_page, total, per_page } = paginationMeta;
+        const paginationDiv = document.createElement('div');
+        paginationDiv.className = 'leituras-pagination';
+        paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 12px; padding: 10px 0 6px; font-size: 13px; color: #333;';
 
-                data.data.readings.forEach(reading => {
-                    // Formatar data/hora para tabela: DD/MM/AAAA - HH:MM
-                    const formattedDateTime = formatDateTimeForTable(reading.measurement_datetime);
+        const prevBtn = document.createElement('button');
+        prevBtn.textContent = '← Anterior';
+        prevBtn.disabled = current_page <= 1;
+        prevBtn.style.cssText = `padding: 6px 14px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: ${current_page <= 1 ? 'default' : 'pointer'}; font-size: 13px; opacity: ${current_page <= 1 ? '0.4' : '1'};`;
+        prevBtn.onclick = () => { if (current_page > 1) fetchPage(current_page - 1); };
 
-                    elements.tableBody.innerHTML += `
-                        <tr>
-                            <td>${formattedDateTime}</td>
-                            <td>${reading.adopted_rainfall || '-'}</td>
-                            <td>${reading.adopted_quota || '-'}</td>
-                            <td>${reading.adopted_flow || '-'}</td>
-                        </tr>`;
-                });
+        const info = document.createElement('span');
+        info.textContent = `Página ${current_page} de ${last_page} (${total} registros)`;
+        info.style.cssText = 'color: #555; font-weight: 500;';
 
-                views.table();
-            } else {
-                showError('Nenhuma leitura encontrada.');
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao carregar leituras:', error);
-            elements.loading.style.display = 'none';
-            showError(error.message || error);
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = 'Próximo →';
+        nextBtn.disabled = current_page >= last_page;
+        nextBtn.style.cssText = `padding: 6px 14px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: ${current_page >= last_page ? 'default' : 'pointer'}; font-size: 13px; opacity: ${current_page >= last_page ? '0.4' : '1'};`;
+        nextBtn.onclick = () => { if (current_page < last_page) fetchPage(current_page + 1); };
+
+        paginationDiv.appendChild(prevBtn);
+        paginationDiv.appendChild(info);
+        paginationDiv.appendChild(nextBtn);
+
+        elements.tableContainer.parentNode.insertBefore(paginationDiv, elements.tableContainer.nextSibling);
+    }
+
+    // Busca todos os dados do período para o gráfico em background (não bloqueia a tabela)
+    function fetchChartData(dateFrom, dateTo) {
+        if (window.leiturasChartInstance) { window.leiturasChartInstance.destroy(); window.leiturasChartInstance = null; }
+        chartData = null; // invalida gráfico até carregar
+
+        let url = `/api/hidroweb-telemetria/${stationCode}/readings?page=1&per_page=9999`;
+        if (dateFrom) url += `&date_from=${dateFrom}`;
+        if (dateTo)   url += `&date_to=${dateTo}`;
+
+        fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                if (data.success && data.data?.readings?.length > 0) {
+                    chartData = data.data.readings;
+                    // Se já estiver na aba gráfico, renderiza imediatamente
+                    if (activeView === 'chart') {
+                        createChart(chartData);
+                    }
+                }
+            })
+            .catch(() => {});
+    }
+
+    // Busca uma página específica da tabela (só chamado com filtro de data)
+    function fetchPage(page) {
+        currentPage = page;
+        const dateFrom = document.getElementById('leiturasFilterDateFrom')?.value || '';
+        const dateTo   = document.getElementById('leiturasFilterDateTo')?.value || '';
+        let url = `/api/hidroweb-telemetria/${stationCode}/readings?page=${page}`;
+        if (dateFrom) url += `&date_from=${dateFrom}`;
+        if (dateTo)   url += `&date_to=${dateTo}`;
+
+        elements.tableBody.innerHTML = '';
+        document.querySelector('.leituras-pagination')?.remove();
+        if (activeView === 'table') {
+            elements.loading.style.display = 'block';
+            elements.tableContainer.style.display = 'none';
+        }
+
+        fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                if (activeView === 'table') elements.loading.style.display = 'none';
+                if (data.success && data.data?.readings?.length > 0) {
+                    paginationMeta = data.meta || null;
+                    elements.total.textContent = paginationMeta ? paginationMeta.total : data.data.readings.length;
+                    renderReadings(data.data.readings);
+                    if (activeView === 'table') {
+                        elements.tableContainer.style.display = 'block';
+                        renderExportButtons();
+                        renderPagination();
+                    }
+                } else {
+                    elements.tableBody.innerHTML = '<tr><td colspan="4">Nenhuma leitura encontrada.</td></tr>';
+                    paginationMeta = null;
+                    if (activeView === 'table') {
+                        elements.tableContainer.style.display = 'block';
+                        renderPagination();
+                    }
+                }
+            })
+            .catch(() => {
+                if (activeView === 'table') {
+                    elements.loading.style.display = 'none';
+                    elements.tableBody.innerHTML = '<tr><td colspan="4">Erro ao carregar página.</td></tr>';
+                    elements.tableContainer.style.display = 'block';
+                }
+            });
+    }
+
+    // Helpers de export (compartilhado entre carga inicial e fetchPage)
+    const buildExportUrl = (format) => {
+        const dateFrom = document.getElementById('leiturasFilterDateFrom')?.value || '';
+        const dateTo   = document.getElementById('leiturasFilterDateTo')?.value || '';
+        let url = `/api/hidroweb-telemetria/${stationCode}/export?format=${format}`;
+        if (dateFrom) url += `&date_from=${dateFrom}`;
+        if (dateTo)   url += `&date_to=${dateTo}`;
+        return url;
+    };
+
+    const showExportSuccess = (msg) => {
+        const toast = document.createElement('div');
+        toast.textContent = msg;
+        toast.style.cssText = 'position:fixed; bottom:30px; right:30px; background:#1e6e3e; color:#fff; padding:12px 20px; border-radius:6px; font-size:14px; font-weight:500; z-index:99999; box-shadow:0 4px 12px rgba(0,0,0,0.15); transition:opacity 0.5s;';
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 3000);
+    };
+
+    function renderExportButtons() {
+        const existingExportBtns = elements.tableContainer.parentNode.querySelector('.leituras-export-btns');
+        if (existingExportBtns) return; // já existe, não recriar
+
+        const csvBtn = document.createElement('button');
+        csvBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>CSV`;
+        csvBtn.title = 'Exportar CSV';
+        csvBtn.style.cssText = 'padding: 6px 12px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px;';
+        const csvSvg = csvBtn.innerHTML;
+        csvBtn.onclick = () => {
+            csvBtn.disabled = true; csvBtn.textContent = 'Exportando...';
+            fetch(buildExportUrl('csv')).then(r => r.blob()).then(blob => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `hidroweb_telemetria_${stationCode}.csv`;
+                a.click(); URL.revokeObjectURL(a.href);
+                showExportSuccess('✓ Download CSV concluído!');
+            }).finally(() => { csvBtn.disabled = false; csvBtn.innerHTML = csvSvg; });
+        };
+
+        const xlsBtn = document.createElement('button');
+        xlsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13l2.5 4 2.5-4"/><path d="M8 17l2.5-4 2.5 4"/></svg>Excel`;
+        xlsBtn.title = 'Exportar Excel';
+        xlsBtn.style.cssText = 'padding: 6px 12px; background: #ffffff; color: #1e6e3e; border: 1px solid #1e6e3e; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px;';
+        const xlsSvg = xlsBtn.innerHTML;
+        xlsBtn.onclick = () => {
+            xlsBtn.disabled = true; xlsBtn.textContent = 'Exportando...';
+            fetch(buildExportUrl('excel')).then(r => r.blob()).then(blob => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `hidroweb_telemetria_${stationCode}.xlsx`;
+                a.click(); URL.revokeObjectURL(a.href);
+                showExportSuccess('✓ Download Excel concluído!');
+            }).finally(() => { xlsBtn.disabled = false; xlsBtn.innerHTML = xlsSvg; });
+        };
+
+        const exportBtns = document.createElement('div');
+        exportBtns.className = 'leituras-export-btns';
+        exportBtns.style.cssText = 'display: flex; justify-content: flex-end; gap: 8px; padding: 6px 0; width: 100%; margin: 0 auto;';
+        exportBtns.appendChild(csvBtn);
+        exportBtns.appendChild(xlsBtn);
+        elements.tableContainer.parentNode.insertBefore(exportBtns, elements.tableContainer);
+    }
+
+    function renderReadings(readings) {
+        elements.tableBody.innerHTML = '';
+        readings.forEach(reading => {
+            elements.tableBody.innerHTML += `
+                <tr>
+                    <td>${formatDateTimeForTable(reading.measurement_datetime)}</td>
+                    <td>${reading.adopted_rainfall || '-'}</td>
+                    <td>${reading.adopted_quota || '-'}</td>
+                    <td>${reading.adopted_flow || '-'}</td>
+                </tr>`;
         });
+    }
+
+    // Carga inicial: últimos 50, sem paginação
+    function loadInitialReadings() {
+        elements.tableBody.innerHTML = '';
+        elements.loading.style.display = 'block';
+        elements.tableContainer.style.display = 'none';
+        document.querySelector('.leituras-pagination')?.remove();
+        paginationMeta = null;
+
+        fetch(`/api/hidroweb-telemetria/${stationCode}/readings`)
+            .then(r => r.ok ? r.json() : Promise.reject('Erro ao buscar leituras'))
+            .then(data => {
+                elements.loading.style.display = 'none';
+                if (data.success && data.data?.readings?.length > 0) {
+                    chartData = data.data.readings;
+                    elements.total.textContent = data.data.readings.length;
+                    renderReadings(data.data.readings);
+                    views.table();
+                    renderExportButtons();
+                } else {
+                    showError('Nenhuma leitura encontrada.');
+                }
+            })
+            .catch(error => {
+                elements.loading.style.display = 'none';
+                showError(error.message || error);
+            });
+    }
+
+    // Carregar dados iniciais
+    loadInitialReadings();
 
     function showError(message) {
         elements.error.style.display = 'block';
         elements.errorText.textContent = message;
         controlsContainer.style.display = 'none';
         chartContainer.style.display = 'none';
+        filterContainer.style.display = 'none';
+    }
+
+    function createLeiturasFilterContainer() {
+        const existing = document.querySelector('.leituras-filter-container');
+        if (existing) existing.remove();
+
+        const container = document.createElement('div');
+        container.className = 'leituras-filter-container';
+        container.style.cssText = 'display: none; justify-content: center; align-items: center; gap: 15px; padding: 15px 0; width: 100%; margin: 0 auto;';
+
+        const deLabel = document.createElement('label');
+        deLabel.textContent = 'De:';
+        deLabel.style.cssText = 'font-weight: 500; color: #333;';
+
+        const deInput = document.createElement('input');
+        deInput.type = 'date';
+        deInput.id = 'leiturasFilterDateFrom';
+        deInput.style.cssText = 'padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; cursor: pointer;';
+
+        const ateLabel = document.createElement('label');
+        ateLabel.textContent = 'Até:';
+        ateLabel.style.cssText = 'font-weight: 500; color: #333;';
+
+        const ateInput = document.createElement('input');
+        ateInput.type = 'date';
+        ateInput.id = 'leiturasFilterDateTo';
+        ateInput.style.cssText = 'padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; cursor: pointer;';
+
+        const aplicarBtn = document.createElement('button');
+        aplicarBtn.textContent = 'Aplicar';
+        aplicarBtn.style.cssText = 'padding: 8px 16px; background: #242731; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+        const limparBtn = document.createElement('button');
+        limparBtn.textContent = 'Limpar';
+        limparBtn.style.cssText = 'padding: 8px 16px; background: #ffffff; color: #242731; border: 1px solid #79808F; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;';
+
+        aplicarBtn.onclick = () => {
+            const fromVal = deInput.value;
+            const toVal   = ateInput.value;
+            if (!fromVal || !toVal) return;
+            currentPage = 1;
+            fetchPage(1);           // sempre atualiza tabela
+            fetchChartData(fromVal, toVal); // sempre atualiza gráfico em background
+        };
+
+        limparBtn.onclick = () => {
+            deInput.value = '';
+            ateInput.value = '';
+            currentPage = 1;
+            paginationMeta = null;
+            chartData = null;
+            if (window.leiturasChartInstance) { window.leiturasChartInstance.destroy(); window.leiturasChartInstance = null; }
+            loadInitialReadings();
+        };
+
+        container.appendChild(deLabel);
+        container.appendChild(deInput);
+        container.appendChild(ateLabel);
+        container.appendChild(ateInput);
+        container.appendChild(aplicarBtn);
+        container.appendChild(limparBtn);
+
+        return container;
     }
 
     function formatDateTimeForTable(dateTimeStr) {

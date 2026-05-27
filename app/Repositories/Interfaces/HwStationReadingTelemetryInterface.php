@@ -13,4 +13,6 @@ interface HwStationReadingTelemetryInterface
     public function paginate(array $options = [], $sort = "id", $order = 'DESC', int $page = 1, int $perPage = 15): IPagination;
     public function getReadingsByStationCode(string $stationCode, int $limit = 50);
     public function getReadingsByStationCodeAndDateRange(string $stationCode, ?string $dateFrom, ?string $dateTo);
+    public function cursorByStationCodeAndDateRange(string $stationCode, ?string $dateFrom, ?string $dateTo): \Generator;
+    public function paginateReadings(string $stationCode, ?string $dateFrom, ?string $dateTo, int $page, int $perPage);
 }

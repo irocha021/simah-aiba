@@ -113,7 +113,7 @@ class HwStationReadingTelemetryRepository implements HwStationReadingTelemetryIn
     public function getReadingsByStationCodeAndDateRange(string $stationCode, ?string $dateFrom, ?string $dateTo)
     {
         $query = $this->model->where('station_code', $stationCode)
-            ->orderBy('measurement_datetime', 'asc');
+            ->orderBy('measurement_datetime', 'desc');
 
         if ($dateFrom) {
             $query->where('measurement_datetime', '>=', $dateFrom . ' 00:00:00');
@@ -126,6 +126,30 @@ class HwStationReadingTelemetryRepository implements HwStationReadingTelemetryIn
         return $query->get();
     }
 
+    public function cursorByStationCodeAndDateRange(string $stationCode, ?string $dateFrom, ?string $dateTo): \Generator
+    {
+        $query = $this->model->where('station_code', $stationCode)
+            ->when($dateFrom, fn($q) => $q->where('measurement_datetime', '>=', $dateFrom . ' 00:00:00'))
+            ->when($dateTo,   fn($q) => $q->where('measurement_datetime', '<=', $dateTo   . ' 23:59:59'))
+            ->orderBy('measurement_datetime', 'desc');
+
+        if (!$dateFrom && !$dateTo) {
+            $query->limit(50);
+        }
+
+        foreach ($query->cursor() as $record) {
+            yield $record;
+        }
+    }
+
+    public function paginateReadings(string $stationCode, ?string $dateFrom, ?string $dateTo, int $page, int $perPage)
+    {
+        return $this->model->where('station_code', $stationCode)
+            ->when($dateFrom, fn($q) => $q->where('measurement_datetime', '>=', $dateFrom . ' 00:00:00'))
+            ->when($dateTo,   fn($q) => $q->where('measurement_datetime', '<=', $dateTo   . ' 23:59:59'))
+            ->orderBy('measurement_datetime', 'desc')
+            ->paginate($perPage, ['*'], 'page', $page);
+    }    
 
 }
  

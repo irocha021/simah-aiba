@@ -166,7 +166,7 @@ class PocoRimasRepository implements PocoRimasRepositoryInterface
     public function getReadingsByIdPontoAndDateRange(int $idPonto, ?string $dateFrom, ?string $dateTo): Collection
     {
         $query = PocoRimas::where('id_ponto', $idPonto)
-            ->orderBy('data_hora_medicao', 'asc');
+            ->orderBy('data_hora_medicao', 'desc');
 
         if ($dateFrom) {
             $query->where('data_hora_medicao', '>=', $dateFrom . ' 00:00:00');
@@ -179,4 +179,19 @@ class PocoRimasRepository implements PocoRimasRepositoryInterface
         return $query->get();
     }
 
+    public function cursorByIdPontoAndDateRange(string $idPonto, ?string $dateFrom, ?string $dateTo): \Generator
+    {
+        $query = PocoRimas::where('id_ponto', $idPonto)
+            ->when($dateFrom, fn($q) => $q->where('data_hora_medicao', '>=', $dateFrom . ' 00:00:00'))
+            ->when($dateTo,   fn($q) => $q->where('data_hora_medicao', '<=', $dateTo   . ' 23:59:59'))
+            ->orderBy('data_hora_medicao', 'desc');
+
+        if (!$dateFrom && !$dateTo) {
+            $query->limit(50);
+        }
+
+        foreach ($query->cursor() as $record) {
+            yield $record;
+        }
+    }
 }

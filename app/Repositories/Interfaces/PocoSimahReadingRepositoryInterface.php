@@ -11,4 +11,5 @@ interface PocoSimahReadingRepositoryInterface
     public function getByStation(int $stationId, int $limit = 100): array;
     public function deleteByStation(int $stationId): bool;
     public function getByStationAndDateRange(int $stationId, string $dateFrom, string $dateTo): Collection;
+    public function cursorByStationAndDateRange(int $stationId, ?string $dateFrom, ?string $dateTo): \Generator;
 }

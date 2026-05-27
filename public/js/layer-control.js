@@ -54,7 +54,8 @@ function initLayerControl() {
   };
 
   // ===== Áreas de drenagem (HidroWeb) =====
-  const HIDROWEB_KEYS = ['hidroweb_telemetria', 'hidroweb_qualidade_agua'];
+  //const HIDROWEB_KEYS = ['hidroweb_telemetria', 'hidroweb_qualidade_agua'];
+  const HIDROWEB_KEYS = [];
   let drainageLayers = null;     // array de L.tileLayer
   let drainageLoaded = false;    // já fez fetch na API?
   let drainageRefCount = 0;      // quantos toggles HidroWeb estão ativos

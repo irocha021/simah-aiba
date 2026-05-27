@@ -161,6 +161,7 @@
         overflow-x: auto;
         overflow-y: auto;
         margin: auto;
+        margin-bottom: 60px;
         position: relative;
     }
 
