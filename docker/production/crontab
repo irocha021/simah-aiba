@@ -2,3 +2,6 @@
 00 2 * * * GET https://simah.std1.net/jobs/hidroweb/readings/hidro-serie-qa
 30 2 * * * GET https://simah.std1.net/jobs/hidroweb/info-ana-adopted-telemetric-series-reading
 10 * * * * GET https://simah.std1.net/jobs/lrgs/readings/dcp-messages
+
+# Previsão de vazão (flow-forecast) — 1x por mês, dia 1 às 02:00
+0 2 1 * * curl -s https://simah.std1.net/jobs/hidroweb/flow-forecast > /dev/null 2>&1
