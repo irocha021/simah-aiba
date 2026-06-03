@@ -94,6 +94,13 @@ function initLayerControl() {
         return L.tileLayer(d.url_pattern, opts);
       });
       drainageLoaded = true;
+
+      // Monta lookup: station_code → tileLayer
+      window.drainageByCode = {};
+      items.forEach((d, idx) => {
+        window.drainageByCode[String(d.station_code)] = drainageLayers[idx];
+      });
+
       console.log(`Áreas de drenagem carregadas: ${drainageLayers.length}`);
     } catch (err) {
       console.warn('Falha ao carregar áreas de drenagem', err);
@@ -200,6 +207,11 @@ function initLayerControl() {
         }
       }
     } else {
+      // Pré-carrega metadados de drenagem quando uma camada HidroWeb é ativada
+      if (['hidroweb_telemetria', 'hidroweb_telemetria_com_previsao'].includes(layerKey)) {
+        await ensureDrainageLayers();
+      }
+
       // Ativar
       if (!state.loaded) {
         // Primeira vez - carregar dados da API

@@ -632,6 +632,18 @@
                 });
             }
 
+            // Exibe a drenagem da estação ao abrir o popup e oculta ao fechar
+            if (station.source === 'hidroweb_telemetria' || station.source === 'hidroweb_telemetria_com_previsao' || station.source === 'hidroweb_qualidade_agua') {
+                marker.on('popupopen', function() {
+                    const layer = window.drainageByCode && window.drainageByCode[String(station.code)];
+                    if (layer) layer.addTo(map);
+                });
+                marker.on('popupclose', function() {
+                    const layer = window.drainageByCode && window.drainageByCode[String(station.code)];
+                    if (layer) map.removeLayer(layer);
+                });
+            }
+
             return marker;
         };
 

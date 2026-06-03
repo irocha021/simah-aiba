@@ -18,11 +18,11 @@ class PocoSimahController extends Controller
     ) {}
 
     /**
-     * Listar estações Poços SIMAH
+     * Listar estações Poços AIBA
      *
-     * Retorna a lista de estações de poços monitorados pelo SIMAH.
+     * Retorna a lista de estações de poços monitorados pelo AIBA.
      *
-     * @group Poços SIMAH
+     * @group Poços AIBA
      *
      * @response {
      *   "data": [
@@ -45,12 +45,12 @@ class PocoSimahController extends Controller
     }
 
     /**
-     * Leituras da estação Poço SIMAH
+     * Leituras da estação Poço AIBA
      *
      * Retorna as leituras de uma estação pelo código, filtradas por período.
      * Os parâmetros date_from e date_to são obrigatórios.
      *
-     * @group Poços SIMAH
+     * @group Poços AIBA
      *
      * @urlParam station_code string required Código da estação. No-example
      * @queryParam date_from string required Data inicial (formato: Y-m-d). No-example

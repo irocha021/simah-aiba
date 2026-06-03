@@ -203,7 +203,8 @@ class HidroFlowForecastController extends Controller
             // Buscar previsões da estação ordenadas por data
             $forecasts = DB::table('hw_station_flow_forecasts')
                 ->where('station_code', $stationCode)
-                ->orderBy('created_at', 'desc')
+                ->orderBy('forecast_year', 'desc')
+                ->orderBy('forecast_month', 'desc')
                 ->limit(30)
                 ->get();
 

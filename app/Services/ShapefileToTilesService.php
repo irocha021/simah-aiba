@@ -24,6 +24,10 @@ class ShapefileToTilesService
         }
 
         $this->mapLayerService = $mapLayerService;
+
+        // Remove limite de tamanho de objetos GeoJSON para o GDAL/OGR,
+        // necessário para shapefiles de drenagem com geometrias muito complexas.
+        putenv('OGR_GEOJSON_MAX_OBJ_SIZE=0');
     }
 
     public function convertToTiles(string $zipPath, string $layerName, int $zoomMin = 5, int $zoomMax = 10): array
@@ -95,7 +99,7 @@ class ShapefileToTilesService
                     Log::info("Zoom {$z}: pixels={$borderPixels}, resolução={$resolution} m/pixel, buffer={$bufferMeters} m");
 
                     $rasterFile = $extractDir . '/' . $layerName . "_z{$z}.tif";
-                    $this->createBordersOnlyRaster($geojsonFile, $rasterFile, $resolution, $bufferMeters);
+                    $this->createBordersOnlyRaster($geojsonFile, $rasterFile, $resolution, $bufferMeters, $this->layerConfig['simplify_boundaries'] ?? false);
 
                     // Roda gdal2tiles só para este zoom; os tiles caem em $tilesDir/{z}/...
                     $this->generateTiles($rasterFile, $tilesDir, $z, $z);
@@ -141,7 +145,7 @@ class ShapefileToTilesService
                     Log::info("[translucent_fill] Zoom {$z}: espessura={$effectiveThicknessPx}px, resolução={$resolution} m/pixel, buffer={$bufferMeters} m (teto={$maxBufferMeters})");
 
                     $rasterFile = $extractDir . '/' . $layerName . "_z{$z}.tif";
-                    $this->createFilledTranslucentRasterForZoom($geojsonFile, $rasterFile, $resolution, $bufferMeters);
+                    $this->createFilledTranslucentRasterForZoom($geojsonFile, $rasterFile, $resolution, $bufferMeters, $this->layerConfig['simplify_boundaries'] ?? false);
 
                     $this->generateTiles($rasterFile, $tilesDir, $z, $z);
 
@@ -255,7 +259,7 @@ class ShapefileToTilesService
         if ($isColorPerFeature) {
             // Cada feature recebe um color_id ciclando entre 1 e palette_size.
             // OGR_FID é único por feature e começa em 0 no SQLite dialect do ogr2ogr.
-            $sql = "SELECT *, (OGR_FID % {$paletteSize}) + 1 AS color_id FROM \"{$tableName}\"";
+            $sql = "SELECT *, (rowid % {$paletteSize}) + 1 AS color_id FROM \"{$tableName}\"";
         } elseif ($isSingleColor) {
             // Camada de cor única: todos features recebem color_id = 1
             $sql = "SELECT *, 1 AS color_id FROM \"{$tableName}\"";
@@ -279,7 +283,7 @@ class ShapefileToTilesService
         }
 
         $command = sprintf(
-            'SHAPE_RESTORE_SHX=YES ogr2ogr -f GeoJSON -t_srs EPSG:3857 -simplify 0 -dialect SQLite -sql %s %s %s 2>&1',
+            'OGR_GEOJSON_MAX_OBJ_SIZE=0 SHAPE_RESTORE_SHX=YES ogr2ogr -f GeoJSON -t_srs EPSG:3857 -simplify 0 -dialect SQLite -sql %s %s %s 2>&1',
             escapeshellarg($sql),
             escapeshellarg($geojsonFile),
             escapeshellarg($shpFile)
@@ -333,18 +337,24 @@ class ShapefileToTilesService
         string $geojsonFile,
         string $rasterFile,
         float $resolutionMeters,
-        float $bufferMeters
+        float $bufferMeters,
+        bool $simplifyBoundaries = false
     ): void
     {
         // 1. Extrair boundaries como LINESTRING com buffer para engrossar
         $boundariesFile = str_replace('.geojson', '_boundaries.geojson', $geojsonFile);
 
-        // Buffer em metros calculado pelo zoom (vem do convertToTiles)
-        $bufferSize = $bufferMeters;
+        if ($simplifyBoundaries) {
+            $simplifyTolerance = $resolutionMeters / 2.0;
+            $geometryExpr = sprintf('ST_SimplifyPreserveTopology(geometry, %f)', $simplifyTolerance);
+        } else {
+            $geometryExpr = 'geometry';
+        }
 
         $extractCommand = sprintf(
-            'ogr2ogr -f GeoJSON -dialect SQLite -sql "SELECT ST_Buffer(ST_Boundary(geometry), %d) as geometry FROM \\"SELECT\\"" %s %s 2>&1',
-            $bufferSize,
+            'OGR_GEOJSON_MAX_OBJ_SIZE=0 ogr2ogr -f GeoJSON -dialect SQLite -sql "SELECT ST_Buffer(ST_Boundary(%s), %d) as geometry FROM \\"SELECT\\"" %s %s 2>&1',
+            $geometryExpr,
+            $bufferMeters,
             escapeshellarg($boundariesFile),
             escapeshellarg($geojsonFile)
         );
@@ -420,7 +430,8 @@ class ShapefileToTilesService
         string $geojsonFile,
         string $rasterFile,
         float $resolutionMeters,
-        float $bufferMeters
+        float $bufferMeters,
+        bool $simplifyBoundaries = false
     ): void
     {
         // 1. Cor do preenchimento: lê a linha "1 R G B A" do palette_text.
@@ -486,8 +497,16 @@ class ShapefileToTilesService
         // 5. Extrair a borda como buffer da boundary (espessura escalada por zoom).
         $boundariesFile = str_replace('.geojson', '_boundaries.geojson', $geojsonFile);
 
+        if ($simplifyBoundaries) {
+            $simplifyTolerance = $resolutionMeters / 2.0;
+            $geometryExpr = sprintf('ST_SimplifyPreserveTopology(geometry, %f)', $simplifyTolerance);
+        } else {
+            $geometryExpr = 'geometry';
+        }
+
         $extractCommand = sprintf(
-            'ogr2ogr -f GeoJSON -dialect SQLite -sql "SELECT ST_Buffer(ST_Boundary(geometry), %f) as geometry FROM \\"SELECT\\"" %s %s 2>&1',
+            'OGR_GEOJSON_MAX_OBJ_SIZE=0 ogr2ogr -f GeoJSON -dialect SQLite -sql "SELECT ST_Buffer(ST_Boundary(%s), %f) as geometry FROM \\"SELECT\\"" %s %s 2>&1',
+            $geometryExpr,
             $bufferMeters,
             escapeshellarg($boundariesFile),
             escapeshellarg($geojsonFile)
@@ -523,7 +542,7 @@ class ShapefileToTilesService
         @unlink($boundariesFile);
     }
 
-    
+
     /**
      * Rasteriza uma geometria de LINHA (rios/hidrografia) para um zoom.
      *
@@ -630,7 +649,7 @@ class ShapefileToTilesService
 
 
         $command = sprintf(
-            'SHAPE_RESTORE_SHX=YES ogr2ogr -f GeoJSON -t_srs EPSG:4326 -dialect SQLite -sql %s %s %s 2>&1',
+            'OGR_GEOJSON_MAX_OBJ_SIZE=0 SHAPE_RESTORE_SHX=YES ogr2ogr -f GeoJSON -t_srs EPSG:4326 -dialect SQLite -sql %s %s %s 2>&1',
             escapeshellarg($sql),
             escapeshellarg($outputFile),
             escapeshellarg($shpFile)
@@ -674,7 +693,7 @@ class ShapefileToTilesService
 
         // O layer name no GeoJSON gerado por SQL query é sempre "SELECT" (palavra reservada, precisa de aspas)
         $extractCommand = sprintf(
-            'ogr2ogr -f GeoJSON -dialect SQLite -sql "SELECT ST_Buffer(ST_Boundary(geometry), '.$borderBuffer .') as geometry FROM \\"SELECT\\"" %s %s 2>&1',
+            'OGR_GEOJSON_MAX_OBJ_SIZE=0 ogr2ogr -f GeoJSON -dialect SQLite -sql "SELECT ST_Buffer(ST_Boundary(geometry), '.$borderBuffer .') as geometry FROM \\"SELECT\\"" %s %s 2>&1',
             escapeshellarg($boundariesFile),
             escapeshellarg($geojsonFile)
         );

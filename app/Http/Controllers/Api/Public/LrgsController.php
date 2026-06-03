@@ -22,7 +22,7 @@ class LrgsController extends Controller
      *
      * Retorna a lista de todas as estações LRGS cadastradas.
      *
-     * @group Estações LRGS
+     * @group Estações AIBA
      *
      * @response {
      *   "data": [
@@ -51,7 +51,7 @@ class LrgsController extends Controller
      * Retorna as leituras de uma estação LRGS pelo endereço DCP.
      * Se não informar as datas, retorna as últimas 72 horas.
      *
-     * @group Estações LRGS
+     * @group Estações AIBA
      *
      * @urlParam station_code string required Endereço DCP da estação. Example: B04041E0
      * @queryParam date_from string required Data inicial (formato: Y-m-d). No-example
