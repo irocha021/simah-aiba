@@ -23,17 +23,35 @@ class ImportLayerJob implements ShouldQueue
     {
         if ($this->layerData['type'] === 'tile') {
             $pathZip = base_path($this->layerData['path_zip']);
-            Artisan::call('tiles:generate', [
+            $exitCode = Artisan::call('tiles:generate', [
                 'shapefile' => $pathZip,
                 '--layer' => $this->layerData['slug'],
                 '--zoom-min' => $this->layerData['min_zoom'],
                 '--zoom-max' => $this->layerData['max_zoom']
             ]);
         } elseif ($this->layerData['type'] === 'geojson') {
-            Artisan::call('geojson:generate', [
+            $exitCode = Artisan::call('geojson:generate', [
                 'zipPath' => $this->layerData['path_zip'],
                 '--layer' => $this->layerData['slug']
             ]);
+        } else {
+            throw new \RuntimeException(
+                "Tipo de camada não suportado: " . ($this->layerData['type'] ?? 'null')
+            );
+        }
+
+        // Sem checar o exit code, uma falha do comando (ex.: mkdir/permission
+        // negada, gdal2tiles com erro) encerrava o job "com sucesso": não ia
+        // para failed_jobs nem disparava retry, escondendo o erro. Agora um
+        // código != 0 vira exceção -> o job falha, registra em failed_jobs e
+        // aciona as tentativas (--tries) do worker.
+        if ($exitCode !== 0) {
+            throw new \RuntimeException(sprintf(
+                "Falha ao importar camada '%s' (comando retornou %d):\n%s",
+                $this->layerData['slug'] ?? '?',
+                $exitCode,
+                Artisan::output()
+            ));
         }
     }
 
