@@ -19,7 +19,7 @@ class CnarhController extends Controller
      *
      * Retorna a lista de outorgas cadastradas no CNARH.
      *
-     * @group CNARH
+     * @group CNARH - Outorgas
      *
      * @response {
      *   "data": [
@@ -68,7 +68,7 @@ class CnarhController extends Controller
      *
      * Retorna os dados de uma outorga CNARH pelo código.
      *
-     * @group CNARH
+     * @group CNARH - Outorgas
      *
      * @urlParam cd_cnarh40 int required Código CNARH40. No-example
      *

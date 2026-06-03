@@ -49,16 +49,19 @@ class GenerateHwStationDrainageTilesJob implements ShouldQueue
         }
 
         $config = [
-            'color_per_feature' => true,
-            'palette_size'      => $paletteSize,
-            'single_color'      => false,
-            'borders_only'      => false,
-            'draw_borders'      => true,
-            'border_color'      => '0,0,0',
-            'palette_text'      => implode("\n", $paletteLines),
-            'sql_mapping_json'  => [],
-            'field_name'        => null,
-            'label_field'       => null,
+            'color_per_feature'   => true,
+            'palette_size'        => $paletteSize,
+            'single_color'        => false,
+            'borders_only'        => false,
+            'draw_borders'        => true,
+            'translucent_fill'    => true,
+            'simplify_boundaries' => true,  // geometrias de drenagem são complexas — simplifica por zoom antes de desenhar borda
+            'border_color'        => '0,0,0',
+            'border_buffer'       => 0,
+            'palette_text'        => implode("\n", $paletteLines),
+            'sql_mapping_json'    => [],
+            'field_name'          => null,
+            'label_field'         => null,
         ];
 
         try {

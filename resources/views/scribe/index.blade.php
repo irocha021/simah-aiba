@@ -299,10 +299,10 @@
 
                                             </div>
                                     <div class="expandable">
-                        <div title="CNARH" id="toc-item-cnarh"
+                        <div title="CNARH - Outorgas" id="toc-item-cnarh-outorgas"
                              class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-4 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none">
-                            <a href="#cnarh"
-                               class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0">CNARH</a>
+                            <a href="#cnarh-outorgas"
+                               class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0">CNARH - Outorgas</a>
                                                             <div class="sl-flex sl-items-center sl-text-xs expansion-chevrons">
                                     <svg aria-hidden="true" focusable="false" data-prefix="fas"
                                          data-icon="chevron-right"
@@ -317,10 +317,10 @@
                                                     <div class="children" style="display: none;">
                                                                     <div class="expandable">
                                         <div class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-8 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none"
-                                             id="toc-item-cnarh-GETapi-v1-cnarh">
+                                             id="toc-item-cnarh-outorgas-GETapi-v1-cnarh">
                                             <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0" title="Listar outorgas CNARH">
                                                 <a class="ElementsTableOfContentsItem sl-block sl-no-underline"
-                                                   href="#cnarh-GETapi-v1-cnarh">
+                                                   href="#cnarh-outorgas-GETapi-v1-cnarh">
                                                     Listar outorgas CNARH
                                                 </a>
                                             </div>
@@ -329,11 +329,54 @@
                                                                             </div>
                                                                     <div class="expandable">
                                         <div class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-8 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none"
-                                             id="toc-item-cnarh-GETapi-v1-cnarh--cd_cnarh40-">
+                                             id="toc-item-cnarh-outorgas-GETapi-v1-cnarh--cd_cnarh40-">
                                             <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0" title="Dados da outorga CNARH">
                                                 <a class="ElementsTableOfContentsItem sl-block sl-no-underline"
-                                                   href="#cnarh-GETapi-v1-cnarh--cd_cnarh40-">
+                                                   href="#cnarh-outorgas-GETapi-v1-cnarh--cd_cnarh40-">
                                                     Dados da outorga CNARH
+                                                </a>
+                                            </div>
+                                                                                    </div>
+
+                                                                            </div>
+                                                            </div>
+                                            </div>
+                                    <div class="expandable">
+                        <div title="Estações AIBA" id="toc-item-estacoes-aiba"
+                             class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-4 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none">
+                            <a href="#estacoes-aiba"
+                               class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0">Estações AIBA</a>
+                                                            <div class="sl-flex sl-items-center sl-text-xs expansion-chevrons">
+                                    <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                         data-icon="chevron-right"
+                                         class="svg-inline--fa fa-chevron-right fa-fw sl-icon sl-text-muted"
+                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                        <path fill="currentColor"
+                                              d="M96 480c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L242.8 256L73.38 86.63c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l192 192c12.5 12.5 12.5 32.75 0 45.25l-192 192C112.4 476.9 104.2 480 96 480z"></path>
+                                    </svg>
+                                </div>
+                                                    </div>
+
+                                                    <div class="children" style="display: none;">
+                                                                    <div class="expandable">
+                                        <div class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-8 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none"
+                                             id="toc-item-estacoes-aiba-GETapi-v1-lrgs-stations">
+                                            <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0" title="Listar estações">
+                                                <a class="ElementsTableOfContentsItem sl-block sl-no-underline"
+                                                   href="#estacoes-aiba-GETapi-v1-lrgs-stations">
+                                                    Listar estações
+                                                </a>
+                                            </div>
+                                                                                    </div>
+
+                                                                            </div>
+                                                                    <div class="expandable">
+                                        <div class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-8 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none"
+                                             id="toc-item-estacoes-aiba-GETapi-v1-lrgs--station_code--readings">
+                                            <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0" title="Leituras da estação">
+                                                <a class="ElementsTableOfContentsItem sl-block sl-no-underline"
+                                                   href="#estacoes-aiba-GETapi-v1-lrgs--station_code--readings">
+                                                    Leituras da estação
                                                 </a>
                                             </div>
                                                                                     </div>
@@ -409,10 +452,10 @@
                                                             </div>
                                             </div>
                                     <div class="expandable">
-                        <div title="Estações LRGS" id="toc-item-estacoes-lrgs"
+                        <div title="Poços AIBA" id="toc-item-pocos-aiba"
                              class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-4 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none">
-                            <a href="#estacoes-lrgs"
-                               class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0">Estações LRGS</a>
+                            <a href="#pocos-aiba"
+                               class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0">Poços AIBA</a>
                                                             <div class="sl-flex sl-items-center sl-text-xs expansion-chevrons">
                                     <svg aria-hidden="true" focusable="false" data-prefix="fas"
                                          data-icon="chevron-right"
@@ -427,11 +470,11 @@
                                                     <div class="children" style="display: none;">
                                                                     <div class="expandable">
                                         <div class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-8 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none"
-                                             id="toc-item-estacoes-lrgs-GETapi-v1-lrgs-stations">
-                                            <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0" title="Listar estações">
+                                             id="toc-item-pocos-aiba-GETapi-v1-poco-simah-stations">
+                                            <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0" title="Listar estações Poços AIBA">
                                                 <a class="ElementsTableOfContentsItem sl-block sl-no-underline"
-                                                   href="#estacoes-lrgs-GETapi-v1-lrgs-stations">
-                                                    Listar estações
+                                                   href="#pocos-aiba-GETapi-v1-poco-simah-stations">
+                                                    Listar estações Poços AIBA
                                                 </a>
                                             </div>
                                                                                     </div>
@@ -439,11 +482,11 @@
                                                                             </div>
                                                                     <div class="expandable">
                                         <div class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-8 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none"
-                                             id="toc-item-estacoes-lrgs-GETapi-v1-lrgs--station_code--readings">
-                                            <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0" title="Leituras da estação">
+                                             id="toc-item-pocos-aiba-GETapi-v1-poco-simah--station_code--readings">
+                                            <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0" title="Leituras da estação Poço AIBA">
                                                 <a class="ElementsTableOfContentsItem sl-block sl-no-underline"
-                                                   href="#estacoes-lrgs-GETapi-v1-lrgs--station_code--readings">
-                                                    Leituras da estação
+                                                   href="#pocos-aiba-GETapi-v1-poco-simah--station_code--readings">
+                                                    Leituras da estação Poço AIBA
                                                 </a>
                                             </div>
                                                                                     </div>
@@ -537,54 +580,11 @@
                                                                             </div>
                                                             </div>
                                             </div>
-                                    <div class="expandable">
-                        <div title="Poços SIMAH" id="toc-item-pocos-simah"
-                             class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-4 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none">
-                            <a href="#pocos-simah"
-                               class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0">Poços SIMAH</a>
-                                                            <div class="sl-flex sl-items-center sl-text-xs expansion-chevrons">
-                                    <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                         data-icon="chevron-right"
-                                         class="svg-inline--fa fa-chevron-right fa-fw sl-icon sl-text-muted"
-                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                        <path fill="currentColor"
-                                              d="M96 480c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L242.8 256L73.38 86.63c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l192 192c12.5 12.5 12.5 32.75 0 45.25l-192 192C112.4 476.9 104.2 480 96 480z"></path>
-                                    </svg>
-                                </div>
-                                                    </div>
-
-                                                    <div class="children" style="display: none;">
-                                                                    <div class="expandable">
-                                        <div class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-8 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none"
-                                             id="toc-item-pocos-simah-GETapi-v1-poco-simah-stations">
-                                            <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0" title="Listar estações Poços SIMAH">
-                                                <a class="ElementsTableOfContentsItem sl-block sl-no-underline"
-                                                   href="#pocos-simah-GETapi-v1-poco-simah-stations">
-                                                    Listar estações Poços SIMAH
-                                                </a>
-                                            </div>
-                                                                                    </div>
-
-                                                                            </div>
-                                                                    <div class="expandable">
-                                        <div class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-8 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none"
-                                             id="toc-item-pocos-simah-GETapi-v1-poco-simah--station_code--readings">
-                                            <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0" title="Leituras da estação Poço SIMAH">
-                                                <a class="ElementsTableOfContentsItem sl-block sl-no-underline"
-                                                   href="#pocos-simah-GETapi-v1-poco-simah--station_code--readings">
-                                                    Leituras da estação Poço SIMAH
-                                                </a>
-                                            </div>
-                                                                                    </div>
-
-                                                                            </div>
-                                                            </div>
-                                            </div>
                             </div>
 
         </div>
         <div class="sl-flex sl-items-center sl-px-4 sl-py-3 sl-border-t">
-            Last updated: May 11, 2026
+            Last updated: June 2, 2026
         </div>
 
         <div class="sl-flex sl-items-center sl-px-4 sl-py-3 sl-border-t">
@@ -624,10 +624,10 @@
             </div>
         </div>
 
-        <h1 id="cnarh"
+        <h1 id="cnarh-outorgas"
         class="sl-text-5xl sl-leading-tight sl-font-prose sl-text-heading"
     >
-        CNARH
+        CNARH - Outorgas
     </h1>
 
     
@@ -637,7 +637,7 @@
         <div class="sl-relative">
             <div class="sl-stack sl-stack--horizontal sl-stack--5 sl-flex sl-flex-row sl-items-center">
                 <h2 class="sl-text-3xl sl-leading-tight sl-font-prose sl-text-heading sl-mt-5 sl-mb-1"
-                    id="cnarh-GETapi-v1-cnarh">
+                    id="cnarh-outorgas-GETapi-v1-cnarh">
                     Listar outorgas CNARH
                 </h2>
             </div>
@@ -1034,7 +1034,7 @@ response.json()</code></pre>                                        </div>
         <div class="sl-relative">
             <div class="sl-stack sl-stack--horizontal sl-stack--5 sl-flex sl-flex-row sl-items-center">
                 <h2 class="sl-text-3xl sl-leading-tight sl-font-prose sl-text-heading sl-mt-5 sl-mb-1"
-                    id="cnarh-GETapi-v1-cnarh--cd_cnarh40-">
+                    id="cnarh-outorgas-GETapi-v1-cnarh--cd_cnarh40-">
                     Dados da outorga CNARH
                 </h2>
             </div>
@@ -1536,6 +1536,1083 @@ response.json()</code></pre>                                        </div>
         &quot;nm_comitefederal&quot;: null,
         &quot;cd_comiteestadual&quot;: 138,
         &quot;nm_comiteestadual&quot;: &quot;CBH do Rio de Contas&quot;
+    }
+}</code></pre>
+                                                                            </div>
+                                </div>
+                                                    </div>
+                            </div>
+    </div>
+</div>
+
+                <h1 id="estacoes-aiba"
+        class="sl-text-5xl sl-leading-tight sl-font-prose sl-text-heading"
+    >
+        Estações AIBA
+    </h1>
+
+    
+
+                                <div class="sl-stack sl-stack--vertical sl-stack--8 HttpOperation sl-flex sl-flex-col sl-items-stretch sl-w-full">
+    <div class="sl-stack sl-stack--vertical sl-stack--5 sl-flex sl-flex-col sl-items-stretch">
+        <div class="sl-relative">
+            <div class="sl-stack sl-stack--horizontal sl-stack--5 sl-flex sl-flex-row sl-items-center">
+                <h2 class="sl-text-3xl sl-leading-tight sl-font-prose sl-text-heading sl-mt-5 sl-mb-1"
+                    id="estacoes-aiba-GETapi-v1-lrgs-stations">
+                    Listar estações
+                </h2>
+            </div>
+        </div>
+
+        <div class="sl-relative">
+            <div title="http://localhost:8119/api/v1/lrgs/stations"
+                     class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
+                >
+                                            <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
+                             style="background-color: green;"
+                        >
+                            GET
+                        </div>
+                                        <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
+                        <div dir="rtl"
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                        <div class="sl-flex-1 sl-font-semibold">/api/v1/lrgs/stations</div>
+                    </div>
+
+                                                    <div class="sl-font-prose sl-font-semibold sl-px-1.5 sl-py-0.5 sl-text-on-primary sl-rounded-lg"
+                                 style="background-color: darkred"
+                            >requires authentication
+                            </div>
+                                                                                    </div>
+        </div>
+
+        <p>Retorna a lista de todas as estações LRGS cadastradas.</p>
+    </div>
+    <div class="sl-flex">
+        <div data-testid="two-column-left" class="sl-flex-1 sl-w-0">
+            <div class="sl-stack sl-stack--vertical sl-stack--10 sl-flex sl-flex-col sl-items-stretch">
+                <div class="sl-stack sl-stack--vertical sl-stack--8 sl-flex sl-flex-col sl-items-stretch">
+                                            <div class="sl-stack sl-stack--vertical sl-stack--5 sl-flex sl-flex-col sl-items-stretch">
+                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">
+                                Headers
+                            </h3>
+                            <div class="sl-text-sm">
+                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
+    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
+    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
+        <div class="sl-flex sl-items-center sl-max-w-full">
+                                        <div class="sl-flex sl-items-baseline sl-text-base">
+                    <div class="sl-font-mono sl-font-semibold sl-mr-2">X-Api-Key</div>
+                                    </div>
+                                        </div>
+                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
+                <span>Example:</span> <!-- <span> important for spacing -->
+                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
+                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
+                        {SUA_CHAVE_DE_API}
+                    </div>
+                </div>
+            </div>
+            </div>
+</div>
+                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
+    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
+    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
+        <div class="sl-flex sl-items-center sl-max-w-full">
+                                        <div class="sl-flex sl-items-baseline sl-text-base">
+                    <div class="sl-font-mono sl-font-semibold sl-mr-2">Content-Type</div>
+                                    </div>
+                                        </div>
+                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
+                <span>Example:</span> <!-- <span> important for spacing -->
+                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
+                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
+                        application/json
+                    </div>
+                </div>
+            </div>
+            </div>
+</div>
+                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
+    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
+    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
+        <div class="sl-flex sl-items-center sl-max-w-full">
+                                        <div class="sl-flex sl-items-baseline sl-text-base">
+                    <div class="sl-font-mono sl-font-semibold sl-mr-2">Accept</div>
+                                    </div>
+                                        </div>
+                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
+                <span>Example:</span> <!-- <span> important for spacing -->
+                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
+                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
+                        application/json
+                    </div>
+                </div>
+            </div>
+            </div>
+</div>
+                                                            </div>
+                        </div>
+                    
+                    
+
+                    
+                    
+                                    </div>
+            </div>
+        </div>
+
+        <div data-testid="two-column-right" class="sl-relative sl-w-2/5 sl-ml-16" style="max-width: 500px;">
+            <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
+
+                                    <div class="sl-inverted">
+    <div class="sl-overflow-y-hidden sl-rounded-lg">
+        <form class="TryItPanel sl-bg-canvas-100 sl-rounded-lg"
+              data-method="GET"
+              data-path="api/v1/lrgs/stations"
+              data-hasfiles="0"
+              data-hasjsonbody="0">
+                            <div class="sl-panel sl-outline-none sl-w-full expandable">
+                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                         role="button">
+                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                     data-icon="caret-down"
+                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                    <path fill="currentColor"
+                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                </svg>
+                            </div>
+                            Auth
+                        </div>
+                    </div>
+                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                        <div class="ParameterGrid sl-p-4">
+                            <label aria-hidden="true"
+                                   for="auth-GETapi-v1-lrgs-stations">X-Api-Key</label>
+                            <span class="sl-mx-3">:</span>
+                            <div class="sl-flex sl-flex-1">
+                                <div class="sl-input sl-flex-1 sl-relative">
+                                    <code></code>
+                                    <input aria-label="X-Api-Key"
+                                           id="auth-GETapi-v1-lrgs-stations"
+                                           data-component="header"
+                                           data-prefix=""
+                                           name="X-Api-Key"
+                                           placeholder="{SUA_CHAVE_DE_API}"
+                                           class="auth-value sl-relative sl-w-full sl-pr-2.5 sl-pl-2.5 sl-h-md sl-text-base sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                            <div class="sl-panel sl-outline-none sl-w-full expandable">
+                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                         role="button">
+                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                     data-icon="caret-down"
+                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                    <path fill="currentColor"
+                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                </svg>
+                            </div>
+                            Headers
+                        </div>
+                    </div>
+                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                        <div class="ParameterGrid sl-p-4">
+                                                                                                                            <label aria-hidden="true"
+                                       for="header-GETapi-v1-lrgs-stations-Content-Type">Content-Type</label>
+                                <span class="sl-mx-3">:</span>
+                                <div class="sl-flex sl-flex-1">
+                                    <div class="sl-input sl-flex-1 sl-relative">
+                                        <input aria-label="Content-Type" name="Content-Type"
+                                               id="header-GETapi-v1-lrgs-stations-Content-Type"
+                                               value="application/json" data-component="header"
+                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                    </div>
+                                </div>
+                                                                                            <label aria-hidden="true"
+                                       for="header-GETapi-v1-lrgs-stations-Accept">Accept</label>
+                                <span class="sl-mx-3">:</span>
+                                <div class="sl-flex sl-flex-1">
+                                    <div class="sl-input sl-flex-1 sl-relative">
+                                        <input aria-label="Accept" name="Accept"
+                                               id="header-GETapi-v1-lrgs-stations-Accept"
+                                               value="application/json" data-component="header"
+                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                    </div>
+                                </div>
+                                                    </div>
+                    </div>
+                </div>
+            
+            
+            
+            
+            <div class="SendButtonHolder sl-mt-4 sl-p-4 sl-pt-0">
+                <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-center">
+                    <button type="button" data-endpoint="GETapi-v1-lrgs-stations"
+                            class="tryItOut-btn sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-bg-primary hover:sl-bg-primary-dark active:sl-bg-primary-darker disabled:sl-bg-canvas-100 sl-text-on-primary disabled:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70"
+                    >
+                        Send Request 💥
+                    </button>
+                </div>
+            </div>
+
+            <div data-endpoint="GETapi-v1-lrgs-stations"
+                 class="tryItOut-error expandable sl-panel sl-outline-none sl-w-full" hidden>
+                <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                     role="button">
+                    <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                        <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                            <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                 data-icon="caret-down"
+                                 class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                <path fill="currentColor"
+                                      d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                            </svg>
+                        </div>
+                        Request failed with error
+                    </div>
+                </div>
+                <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                    <div class="sl-panel__content sl-p-4">
+                        <p class="sl-pb-2"><strong class="error-message"></strong></p>
+                        <p class="sl-pb-2">Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</p>
+                    </div>
+                </div>
+            </div>
+
+                <div data-endpoint="GETapi-v1-lrgs-stations"
+                     class="tryItOut-response expandable sl-panel sl-outline-none sl-w-full" hidden>
+                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                         role="button">
+                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                     data-icon="caret-down"
+                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                    <path fill="currentColor"
+                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                </svg>
+                            </div>
+                            Received response
+                        </div>
+                    </div>
+                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                        <div class="sl-panel__content sl-p-4">
+                            <p class="sl-pb-2 response-status"></p>
+                            <pre><code class="sl-pb-2 response-content language-json"
+                                       data-empty-response-text="<Empty response>"
+                                       style="max-height: 300px;"></code></pre>
+                        </div>
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
+                
+                                            <div class="sl-panel sl-outline-none sl-w-full sl-rounded-lg">
+                            <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
+                                <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                                    <div class="sl--ml-2">
+                                        Example request:
+                                        <select class="example-request-lang-toggle sl-text-base"
+                                                aria-label="Request Sample Language"
+                                                onchange="switchExampleLanguage(event.target.value);">
+                                                                                            <option>bash</option>
+                                                                                            <option>javascript</option>
+                                                                                            <option>python</option>
+                                                                                    </select>
+                                    </div>
+                                </div>
+                            </div>
+                                                            <div class="sl-bg-canvas-100 example-request example-request-bash"
+                                     style="">
+                                    <div class="sl-px-0 sl-py-1">
+                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
+                                            <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8119/api/v1/lrgs/stations" \
+    --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre>                                        </div>
+                                    </div>
+                                </div>
+                                                            <div class="sl-bg-canvas-100 example-request example-request-javascript"
+                                     style="display: none;">
+                                    <div class="sl-px-0 sl-py-1">
+                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
+                                            <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8119/api/v1/lrgs/stations"
+);
+
+const headers = {
+    "X-Api-Key": "{SUA_CHAVE_DE_API}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre>                                        </div>
+                                    </div>
+                                </div>
+                                                            <div class="sl-bg-canvas-100 example-request example-request-python"
+                                     style="display: none;">
+                                    <div class="sl-px-0 sl-py-1">
+                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
+                                            <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost:8119/api/v1/lrgs/stations'
+headers = {
+  'X-Api-Key': '{SUA_CHAVE_DE_API}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre>                                        </div>
+                                    </div>
+                                </div>
+                                                    </div>
+                    
+                                            <div class="sl-panel sl-outline-none sl-w-full sl-rounded-lg">
+                            <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
+                                <div class="sl-flex sl-flex-1 sl-items-center sl-py-2">
+                                    <div class="sl--ml-2">
+                                        <div class="sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-text-muted sl-rounded sl-border-transparent sl-border">
+                                            <div class="sl-mb-2 sl-inline-block">Example response:</div>
+                                            <div class="sl-mb-2 sl-inline-block">
+                                                <select
+                                                        class="example-response-GETapi-v1-lrgs-stations-toggle sl-text-base"
+                                                        aria-label="Response sample"
+                                                        onchange="switchExampleResponse('GETapi-v1-lrgs-stations', event.target.value);">
+                                                                                                            <option value="0">200</option>
+                                                                                                    </select></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button"
+                                        class="sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 hover:sl-bg-canvas-50 active:sl-bg-canvas-100 sl-text-muted hover:sl-text-body focus:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70">
+                                    <div class="sl-mx-0">
+                                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="copy"
+                                             class="svg-inline--fa fa-copy fa-fw fa-sm sl-icon" role="img"
+                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                            <path fill="currentColor"
+                                                  d="M384 96L384 0h-112c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48H464c26.51 0 48-21.49 48-48V128h-95.1C398.4 128 384 113.6 384 96zM416 0v96h96L416 0zM192 352V128h-144c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48h192c26.51 0 48-21.49 48-48L288 416h-32C220.7 416 192 387.3 192 352z"></path>
+                                        </svg>
+                                    </div>
+                                </button>
+                            </div>
+                                                            <div class="sl-panel__content-wrapper sl-bg-canvas-100 example-response-GETapi-v1-lrgs-stations example-response-GETapi-v1-lrgs-stations-0"
+                                     style=" "
+                                >
+                                    <div class="sl-panel__content sl-p-0">                                                                                                                                
+                                            <pre><code style="max-height: 300px;"
+                                                       class="language-json sl-overflow-x-auto sl-overflow-y-auto">{
+    &quot;data&quot;: [
+        {
+            &quot;dcp_address&quot;: &quot;B04041E0&quot;,
+            &quot;station_label&quot;: &quot;Esta&ccedil;&atilde;o Principal - Rio S&atilde;o Francisco&quot;,
+            &quot;latitude&quot;: -12.1437,
+            &quot;longitude&quot;: -45.0107,
+            &quot;is_active&quot;: true
+        },
+        {
+            &quot;dcp_address&quot;: &quot;CE342D34&quot;,
+            &quot;station_label&quot;: &quot;Teste&quot;,
+            &quot;latitude&quot;: null,
+            &quot;longitude&quot;: null,
+            &quot;is_active&quot;: true
+        }
+    ],
+    &quot;meta&quot;: {
+        &quot;total&quot;: 2,
+        &quot;retrieved_at&quot;: &quot;2026-04-13T14:01:21-03:00&quot;
+    }
+}</code></pre>
+                                                                            </div>
+                                </div>
+                                                    </div>
+                            </div>
+    </div>
+</div>
+
+                    <div class="sl-stack sl-stack--vertical sl-stack--8 HttpOperation sl-flex sl-flex-col sl-items-stretch sl-w-full">
+    <div class="sl-stack sl-stack--vertical sl-stack--5 sl-flex sl-flex-col sl-items-stretch">
+        <div class="sl-relative">
+            <div class="sl-stack sl-stack--horizontal sl-stack--5 sl-flex sl-flex-row sl-items-center">
+                <h2 class="sl-text-3xl sl-leading-tight sl-font-prose sl-text-heading sl-mt-5 sl-mb-1"
+                    id="estacoes-aiba-GETapi-v1-lrgs--station_code--readings">
+                    Leituras da estação
+                </h2>
+            </div>
+        </div>
+
+        <div class="sl-relative">
+            <div title="http://localhost:8119/api/v1/lrgs/{station_code}/readings"
+                     class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
+                >
+                                            <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
+                             style="background-color: green;"
+                        >
+                            GET
+                        </div>
+                                        <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
+                        <div dir="rtl"
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                        <div class="sl-flex-1 sl-font-semibold">/api/v1/lrgs/{station_code}/readings</div>
+                    </div>
+
+                                                    <div class="sl-font-prose sl-font-semibold sl-px-1.5 sl-py-0.5 sl-text-on-primary sl-rounded-lg"
+                                 style="background-color: darkred"
+                            >requires authentication
+                            </div>
+                                                                                    </div>
+        </div>
+
+        <p>Retorna as leituras de uma estação LRGS pelo endereço DCP.
+Se não informar as datas, retorna as últimas 72 horas.</p>
+    </div>
+    <div class="sl-flex">
+        <div data-testid="two-column-left" class="sl-flex-1 sl-w-0">
+            <div class="sl-stack sl-stack--vertical sl-stack--10 sl-flex sl-flex-col sl-items-stretch">
+                <div class="sl-stack sl-stack--vertical sl-stack--8 sl-flex sl-flex-col sl-items-stretch">
+                                            <div class="sl-stack sl-stack--vertical sl-stack--5 sl-flex sl-flex-col sl-items-stretch">
+                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">
+                                Headers
+                            </h3>
+                            <div class="sl-text-sm">
+                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
+    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
+    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
+        <div class="sl-flex sl-items-center sl-max-w-full">
+                                        <div class="sl-flex sl-items-baseline sl-text-base">
+                    <div class="sl-font-mono sl-font-semibold sl-mr-2">X-Api-Key</div>
+                                    </div>
+                                        </div>
+                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
+                <span>Example:</span> <!-- <span> important for spacing -->
+                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
+                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
+                        {SUA_CHAVE_DE_API}
+                    </div>
+                </div>
+            </div>
+            </div>
+</div>
+                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
+    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
+    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
+        <div class="sl-flex sl-items-center sl-max-w-full">
+                                        <div class="sl-flex sl-items-baseline sl-text-base">
+                    <div class="sl-font-mono sl-font-semibold sl-mr-2">Content-Type</div>
+                                    </div>
+                                        </div>
+                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
+                <span>Example:</span> <!-- <span> important for spacing -->
+                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
+                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
+                        application/json
+                    </div>
+                </div>
+            </div>
+            </div>
+</div>
+                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
+    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
+    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
+        <div class="sl-flex sl-items-center sl-max-w-full">
+                                        <div class="sl-flex sl-items-baseline sl-text-base">
+                    <div class="sl-font-mono sl-font-semibold sl-mr-2">Accept</div>
+                                    </div>
+                                        </div>
+                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
+                <span>Example:</span> <!-- <span> important for spacing -->
+                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
+                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
+                        application/json
+                    </div>
+                </div>
+            </div>
+            </div>
+</div>
+                                                            </div>
+                        </div>
+                    
+                                            <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
+                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">URL Parameters</h3>
+
+                            <div class="sl-text-sm">
+                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
+    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
+    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
+        <div class="sl-flex sl-items-center sl-max-w-full">
+                                        <div class="sl-flex sl-items-baseline sl-text-base">
+                    <div class="sl-font-mono sl-font-semibold sl-mr-2">station_code</div>
+                                            <span class="sl-truncate sl-text-muted">string</span>
+                                    </div>
+                                            <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
+                        <div class="sl-flex sl-items-center">
+                                                            <span class="sl-ml-2 sl-text-warning">required</span>
+                                                                                </div>
+                                        </div>
+                <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
+            <p>Endereço DCP da estação.</p>
+        </div>
+                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
+                <span>Example:</span> <!-- <span> important for spacing -->
+                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
+                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
+                        B04041E0
+                    </div>
+                </div>
+            </div>
+            </div>
+</div>
+                                                            </div>
+                        </div>
+                    
+
+                                                <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
+                                <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Query Parameters</h3>
+
+                                <div class="sl-text-sm">
+                                                                            <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
+    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
+    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
+        <div class="sl-flex sl-items-center sl-max-w-full">
+                                        <div class="sl-flex sl-items-baseline sl-text-base">
+                    <div class="sl-font-mono sl-font-semibold sl-mr-2">date_from</div>
+                                            <span class="sl-truncate sl-text-muted">string</span>
+                                    </div>
+                                            <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
+                        <div class="sl-flex sl-items-center">
+                                                            <span class="sl-ml-2 sl-text-warning">required</span>
+                                                                                </div>
+                                        </div>
+                <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
+            <p>Data inicial (formato: Y-m-d).</p>
+        </div>
+                                    </div>
+</div>
+                                                                            <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
+    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
+    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
+        <div class="sl-flex sl-items-center sl-max-w-full">
+                                        <div class="sl-flex sl-items-baseline sl-text-base">
+                    <div class="sl-font-mono sl-font-semibold sl-mr-2">date_to</div>
+                                            <span class="sl-truncate sl-text-muted">string</span>
+                                    </div>
+                                            <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
+                        <div class="sl-flex sl-items-center">
+                                                            <span class="sl-ml-2 sl-text-warning">required</span>
+                                                                                </div>
+                                        </div>
+                <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
+            <p>Data final (formato: Y-m-d).</p>
+        </div>
+                                    </div>
+</div>
+                                                                </div>
+                        </div>
+                    
+                                            <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
+                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Body Parameters</h3>
+
+                                <div class="sl-text-sm">
+                                    <div class="expandable sl-text-sm sl-border-l sl-ml-px">
+        <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
+    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
+    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
+        <div class="sl-flex sl-items-center sl-max-w-full">
+                                        <div class="sl-flex sl-items-baseline sl-text-base">
+                    <div class="sl-font-mono sl-font-semibold sl-mr-2">date_from</div>
+                                            <span class="sl-truncate sl-text-muted">string</span>
+                                    </div>
+                                            <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
+                        <div class="sl-flex sl-items-center">
+                                                            <span class="sl-ml-2 sl-text-warning">required</span>
+                                                                                </div>
+                                        </div>
+                <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
+            <p>Data inicial (formato: Y-m-d).</p>
+        </div>
+                                    </div>
+</div>
+
+            </div>
+    <div class="expandable sl-text-sm sl-border-l sl-ml-px">
+        <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
+    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
+    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
+        <div class="sl-flex sl-items-center sl-max-w-full">
+                                        <div class="sl-flex sl-items-baseline sl-text-base">
+                    <div class="sl-font-mono sl-font-semibold sl-mr-2">date_to</div>
+                                            <span class="sl-truncate sl-text-muted">string</span>
+                                    </div>
+                                            <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
+                        <div class="sl-flex sl-items-center">
+                                                            <span class="sl-ml-2 sl-text-warning">required</span>
+                                                                                </div>
+                                        </div>
+                <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
+            <p>Data final (formato: Y-m-d).</p>
+        </div>
+                                    </div>
+</div>
+
+            </div>
+                            </div>
+                        </div>
+                    
+                                    </div>
+            </div>
+        </div>
+
+        <div data-testid="two-column-right" class="sl-relative sl-w-2/5 sl-ml-16" style="max-width: 500px;">
+            <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
+
+                                    <div class="sl-inverted">
+    <div class="sl-overflow-y-hidden sl-rounded-lg">
+        <form class="TryItPanel sl-bg-canvas-100 sl-rounded-lg"
+              data-method="GET"
+              data-path="api/v1/lrgs/{station_code}/readings"
+              data-hasfiles="0"
+              data-hasjsonbody="1">
+                            <div class="sl-panel sl-outline-none sl-w-full expandable">
+                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                         role="button">
+                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                     data-icon="caret-down"
+                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                    <path fill="currentColor"
+                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                </svg>
+                            </div>
+                            Auth
+                        </div>
+                    </div>
+                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                        <div class="ParameterGrid sl-p-4">
+                            <label aria-hidden="true"
+                                   for="auth-GETapi-v1-lrgs--station_code--readings">X-Api-Key</label>
+                            <span class="sl-mx-3">:</span>
+                            <div class="sl-flex sl-flex-1">
+                                <div class="sl-input sl-flex-1 sl-relative">
+                                    <code></code>
+                                    <input aria-label="X-Api-Key"
+                                           id="auth-GETapi-v1-lrgs--station_code--readings"
+                                           data-component="header"
+                                           data-prefix=""
+                                           name="X-Api-Key"
+                                           placeholder="{SUA_CHAVE_DE_API}"
+                                           class="auth-value sl-relative sl-w-full sl-pr-2.5 sl-pl-2.5 sl-h-md sl-text-base sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                            <div class="sl-panel sl-outline-none sl-w-full expandable">
+                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                         role="button">
+                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                     data-icon="caret-down"
+                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                    <path fill="currentColor"
+                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                </svg>
+                            </div>
+                            Headers
+                        </div>
+                    </div>
+                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                        <div class="ParameterGrid sl-p-4">
+                                                                                                                            <label aria-hidden="true"
+                                       for="header-GETapi-v1-lrgs--station_code--readings-Content-Type">Content-Type</label>
+                                <span class="sl-mx-3">:</span>
+                                <div class="sl-flex sl-flex-1">
+                                    <div class="sl-input sl-flex-1 sl-relative">
+                                        <input aria-label="Content-Type" name="Content-Type"
+                                               id="header-GETapi-v1-lrgs--station_code--readings-Content-Type"
+                                               value="application/json" data-component="header"
+                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                    </div>
+                                </div>
+                                                                                            <label aria-hidden="true"
+                                       for="header-GETapi-v1-lrgs--station_code--readings-Accept">Accept</label>
+                                <span class="sl-mx-3">:</span>
+                                <div class="sl-flex sl-flex-1">
+                                    <div class="sl-input sl-flex-1 sl-relative">
+                                        <input aria-label="Accept" name="Accept"
+                                               id="header-GETapi-v1-lrgs--station_code--readings-Accept"
+                                               value="application/json" data-component="header"
+                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                    </div>
+                                </div>
+                                                    </div>
+                    </div>
+                </div>
+            
+                            <div class="sl-panel sl-outline-none sl-w-full expandable">
+                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                         role="button">
+                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                     data-icon="caret-down"
+                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                    <path fill="currentColor"
+                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                </svg>
+                            </div>
+                            URL Parameters
+                        </div>
+                    </div>
+                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                        <div class="ParameterGrid sl-p-4">
+                                                            <label aria-hidden="true"
+                                       for="urlparam-GETapi-v1-lrgs--station_code--readings-station_code">station_code</label>
+                                <span class="sl-mx-3">:</span>
+                                <div class="sl-flex sl-flex-1">
+                                    <div class="sl-input sl-flex-1 sl-relative">
+                                        <input aria-label="station_code" name="station_code"
+                                               id="urlparam-GETapi-v1-lrgs--station_code--readings-station_code"
+                                               placeholder="Endereço DCP da estação."
+                                               value="B04041E0" data-component="url"
+                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                    </div>
+                                </div>
+                                                    </div>
+                    </div>
+                </div>
+            
+                            <div class="sl-panel sl-outline-none sl-w-full expandable">
+                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                         role="button">
+                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                     data-icon="caret-down"
+                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                    <path fill="currentColor"
+                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                </svg>
+                            </div>
+                            Query Parameters
+                        </div>
+                    </div>
+                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                        <div class="ParameterGrid sl-p-4">
+                                                                                            <label aria-hidden="true"
+                                       for="queryparam-GETapi-v1-lrgs--station_code--readings-date_from">date_from</label>
+                                <span class="sl-mx-3">:</span>
+                                <div class="sl-flex sl-flex-1">
+                                    <div class="sl-input sl-flex-1 sl-relative">
+                                                                                    <input aria-label="date_from" name="date_from"
+                                                   id="queryparam-GETapi-v1-lrgs--station_code--readings-date_from"
+                                                   placeholder="Data inicial (formato: Y-m-d)."
+                                                   value="" data-component="query"
+                                                   class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                            >
+                                                                            </div>
+                                </div>
+                                                                                            <label aria-hidden="true"
+                                       for="queryparam-GETapi-v1-lrgs--station_code--readings-date_to">date_to</label>
+                                <span class="sl-mx-3">:</span>
+                                <div class="sl-flex sl-flex-1">
+                                    <div class="sl-input sl-flex-1 sl-relative">
+                                                                                    <input aria-label="date_to" name="date_to"
+                                                   id="queryparam-GETapi-v1-lrgs--station_code--readings-date_to"
+                                                   placeholder="Data final (formato: Y-m-d)."
+                                                   value="" data-component="query"
+                                                   class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                            >
+                                                                            </div>
+                                </div>
+                                                    </div>
+                    </div>
+                </div>
+            
+                            <div class="sl-panel sl-outline-none sl-w-full expandable">
+                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                         role="button">
+                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                     data-icon="caret-down"
+                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                    <path fill="currentColor"
+                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                </svg>
+                            </div>
+                            Body
+                        </div>
+                    </div>
+                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                                                    <div class="TextRequestBody sl-p-4">
+                                <div class="code-editor language-json"
+                                     id="json-body-GETapi-v1-lrgs--station_code--readings"
+                                     style="font-family: var(--font-code); font-size: 12px; line-height: var(--lh-code);"
+                                >{
+    "date_from": null,
+    "date_to": null
+}</div>
+                            </div>
+                                            </div>
+                </div>
+            
+            <div class="SendButtonHolder sl-mt-4 sl-p-4 sl-pt-0">
+                <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-center">
+                    <button type="button" data-endpoint="GETapi-v1-lrgs--station_code--readings"
+                            class="tryItOut-btn sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-bg-primary hover:sl-bg-primary-dark active:sl-bg-primary-darker disabled:sl-bg-canvas-100 sl-text-on-primary disabled:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70"
+                    >
+                        Send Request 💥
+                    </button>
+                </div>
+            </div>
+
+            <div data-endpoint="GETapi-v1-lrgs--station_code--readings"
+                 class="tryItOut-error expandable sl-panel sl-outline-none sl-w-full" hidden>
+                <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                     role="button">
+                    <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                        <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                            <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                 data-icon="caret-down"
+                                 class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                <path fill="currentColor"
+                                      d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                            </svg>
+                        </div>
+                        Request failed with error
+                    </div>
+                </div>
+                <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                    <div class="sl-panel__content sl-p-4">
+                        <p class="sl-pb-2"><strong class="error-message"></strong></p>
+                        <p class="sl-pb-2">Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</p>
+                    </div>
+                </div>
+            </div>
+
+                <div data-endpoint="GETapi-v1-lrgs--station_code--readings"
+                     class="tryItOut-response expandable sl-panel sl-outline-none sl-w-full" hidden>
+                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                         role="button">
+                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                     data-icon="caret-down"
+                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                    <path fill="currentColor"
+                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                </svg>
+                            </div>
+                            Received response
+                        </div>
+                    </div>
+                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                        <div class="sl-panel__content sl-p-4">
+                            <p class="sl-pb-2 response-status"></p>
+                            <pre><code class="sl-pb-2 response-content language-json"
+                                       data-empty-response-text="<Empty response>"
+                                       style="max-height: 300px;"></code></pre>
+                        </div>
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
+                
+                                            <div class="sl-panel sl-outline-none sl-w-full sl-rounded-lg">
+                            <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
+                                <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                                    <div class="sl--ml-2">
+                                        Example request:
+                                        <select class="example-request-lang-toggle sl-text-base"
+                                                aria-label="Request Sample Language"
+                                                onchange="switchExampleLanguage(event.target.value);">
+                                                                                            <option>bash</option>
+                                                                                            <option>javascript</option>
+                                                                                            <option>python</option>
+                                                                                    </select>
+                                    </div>
+                                </div>
+                            </div>
+                                                            <div class="sl-bg-canvas-100 example-request example-request-bash"
+                                     style="">
+                                    <div class="sl-px-0 sl-py-1">
+                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
+                                            <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8119/api/v1/lrgs/B04041E0/readings?date_from=&amp;date_to=" \
+    --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"date_from\": null,
+    \"date_to\": null
+}"
+</code></pre>                                        </div>
+                                    </div>
+                                </div>
+                                                            <div class="sl-bg-canvas-100 example-request example-request-javascript"
+                                     style="display: none;">
+                                    <div class="sl-px-0 sl-py-1">
+                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
+                                            <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8119/api/v1/lrgs/B04041E0/readings"
+);
+
+const params = {
+    "date_from": "",
+    "date_to": "",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
+
+const headers = {
+    "X-Api-Key": "{SUA_CHAVE_DE_API}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "date_from": null,
+    "date_to": null
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre>                                        </div>
+                                    </div>
+                                </div>
+                                                            <div class="sl-bg-canvas-100 example-request example-request-python"
+                                     style="display: none;">
+                                    <div class="sl-px-0 sl-py-1">
+                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
+                                            <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost:8119/api/v1/lrgs/B04041E0/readings'
+payload = {
+    "date_from": null,
+    "date_to": null
+}
+params = {
+  'date_from': '',
+  'date_to': '',
+}
+headers = {
+  'X-Api-Key': '{SUA_CHAVE_DE_API}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers, json=payload, params=params)
+response.json()</code></pre>                                        </div>
+                                    </div>
+                                </div>
+                                                    </div>
+                    
+                                            <div class="sl-panel sl-outline-none sl-w-full sl-rounded-lg">
+                            <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
+                                <div class="sl-flex sl-flex-1 sl-items-center sl-py-2">
+                                    <div class="sl--ml-2">
+                                        <div class="sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-text-muted sl-rounded sl-border-transparent sl-border">
+                                            <div class="sl-mb-2 sl-inline-block">Example response:</div>
+                                            <div class="sl-mb-2 sl-inline-block">
+                                                <select
+                                                        class="example-response-GETapi-v1-lrgs--station_code--readings-toggle sl-text-base"
+                                                        aria-label="Response sample"
+                                                        onchange="switchExampleResponse('GETapi-v1-lrgs--station_code--readings', event.target.value);">
+                                                                                                            <option value="0">200</option>
+                                                                                                    </select></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button"
+                                        class="sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 hover:sl-bg-canvas-50 active:sl-bg-canvas-100 sl-text-muted hover:sl-text-body focus:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70">
+                                    <div class="sl-mx-0">
+                                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="copy"
+                                             class="svg-inline--fa fa-copy fa-fw fa-sm sl-icon" role="img"
+                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                            <path fill="currentColor"
+                                                  d="M384 96L384 0h-112c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48H464c26.51 0 48-21.49 48-48V128h-95.1C398.4 128 384 113.6 384 96zM416 0v96h96L416 0zM192 352V128h-144c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48h192c26.51 0 48-21.49 48-48L288 416h-32C220.7 416 192 387.3 192 352z"></path>
+                                        </svg>
+                                    </div>
+                                </button>
+                            </div>
+                                                            <div class="sl-panel__content-wrapper sl-bg-canvas-100 example-response-GETapi-v1-lrgs--station_code--readings example-response-GETapi-v1-lrgs--station_code--readings-0"
+                                     style=" "
+                                >
+                                    <div class="sl-panel__content sl-p-0">                                                                                                                                
+                                            <pre><code style="max-height: 300px;"
+                                                       class="language-json sl-overflow-x-auto sl-overflow-y-auto">{
+    &quot;data&quot;: [
+        {
+            &quot;reading_datetime&quot;: &quot;2026-01-01 21:06:22&quot;,
+            &quot;water_level&quot;: &quot;32&quot;,
+            &quot;flow&quot;: &quot;1800.000000&quot;,
+            &quot;rain&quot;: &quot;641.2&quot;,
+            &quot;water_temperature&quot;: &quot;31.6&quot;,
+            &quot;atmospheric_pressure&quot;: &quot;961.2&quot;
+        },
+        {
+            &quot;reading_datetime&quot;: &quot;2026-01-01 20:06:22&quot;,
+            &quot;water_level&quot;: &quot;32&quot;,
+            &quot;flow&quot;: &quot;1800.000000&quot;,
+            &quot;rain&quot;: &quot;641.2&quot;,
+            &quot;water_temperature&quot;: &quot;32.3&quot;,
+            &quot;atmospheric_pressure&quot;: &quot;960.8&quot;
+        },
+        {
+            &quot;reading_datetime&quot;: &quot;2026-01-01 19:06:22&quot;,
+            &quot;water_level&quot;: &quot;32&quot;,
+            &quot;flow&quot;: &quot;1800.000000&quot;,
+            &quot;rain&quot;: &quot;641.2&quot;,
+            &quot;water_temperature&quot;: &quot;33.0&quot;,
+            &quot;atmospheric_pressure&quot;: &quot;959.3&quot;
+        }
+    ],
+    &quot;meta&quot;: {
+        &quot;station_code&quot;: &quot;B04041E0&quot;,
+        &quot;total&quot;: 21,
+        &quot;period&quot;: {
+            &quot;from&quot;: &quot;2026-01-01&quot;,
+            &quot;to&quot;: &quot;2026-01-31&quot;
+        },
+        &quot;retrieved_at&quot;: &quot;2026-04-13T14:02:22-03:00&quot;
     }
 }</code></pre>
                                                                             </div>
@@ -4181,10 +5258,10 @@ response.json()</code></pre>                                        </div>
     </div>
 </div>
 
-                <h1 id="estacoes-lrgs"
+                <h1 id="pocos-aiba"
         class="sl-text-5xl sl-leading-tight sl-font-prose sl-text-heading"
     >
-        Estações LRGS
+        Poços AIBA
     </h1>
 
     
@@ -4194,14 +5271,14 @@ response.json()</code></pre>                                        </div>
         <div class="sl-relative">
             <div class="sl-stack sl-stack--horizontal sl-stack--5 sl-flex sl-flex-row sl-items-center">
                 <h2 class="sl-text-3xl sl-leading-tight sl-font-prose sl-text-heading sl-mt-5 sl-mb-1"
-                    id="estacoes-lrgs-GETapi-v1-lrgs-stations">
-                    Listar estações
+                    id="pocos-aiba-GETapi-v1-poco-simah-stations">
+                    Listar estações Poços AIBA
                 </h2>
             </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/lrgs/stations"
+            <div title="http://localhost:8119/api/v1/poco-simah/stations"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -4212,7 +5289,7 @@ response.json()</code></pre>                                        </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
                              class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
-                        <div class="sl-flex-1 sl-font-semibold">/api/v1/lrgs/stations</div>
+                        <div class="sl-flex-1 sl-font-semibold">/api/v1/poco-simah/stations</div>
                     </div>
 
                                                     <div class="sl-font-prose sl-font-semibold sl-px-1.5 sl-py-0.5 sl-text-on-primary sl-rounded-lg"
@@ -4222,7 +5299,7 @@ response.json()</code></pre>                                        </div>
                                                                                     </div>
         </div>
 
-        <p>Retorna a lista de todas as estações LRGS cadastradas.</p>
+        <p>Retorna a lista de estações de poços monitorados pelo AIBA.</p>
     </div>
     <div class="sl-flex">
         <div data-testid="two-column-left" class="sl-flex-1 sl-w-0">
@@ -4305,7 +5382,7 @@ response.json()</code></pre>                                        </div>
     <div class="sl-overflow-y-hidden sl-rounded-lg">
         <form class="TryItPanel sl-bg-canvas-100 sl-rounded-lg"
               data-method="GET"
-              data-path="api/v1/lrgs/stations"
+              data-path="api/v1/poco-simah/stations"
               data-hasfiles="0"
               data-hasjsonbody="0">
                             <div class="sl-panel sl-outline-none sl-w-full expandable">
@@ -4327,13 +5404,13 @@ response.json()</code></pre>                                        </div>
                     <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
                         <div class="ParameterGrid sl-p-4">
                             <label aria-hidden="true"
-                                   for="auth-GETapi-v1-lrgs-stations">X-Api-Key</label>
+                                   for="auth-GETapi-v1-poco-simah-stations">X-Api-Key</label>
                             <span class="sl-mx-3">:</span>
                             <div class="sl-flex sl-flex-1">
                                 <div class="sl-input sl-flex-1 sl-relative">
                                     <code></code>
                                     <input aria-label="X-Api-Key"
-                                           id="auth-GETapi-v1-lrgs-stations"
+                                           id="auth-GETapi-v1-poco-simah-stations"
                                            data-component="header"
                                            data-prefix=""
                                            name="X-Api-Key"
@@ -4364,23 +5441,23 @@ response.json()</code></pre>                                        </div>
                     <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
                         <div class="ParameterGrid sl-p-4">
                                                                                                                             <label aria-hidden="true"
-                                       for="header-GETapi-v1-lrgs-stations-Content-Type">Content-Type</label>
+                                       for="header-GETapi-v1-poco-simah-stations-Content-Type">Content-Type</label>
                                 <span class="sl-mx-3">:</span>
                                 <div class="sl-flex sl-flex-1">
                                     <div class="sl-input sl-flex-1 sl-relative">
                                         <input aria-label="Content-Type" name="Content-Type"
-                                               id="header-GETapi-v1-lrgs-stations-Content-Type"
+                                               id="header-GETapi-v1-poco-simah-stations-Content-Type"
                                                value="application/json" data-component="header"
                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
                                     </div>
                                 </div>
                                                                                             <label aria-hidden="true"
-                                       for="header-GETapi-v1-lrgs-stations-Accept">Accept</label>
+                                       for="header-GETapi-v1-poco-simah-stations-Accept">Accept</label>
                                 <span class="sl-mx-3">:</span>
                                 <div class="sl-flex sl-flex-1">
                                     <div class="sl-input sl-flex-1 sl-relative">
                                         <input aria-label="Accept" name="Accept"
-                                               id="header-GETapi-v1-lrgs-stations-Accept"
+                                               id="header-GETapi-v1-poco-simah-stations-Accept"
                                                value="application/json" data-component="header"
                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
                                     </div>
@@ -4394,7 +5471,7 @@ response.json()</code></pre>                                        </div>
             
             <div class="SendButtonHolder sl-mt-4 sl-p-4 sl-pt-0">
                 <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-center">
-                    <button type="button" data-endpoint="GETapi-v1-lrgs-stations"
+                    <button type="button" data-endpoint="GETapi-v1-poco-simah-stations"
                             class="tryItOut-btn sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-bg-primary hover:sl-bg-primary-dark active:sl-bg-primary-darker disabled:sl-bg-canvas-100 sl-text-on-primary disabled:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70"
                     >
                         Send Request 💥
@@ -4402,7 +5479,7 @@ response.json()</code></pre>                                        </div>
                 </div>
             </div>
 
-            <div data-endpoint="GETapi-v1-lrgs-stations"
+            <div data-endpoint="GETapi-v1-poco-simah-stations"
                  class="tryItOut-error expandable sl-panel sl-outline-none sl-w-full" hidden>
                 <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
                      role="button">
@@ -4429,7 +5506,7 @@ You can check the Dev Tools console for debugging information.</p>
                 </div>
             </div>
 
-                <div data-endpoint="GETapi-v1-lrgs-stations"
+                <div data-endpoint="GETapi-v1-poco-simah-stations"
                      class="tryItOut-response expandable sl-panel sl-outline-none sl-w-full" hidden>
                     <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
                          role="button">
@@ -4479,7 +5556,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/lrgs/stations" \
+    --get "http://localhost:8119/api/v1/poco-simah/stations" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
@@ -4490,7 +5567,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/lrgs/stations"
+    "http://localhost:8119/api/v1/poco-simah/stations"
 );
 
 const headers = {
@@ -4513,7 +5590,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/lrgs/stations'
+url = 'http://localhost:8119/api/v1/poco-simah/stations'
 headers = {
   'X-Api-Key': '{SUA_CHAVE_DE_API}',
   'Content-Type': 'application/json',
@@ -4534,9 +5611,9 @@ response.json()</code></pre>                                        </div>
                                             <div class="sl-mb-2 sl-inline-block">Example response:</div>
                                             <div class="sl-mb-2 sl-inline-block">
                                                 <select
-                                                        class="example-response-GETapi-v1-lrgs-stations-toggle sl-text-base"
+                                                        class="example-response-GETapi-v1-poco-simah-stations-toggle sl-text-base"
                                                         aria-label="Response sample"
-                                                        onchange="switchExampleResponse('GETapi-v1-lrgs-stations', event.target.value);">
+                                                        onchange="switchExampleResponse('GETapi-v1-poco-simah-stations', event.target.value);">
                                                                                                             <option value="0">200</option>
                                                                                                     </select></div>
                                         </div>
@@ -4554,7 +5631,7 @@ response.json()</code></pre>                                        </div>
                                     </div>
                                 </button>
                             </div>
-                                                            <div class="sl-panel__content-wrapper sl-bg-canvas-100 example-response-GETapi-v1-lrgs-stations example-response-GETapi-v1-lrgs-stations-0"
+                                                            <div class="sl-panel__content-wrapper sl-bg-canvas-100 example-response-GETapi-v1-poco-simah-stations example-response-GETapi-v1-poco-simah-stations-0"
                                      style=" "
                                 >
                                     <div class="sl-panel__content sl-p-0">                                                                                                                                
@@ -4562,23 +5639,16 @@ response.json()</code></pre>                                        </div>
                                                        class="language-json sl-overflow-x-auto sl-overflow-y-auto">{
     &quot;data&quot;: [
         {
-            &quot;dcp_address&quot;: &quot;B04041E0&quot;,
-            &quot;station_label&quot;: &quot;Esta&ccedil;&atilde;o Principal - Rio S&atilde;o Francisco&quot;,
-            &quot;latitude&quot;: -12.1437,
-            &quot;longitude&quot;: -45.0107,
-            &quot;is_active&quot;: true
-        },
-        {
-            &quot;dcp_address&quot;: &quot;CE342D34&quot;,
-            &quot;station_label&quot;: &quot;Teste&quot;,
-            &quot;latitude&quot;: null,
-            &quot;longitude&quot;: null,
-            &quot;is_active&quot;: true
+            &quot;station_code&quot;: &quot;1676349&quot;,
+            &quot;name&quot;: &quot;Po&ccedil;o SIMAH 01&quot;,
+            &quot;latitude&quot;: &quot;-12.9714&quot;,
+            &quot;longitude&quot;: &quot;-38.5014&quot;,
+            &quot;ativa&quot;: true
         }
     ],
     &quot;meta&quot;: {
-        &quot;total&quot;: 2,
-        &quot;retrieved_at&quot;: &quot;2026-04-13T14:01:21-03:00&quot;
+        &quot;total&quot;: 1,
+        &quot;retrieved_at&quot;: &quot;2026-04-25T10:00:00-03:00&quot;
     }
 }</code></pre>
                                                                             </div>
@@ -4593,14 +5663,14 @@ response.json()</code></pre>                                        </div>
         <div class="sl-relative">
             <div class="sl-stack sl-stack--horizontal sl-stack--5 sl-flex sl-flex-row sl-items-center">
                 <h2 class="sl-text-3xl sl-leading-tight sl-font-prose sl-text-heading sl-mt-5 sl-mb-1"
-                    id="estacoes-lrgs-GETapi-v1-lrgs--station_code--readings">
-                    Leituras da estação
+                    id="pocos-aiba-GETapi-v1-poco-simah--station_code--readings">
+                    Leituras da estação Poço AIBA
                 </h2>
             </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/lrgs/{station_code}/readings"
+            <div title="http://localhost:8119/api/v1/poco-simah/{station_code}/readings"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -4611,7 +5681,7 @@ response.json()</code></pre>                                        </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
                              class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
-                        <div class="sl-flex-1 sl-font-semibold">/api/v1/lrgs/{station_code}/readings</div>
+                        <div class="sl-flex-1 sl-font-semibold">/api/v1/poco-simah/{station_code}/readings</div>
                     </div>
 
                                                     <div class="sl-font-prose sl-font-semibold sl-px-1.5 sl-py-0.5 sl-text-on-primary sl-rounded-lg"
@@ -4621,8 +5691,8 @@ response.json()</code></pre>                                        </div>
                                                                                     </div>
         </div>
 
-        <p>Retorna as leituras de uma estação LRGS pelo endereço DCP.
-Se não informar as datas, retorna as últimas 72 horas.</p>
+        <p>Retorna as leituras de uma estação pelo código, filtradas por período.
+Os parâmetros date_from e date_to são obrigatórios.</p>
     </div>
     <div class="sl-flex">
         <div data-testid="two-column-left" class="sl-flex-1 sl-w-0">
@@ -4708,17 +5778,9 @@ Se não informar as datas, retorna as últimas 72 horas.</p>
                                                                                 </div>
                                         </div>
                 <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
-            <p>Endereço DCP da estação.</p>
+            <p>Código da estação.</p>
         </div>
-                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
-                <span>Example:</span> <!-- <span> important for spacing -->
-                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
-                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
-                        B04041E0
-                    </div>
-                </div>
-            </div>
-            </div>
+                                    </div>
 </div>
                                                             </div>
                         </div>
@@ -4767,54 +5829,6 @@ Se não informar as datas, retorna as últimas 72 horas.</p>
                                                                 </div>
                         </div>
                     
-                                            <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Body Parameters</h3>
-
-                                <div class="sl-text-sm">
-                                    <div class="expandable sl-text-sm sl-border-l sl-ml-px">
-        <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
-    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
-    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
-        <div class="sl-flex sl-items-center sl-max-w-full">
-                                        <div class="sl-flex sl-items-baseline sl-text-base">
-                    <div class="sl-font-mono sl-font-semibold sl-mr-2">date_from</div>
-                                            <span class="sl-truncate sl-text-muted">string</span>
-                                    </div>
-                                            <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
-                        <div class="sl-flex sl-items-center">
-                                                            <span class="sl-ml-2 sl-text-warning">required</span>
-                                                                                </div>
-                                        </div>
-                <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
-            <p>Data inicial (formato: Y-m-d).</p>
-        </div>
-                                    </div>
-</div>
-
-            </div>
-    <div class="expandable sl-text-sm sl-border-l sl-ml-px">
-        <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
-    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
-    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
-        <div class="sl-flex sl-items-center sl-max-w-full">
-                                        <div class="sl-flex sl-items-baseline sl-text-base">
-                    <div class="sl-font-mono sl-font-semibold sl-mr-2">date_to</div>
-                                            <span class="sl-truncate sl-text-muted">string</span>
-                                    </div>
-                                            <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
-                        <div class="sl-flex sl-items-center">
-                                                            <span class="sl-ml-2 sl-text-warning">required</span>
-                                                                                </div>
-                                        </div>
-                <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
-            <p>Data final (formato: Y-m-d).</p>
-        </div>
-                                    </div>
-</div>
-
-            </div>
-                            </div>
-                        </div>
                     
                                     </div>
             </div>
@@ -4827,9 +5841,9 @@ Se não informar as datas, retorna as últimas 72 horas.</p>
     <div class="sl-overflow-y-hidden sl-rounded-lg">
         <form class="TryItPanel sl-bg-canvas-100 sl-rounded-lg"
               data-method="GET"
-              data-path="api/v1/lrgs/{station_code}/readings"
+              data-path="api/v1/poco-simah/{station_code}/readings"
               data-hasfiles="0"
-              data-hasjsonbody="1">
+              data-hasjsonbody="0">
                             <div class="sl-panel sl-outline-none sl-w-full expandable">
                     <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
                          role="button">
@@ -4849,13 +5863,13 @@ Se não informar as datas, retorna as últimas 72 horas.</p>
                     <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
                         <div class="ParameterGrid sl-p-4">
                             <label aria-hidden="true"
-                                   for="auth-GETapi-v1-lrgs--station_code--readings">X-Api-Key</label>
+                                   for="auth-GETapi-v1-poco-simah--station_code--readings">X-Api-Key</label>
                             <span class="sl-mx-3">:</span>
                             <div class="sl-flex sl-flex-1">
                                 <div class="sl-input sl-flex-1 sl-relative">
                                     <code></code>
                                     <input aria-label="X-Api-Key"
-                                           id="auth-GETapi-v1-lrgs--station_code--readings"
+                                           id="auth-GETapi-v1-poco-simah--station_code--readings"
                                            data-component="header"
                                            data-prefix=""
                                            name="X-Api-Key"
@@ -4886,23 +5900,23 @@ Se não informar as datas, retorna as últimas 72 horas.</p>
                     <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
                         <div class="ParameterGrid sl-p-4">
                                                                                                                             <label aria-hidden="true"
-                                       for="header-GETapi-v1-lrgs--station_code--readings-Content-Type">Content-Type</label>
+                                       for="header-GETapi-v1-poco-simah--station_code--readings-Content-Type">Content-Type</label>
                                 <span class="sl-mx-3">:</span>
                                 <div class="sl-flex sl-flex-1">
                                     <div class="sl-input sl-flex-1 sl-relative">
                                         <input aria-label="Content-Type" name="Content-Type"
-                                               id="header-GETapi-v1-lrgs--station_code--readings-Content-Type"
+                                               id="header-GETapi-v1-poco-simah--station_code--readings-Content-Type"
                                                value="application/json" data-component="header"
                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
                                     </div>
                                 </div>
                                                                                             <label aria-hidden="true"
-                                       for="header-GETapi-v1-lrgs--station_code--readings-Accept">Accept</label>
+                                       for="header-GETapi-v1-poco-simah--station_code--readings-Accept">Accept</label>
                                 <span class="sl-mx-3">:</span>
                                 <div class="sl-flex sl-flex-1">
                                     <div class="sl-input sl-flex-1 sl-relative">
                                         <input aria-label="Accept" name="Accept"
-                                               id="header-GETapi-v1-lrgs--station_code--readings-Accept"
+                                               id="header-GETapi-v1-poco-simah--station_code--readings-Accept"
                                                value="application/json" data-component="header"
                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
                                     </div>
@@ -4930,14 +5944,14 @@ Se não informar as datas, retorna as últimas 72 horas.</p>
                     <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
                         <div class="ParameterGrid sl-p-4">
                                                             <label aria-hidden="true"
-                                       for="urlparam-GETapi-v1-lrgs--station_code--readings-station_code">station_code</label>
+                                       for="urlparam-GETapi-v1-poco-simah--station_code--readings-station_code">station_code</label>
                                 <span class="sl-mx-3">:</span>
                                 <div class="sl-flex sl-flex-1">
                                     <div class="sl-input sl-flex-1 sl-relative">
                                         <input aria-label="station_code" name="station_code"
-                                               id="urlparam-GETapi-v1-lrgs--station_code--readings-station_code"
-                                               placeholder="Endereço DCP da estação."
-                                               value="B04041E0" data-component="url"
+                                               id="urlparam-GETapi-v1-poco-simah--station_code--readings-station_code"
+                                               placeholder="Código da estação."
+                                               value="" data-component="url"
                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
                                     </div>
                                 </div>
@@ -4964,12 +5978,12 @@ Se não informar as datas, retorna as últimas 72 horas.</p>
                     <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
                         <div class="ParameterGrid sl-p-4">
                                                                                             <label aria-hidden="true"
-                                       for="queryparam-GETapi-v1-lrgs--station_code--readings-date_from">date_from</label>
+                                       for="queryparam-GETapi-v1-poco-simah--station_code--readings-date_from">date_from</label>
                                 <span class="sl-mx-3">:</span>
                                 <div class="sl-flex sl-flex-1">
                                     <div class="sl-input sl-flex-1 sl-relative">
                                                                                     <input aria-label="date_from" name="date_from"
-                                                   id="queryparam-GETapi-v1-lrgs--station_code--readings-date_from"
+                                                   id="queryparam-GETapi-v1-poco-simah--station_code--readings-date_from"
                                                    placeholder="Data inicial (formato: Y-m-d)."
                                                    value="" data-component="query"
                                                    class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
@@ -4977,12 +5991,12 @@ Se não informar as datas, retorna as últimas 72 horas.</p>
                                                                             </div>
                                 </div>
                                                                                             <label aria-hidden="true"
-                                       for="queryparam-GETapi-v1-lrgs--station_code--readings-date_to">date_to</label>
+                                       for="queryparam-GETapi-v1-poco-simah--station_code--readings-date_to">date_to</label>
                                 <span class="sl-mx-3">:</span>
                                 <div class="sl-flex sl-flex-1">
                                     <div class="sl-input sl-flex-1 sl-relative">
                                                                                     <input aria-label="date_to" name="date_to"
-                                                   id="queryparam-GETapi-v1-lrgs--station_code--readings-date_to"
+                                                   id="queryparam-GETapi-v1-poco-simah--station_code--readings-date_to"
                                                    placeholder="Data final (formato: Y-m-d)."
                                                    value="" data-component="query"
                                                    class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
@@ -4993,38 +6007,10 @@ Se não informar as datas, retorna as últimas 72 horas.</p>
                     </div>
                 </div>
             
-                            <div class="sl-panel sl-outline-none sl-w-full expandable">
-                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                         role="button">
-                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
-                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                     data-icon="caret-down"
-                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                    <path fill="currentColor"
-                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                                </svg>
-                            </div>
-                            Body
-                        </div>
-                    </div>
-                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
-                                                    <div class="TextRequestBody sl-p-4">
-                                <div class="code-editor language-json"
-                                     id="json-body-GETapi-v1-lrgs--station_code--readings"
-                                     style="font-family: var(--font-code); font-size: 12px; line-height: var(--lh-code);"
-                                >{
-    "date_from": null,
-    "date_to": null
-}</div>
-                            </div>
-                                            </div>
-                </div>
             
             <div class="SendButtonHolder sl-mt-4 sl-p-4 sl-pt-0">
                 <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-center">
-                    <button type="button" data-endpoint="GETapi-v1-lrgs--station_code--readings"
+                    <button type="button" data-endpoint="GETapi-v1-poco-simah--station_code--readings"
                             class="tryItOut-btn sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-bg-primary hover:sl-bg-primary-dark active:sl-bg-primary-darker disabled:sl-bg-canvas-100 sl-text-on-primary disabled:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70"
                     >
                         Send Request 💥
@@ -5032,7 +6018,7 @@ Se não informar as datas, retorna as últimas 72 horas.</p>
                 </div>
             </div>
 
-            <div data-endpoint="GETapi-v1-lrgs--station_code--readings"
+            <div data-endpoint="GETapi-v1-poco-simah--station_code--readings"
                  class="tryItOut-error expandable sl-panel sl-outline-none sl-w-full" hidden>
                 <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
                      role="button">
@@ -5059,7 +6045,7 @@ You can check the Dev Tools console for debugging information.</p>
                 </div>
             </div>
 
-                <div data-endpoint="GETapi-v1-lrgs--station_code--readings"
+                <div data-endpoint="GETapi-v1-poco-simah--station_code--readings"
                      class="tryItOut-response expandable sl-panel sl-outline-none sl-w-full" hidden>
                     <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
                          role="button">
@@ -5109,15 +6095,10 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/lrgs/B04041E0/readings?date_from=&amp;date_to=" \
+    --get "http://localhost:8119/api/v1/poco-simah//readings?date_from=&amp;date_to=" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
-    --header "Accept: application/json" \
-    --data "{
-    \"date_from\": null,
-    \"date_to\": null
-}"
-</code></pre>                                        </div>
+    --header "Accept: application/json"</code></pre>                                        </div>
                                     </div>
                                 </div>
                                                             <div class="sl-bg-canvas-100 example-request example-request-javascript"
@@ -5125,7 +6106,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/lrgs/B04041E0/readings"
+    "http://localhost:8119/api/v1/poco-simah//readings"
 );
 
 const params = {
@@ -5141,15 +6122,10 @@ const headers = {
     "Accept": "application/json",
 };
 
-let body = {
-    "date_from": null,
-    "date_to": null
-};
 
 fetch(url, {
     method: "GET",
     headers,
-    body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre>                                        </div>
                                     </div>
                                 </div>
@@ -5160,11 +6136,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/lrgs/B04041E0/readings'
-payload = {
-    "date_from": null,
-    "date_to": null
-}
+url = 'http://localhost:8119/api/v1/poco-simah//readings'
 params = {
   'date_from': '',
   'date_to': '',
@@ -5175,7 +6147,7 @@ headers = {
   'Accept': 'application/json'
 }
 
-response = requests.request('GET', url, headers=headers, json=payload, params=params)
+response = requests.request('GET', url, headers=headers, params=params)
 response.json()</code></pre>                                        </div>
                                     </div>
                                 </div>
@@ -5189,9 +6161,9 @@ response.json()</code></pre>                                        </div>
                                             <div class="sl-mb-2 sl-inline-block">Example response:</div>
                                             <div class="sl-mb-2 sl-inline-block">
                                                 <select
-                                                        class="example-response-GETapi-v1-lrgs--station_code--readings-toggle sl-text-base"
+                                                        class="example-response-GETapi-v1-poco-simah--station_code--readings-toggle sl-text-base"
                                                         aria-label="Response sample"
-                                                        onchange="switchExampleResponse('GETapi-v1-lrgs--station_code--readings', event.target.value);">
+                                                        onchange="switchExampleResponse('GETapi-v1-poco-simah--station_code--readings', event.target.value);">
                                                                                                             <option value="0">200</option>
                                                                                                     </select></div>
                                         </div>
@@ -5209,7 +6181,7 @@ response.json()</code></pre>                                        </div>
                                     </div>
                                 </button>
                             </div>
-                                                            <div class="sl-panel__content-wrapper sl-bg-canvas-100 example-response-GETapi-v1-lrgs--station_code--readings example-response-GETapi-v1-lrgs--station_code--readings-0"
+                                                            <div class="sl-panel__content-wrapper sl-bg-canvas-100 example-response-GETapi-v1-poco-simah--station_code--readings example-response-GETapi-v1-poco-simah--station_code--readings-0"
                                      style=" "
                                 >
                                     <div class="sl-panel__content sl-p-0">                                                                                                                                
@@ -5217,38 +6189,25 @@ response.json()</code></pre>                                        </div>
                                                        class="language-json sl-overflow-x-auto sl-overflow-y-auto">{
     &quot;data&quot;: [
         {
-            &quot;reading_datetime&quot;: &quot;2026-01-01 21:06:22&quot;,
-            &quot;water_level&quot;: &quot;32&quot;,
-            &quot;flow&quot;: &quot;1800.000000&quot;,
-            &quot;rain&quot;: &quot;641.2&quot;,
-            &quot;water_temperature&quot;: &quot;31.6&quot;,
-            &quot;atmospheric_pressure&quot;: &quot;961.2&quot;
-        },
-        {
-            &quot;reading_datetime&quot;: &quot;2026-01-01 20:06:22&quot;,
-            &quot;water_level&quot;: &quot;32&quot;,
-            &quot;flow&quot;: &quot;1800.000000&quot;,
-            &quot;rain&quot;: &quot;641.2&quot;,
-            &quot;water_temperature&quot;: &quot;32.3&quot;,
-            &quot;atmospheric_pressure&quot;: &quot;960.8&quot;
-        },
-        {
-            &quot;reading_datetime&quot;: &quot;2026-01-01 19:06:22&quot;,
-            &quot;water_level&quot;: &quot;32&quot;,
-            &quot;flow&quot;: &quot;1800.000000&quot;,
-            &quot;rain&quot;: &quot;641.2&quot;,
-            &quot;water_temperature&quot;: &quot;33.0&quot;,
-            &quot;atmospheric_pressure&quot;: &quot;959.3&quot;
+            &quot;number&quot;: 1,
+            &quot;datetime_local&quot;: &quot;2026-04-07T17:25:29.000000Z&quot;,
+            &quot;datetime_utc&quot;: &quot;2026-04-07T20:25:29.000000Z&quot;,
+            &quot;pd_bar&quot;: &quot;0.00075674057&quot;,
+            &quot;p1_bar&quot;: &quot;0.96156311035&quot;,
+            &quot;water_level_meters&quot;: &quot;9.807943725570000&quot;,
+            &quot;p2_bar&quot;: &quot;0.96080017090&quot;,
+            &quot;tob1_celsius&quot;: &quot;25.15673828125&quot;,
+            &quot;tob2_celsius&quot;: &quot;24.51025390625&quot;
         }
     ],
     &quot;meta&quot;: {
-        &quot;station_code&quot;: &quot;B04041E0&quot;,
-        &quot;total&quot;: 21,
+        &quot;station_code&quot;: &quot;1676349&quot;,
+        &quot;total&quot;: 1,
         &quot;period&quot;: {
-            &quot;from&quot;: &quot;2026-01-01&quot;,
-            &quot;to&quot;: &quot;2026-01-31&quot;
+            &quot;from&quot;: &quot;2026-04-01&quot;,
+            &quot;to&quot;: &quot;2026-04-30&quot;
         },
-        &quot;retrieved_at&quot;: &quot;2026-04-13T14:02:22-03:00&quot;
+        &quot;retrieved_at&quot;: &quot;2026-04-25T10:00:00-03:00&quot;
     }
 }</code></pre>
                                                                             </div>
@@ -7146,965 +8105,6 @@ response.json()</code></pre>                                        </div>
         &quot;nivel_estatico&quot;: &quot;12.940000000000000&quot;,
         &quot;vazao_especifica&quot;: &quot;1.072000000000000&quot;,
         &quot;vazao_estabilizada&quot;: &quot;16.129999999999999&quot;
-    }
-}</code></pre>
-                                                                            </div>
-                                </div>
-                                                    </div>
-                            </div>
-    </div>
-</div>
-
-                <h1 id="pocos-simah"
-        class="sl-text-5xl sl-leading-tight sl-font-prose sl-text-heading"
-    >
-        Poços SIMAH
-    </h1>
-
-    
-
-                                <div class="sl-stack sl-stack--vertical sl-stack--8 HttpOperation sl-flex sl-flex-col sl-items-stretch sl-w-full">
-    <div class="sl-stack sl-stack--vertical sl-stack--5 sl-flex sl-flex-col sl-items-stretch">
-        <div class="sl-relative">
-            <div class="sl-stack sl-stack--horizontal sl-stack--5 sl-flex sl-flex-row sl-items-center">
-                <h2 class="sl-text-3xl sl-leading-tight sl-font-prose sl-text-heading sl-mt-5 sl-mb-1"
-                    id="pocos-simah-GETapi-v1-poco-simah-stations">
-                    Listar estações Poços SIMAH
-                </h2>
-            </div>
-        </div>
-
-        <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/poco-simah/stations"
-                     class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
-                >
-                                            <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
-                             style="background-color: green;"
-                        >
-                            GET
-                        </div>
-                                        <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
-                        <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
-                        <div class="sl-flex-1 sl-font-semibold">/api/v1/poco-simah/stations</div>
-                    </div>
-
-                                                    <div class="sl-font-prose sl-font-semibold sl-px-1.5 sl-py-0.5 sl-text-on-primary sl-rounded-lg"
-                                 style="background-color: darkred"
-                            >requires authentication
-                            </div>
-                                                                                    </div>
-        </div>
-
-        <p>Retorna a lista de estações de poços monitorados pelo SIMAH.</p>
-    </div>
-    <div class="sl-flex">
-        <div data-testid="two-column-left" class="sl-flex-1 sl-w-0">
-            <div class="sl-stack sl-stack--vertical sl-stack--10 sl-flex sl-flex-col sl-items-stretch">
-                <div class="sl-stack sl-stack--vertical sl-stack--8 sl-flex sl-flex-col sl-items-stretch">
-                                            <div class="sl-stack sl-stack--vertical sl-stack--5 sl-flex sl-flex-col sl-items-stretch">
-                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">
-                                Headers
-                            </h3>
-                            <div class="sl-text-sm">
-                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
-    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
-    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
-        <div class="sl-flex sl-items-center sl-max-w-full">
-                                        <div class="sl-flex sl-items-baseline sl-text-base">
-                    <div class="sl-font-mono sl-font-semibold sl-mr-2">X-Api-Key</div>
-                                    </div>
-                                        </div>
-                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
-                <span>Example:</span> <!-- <span> important for spacing -->
-                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
-                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
-                        {SUA_CHAVE_DE_API}
-                    </div>
-                </div>
-            </div>
-            </div>
-</div>
-                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
-    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
-    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
-        <div class="sl-flex sl-items-center sl-max-w-full">
-                                        <div class="sl-flex sl-items-baseline sl-text-base">
-                    <div class="sl-font-mono sl-font-semibold sl-mr-2">Content-Type</div>
-                                    </div>
-                                        </div>
-                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
-                <span>Example:</span> <!-- <span> important for spacing -->
-                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
-                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
-                        application/json
-                    </div>
-                </div>
-            </div>
-            </div>
-</div>
-                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
-    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
-    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
-        <div class="sl-flex sl-items-center sl-max-w-full">
-                                        <div class="sl-flex sl-items-baseline sl-text-base">
-                    <div class="sl-font-mono sl-font-semibold sl-mr-2">Accept</div>
-                                    </div>
-                                        </div>
-                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
-                <span>Example:</span> <!-- <span> important for spacing -->
-                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
-                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
-                        application/json
-                    </div>
-                </div>
-            </div>
-            </div>
-</div>
-                                                            </div>
-                        </div>
-                    
-                    
-
-                    
-                    
-                                    </div>
-            </div>
-        </div>
-
-        <div data-testid="two-column-right" class="sl-relative sl-w-2/5 sl-ml-16" style="max-width: 500px;">
-            <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-
-                                    <div class="sl-inverted">
-    <div class="sl-overflow-y-hidden sl-rounded-lg">
-        <form class="TryItPanel sl-bg-canvas-100 sl-rounded-lg"
-              data-method="GET"
-              data-path="api/v1/poco-simah/stations"
-              data-hasfiles="0"
-              data-hasjsonbody="0">
-                            <div class="sl-panel sl-outline-none sl-w-full expandable">
-                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                         role="button">
-                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
-                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                     data-icon="caret-down"
-                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                    <path fill="currentColor"
-                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                                </svg>
-                            </div>
-                            Auth
-                        </div>
-                    </div>
-                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
-                        <div class="ParameterGrid sl-p-4">
-                            <label aria-hidden="true"
-                                   for="auth-GETapi-v1-poco-simah-stations">X-Api-Key</label>
-                            <span class="sl-mx-3">:</span>
-                            <div class="sl-flex sl-flex-1">
-                                <div class="sl-input sl-flex-1 sl-relative">
-                                    <code></code>
-                                    <input aria-label="X-Api-Key"
-                                           id="auth-GETapi-v1-poco-simah-stations"
-                                           data-component="header"
-                                           data-prefix=""
-                                           name="X-Api-Key"
-                                           placeholder="{SUA_CHAVE_DE_API}"
-                                           class="auth-value sl-relative sl-w-full sl-pr-2.5 sl-pl-2.5 sl-h-md sl-text-base sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            
-                            <div class="sl-panel sl-outline-none sl-w-full expandable">
-                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                         role="button">
-                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
-                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                     data-icon="caret-down"
-                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                    <path fill="currentColor"
-                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                                </svg>
-                            </div>
-                            Headers
-                        </div>
-                    </div>
-                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
-                        <div class="ParameterGrid sl-p-4">
-                                                                                                                            <label aria-hidden="true"
-                                       for="header-GETapi-v1-poco-simah-stations-Content-Type">Content-Type</label>
-                                <span class="sl-mx-3">:</span>
-                                <div class="sl-flex sl-flex-1">
-                                    <div class="sl-input sl-flex-1 sl-relative">
-                                        <input aria-label="Content-Type" name="Content-Type"
-                                               id="header-GETapi-v1-poco-simah-stations-Content-Type"
-                                               value="application/json" data-component="header"
-                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
-                                    </div>
-                                </div>
-                                                                                            <label aria-hidden="true"
-                                       for="header-GETapi-v1-poco-simah-stations-Accept">Accept</label>
-                                <span class="sl-mx-3">:</span>
-                                <div class="sl-flex sl-flex-1">
-                                    <div class="sl-input sl-flex-1 sl-relative">
-                                        <input aria-label="Accept" name="Accept"
-                                               id="header-GETapi-v1-poco-simah-stations-Accept"
-                                               value="application/json" data-component="header"
-                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
-                                    </div>
-                                </div>
-                                                    </div>
-                    </div>
-                </div>
-            
-            
-            
-            
-            <div class="SendButtonHolder sl-mt-4 sl-p-4 sl-pt-0">
-                <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-center">
-                    <button type="button" data-endpoint="GETapi-v1-poco-simah-stations"
-                            class="tryItOut-btn sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-bg-primary hover:sl-bg-primary-dark active:sl-bg-primary-darker disabled:sl-bg-canvas-100 sl-text-on-primary disabled:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70"
-                    >
-                        Send Request 💥
-                    </button>
-                </div>
-            </div>
-
-            <div data-endpoint="GETapi-v1-poco-simah-stations"
-                 class="tryItOut-error expandable sl-panel sl-outline-none sl-w-full" hidden>
-                <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                     role="button">
-                    <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                        <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
-                            <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                 data-icon="caret-down"
-                                 class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                <path fill="currentColor"
-                                      d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                            </svg>
-                        </div>
-                        Request failed with error
-                    </div>
-                </div>
-                <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
-                    <div class="sl-panel__content sl-p-4">
-                        <p class="sl-pb-2"><strong class="error-message"></strong></p>
-                        <p class="sl-pb-2">Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</p>
-                    </div>
-                </div>
-            </div>
-
-                <div data-endpoint="GETapi-v1-poco-simah-stations"
-                     class="tryItOut-response expandable sl-panel sl-outline-none sl-w-full" hidden>
-                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                         role="button">
-                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
-                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                     data-icon="caret-down"
-                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                    <path fill="currentColor"
-                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                                </svg>
-                            </div>
-                            Received response
-                        </div>
-                    </div>
-                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
-                        <div class="sl-panel__content sl-p-4">
-                            <p class="sl-pb-2 response-status"></p>
-                            <pre><code class="sl-pb-2 response-content language-json"
-                                       data-empty-response-text="<Empty response>"
-                                       style="max-height: 300px;"></code></pre>
-                        </div>
-                    </div>
-                </div>
-        </form>
-    </div>
-</div>
-                
-                                            <div class="sl-panel sl-outline-none sl-w-full sl-rounded-lg">
-                            <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
-                                <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                                    <div class="sl--ml-2">
-                                        Example request:
-                                        <select class="example-request-lang-toggle sl-text-base"
-                                                aria-label="Request Sample Language"
-                                                onchange="switchExampleLanguage(event.target.value);">
-                                                                                            <option>bash</option>
-                                                                                            <option>javascript</option>
-                                                                                            <option>python</option>
-                                                                                    </select>
-                                    </div>
-                                </div>
-                            </div>
-                                                            <div class="sl-bg-canvas-100 example-request example-request-bash"
-                                     style="">
-                                    <div class="sl-px-0 sl-py-1">
-                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
-                                            <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/poco-simah/stations" \
-    --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre>                                        </div>
-                                    </div>
-                                </div>
-                                                            <div class="sl-bg-canvas-100 example-request example-request-javascript"
-                                     style="display: none;">
-                                    <div class="sl-px-0 sl-py-1">
-                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
-                                            <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/poco-simah/stations"
-);
-
-const headers = {
-    "X-Api-Key": "{SUA_CHAVE_DE_API}",
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre>                                        </div>
-                                    </div>
-                                </div>
-                                                            <div class="sl-bg-canvas-100 example-request example-request-python"
-                                     style="display: none;">
-                                    <div class="sl-px-0 sl-py-1">
-                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
-                                            <pre><code class="language-python">import requests
-import json
-
-url = 'http://localhost:8119/api/v1/poco-simah/stations'
-headers = {
-  'X-Api-Key': '{SUA_CHAVE_DE_API}',
-  'Content-Type': 'application/json',
-  'Accept': 'application/json'
-}
-
-response = requests.request('GET', url, headers=headers)
-response.json()</code></pre>                                        </div>
-                                    </div>
-                                </div>
-                                                    </div>
-                    
-                                            <div class="sl-panel sl-outline-none sl-w-full sl-rounded-lg">
-                            <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
-                                <div class="sl-flex sl-flex-1 sl-items-center sl-py-2">
-                                    <div class="sl--ml-2">
-                                        <div class="sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-text-muted sl-rounded sl-border-transparent sl-border">
-                                            <div class="sl-mb-2 sl-inline-block">Example response:</div>
-                                            <div class="sl-mb-2 sl-inline-block">
-                                                <select
-                                                        class="example-response-GETapi-v1-poco-simah-stations-toggle sl-text-base"
-                                                        aria-label="Response sample"
-                                                        onchange="switchExampleResponse('GETapi-v1-poco-simah-stations', event.target.value);">
-                                                                                                            <option value="0">200</option>
-                                                                                                    </select></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="button"
-                                        class="sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 hover:sl-bg-canvas-50 active:sl-bg-canvas-100 sl-text-muted hover:sl-text-body focus:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70">
-                                    <div class="sl-mx-0">
-                                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="copy"
-                                             class="svg-inline--fa fa-copy fa-fw fa-sm sl-icon" role="img"
-                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                            <path fill="currentColor"
-                                                  d="M384 96L384 0h-112c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48H464c26.51 0 48-21.49 48-48V128h-95.1C398.4 128 384 113.6 384 96zM416 0v96h96L416 0zM192 352V128h-144c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48h192c26.51 0 48-21.49 48-48L288 416h-32C220.7 416 192 387.3 192 352z"></path>
-                                        </svg>
-                                    </div>
-                                </button>
-                            </div>
-                                                            <div class="sl-panel__content-wrapper sl-bg-canvas-100 example-response-GETapi-v1-poco-simah-stations example-response-GETapi-v1-poco-simah-stations-0"
-                                     style=" "
-                                >
-                                    <div class="sl-panel__content sl-p-0">                                                                                                                                
-                                            <pre><code style="max-height: 300px;"
-                                                       class="language-json sl-overflow-x-auto sl-overflow-y-auto">{
-    &quot;data&quot;: [
-        {
-            &quot;station_code&quot;: &quot;1676349&quot;,
-            &quot;name&quot;: &quot;Po&ccedil;o SIMAH 01&quot;,
-            &quot;latitude&quot;: &quot;-12.9714&quot;,
-            &quot;longitude&quot;: &quot;-38.5014&quot;,
-            &quot;ativa&quot;: true
-        }
-    ],
-    &quot;meta&quot;: {
-        &quot;total&quot;: 1,
-        &quot;retrieved_at&quot;: &quot;2026-04-25T10:00:00-03:00&quot;
-    }
-}</code></pre>
-                                                                            </div>
-                                </div>
-                                                    </div>
-                            </div>
-    </div>
-</div>
-
-                    <div class="sl-stack sl-stack--vertical sl-stack--8 HttpOperation sl-flex sl-flex-col sl-items-stretch sl-w-full">
-    <div class="sl-stack sl-stack--vertical sl-stack--5 sl-flex sl-flex-col sl-items-stretch">
-        <div class="sl-relative">
-            <div class="sl-stack sl-stack--horizontal sl-stack--5 sl-flex sl-flex-row sl-items-center">
-                <h2 class="sl-text-3xl sl-leading-tight sl-font-prose sl-text-heading sl-mt-5 sl-mb-1"
-                    id="pocos-simah-GETapi-v1-poco-simah--station_code--readings">
-                    Leituras da estação Poço SIMAH
-                </h2>
-            </div>
-        </div>
-
-        <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/poco-simah/{station_code}/readings"
-                     class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
-                >
-                                            <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
-                             style="background-color: green;"
-                        >
-                            GET
-                        </div>
-                                        <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
-                        <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
-                        <div class="sl-flex-1 sl-font-semibold">/api/v1/poco-simah/{station_code}/readings</div>
-                    </div>
-
-                                                    <div class="sl-font-prose sl-font-semibold sl-px-1.5 sl-py-0.5 sl-text-on-primary sl-rounded-lg"
-                                 style="background-color: darkred"
-                            >requires authentication
-                            </div>
-                                                                                    </div>
-        </div>
-
-        <p>Retorna as leituras de uma estação pelo código, filtradas por período.
-Os parâmetros date_from e date_to são obrigatórios.</p>
-    </div>
-    <div class="sl-flex">
-        <div data-testid="two-column-left" class="sl-flex-1 sl-w-0">
-            <div class="sl-stack sl-stack--vertical sl-stack--10 sl-flex sl-flex-col sl-items-stretch">
-                <div class="sl-stack sl-stack--vertical sl-stack--8 sl-flex sl-flex-col sl-items-stretch">
-                                            <div class="sl-stack sl-stack--vertical sl-stack--5 sl-flex sl-flex-col sl-items-stretch">
-                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">
-                                Headers
-                            </h3>
-                            <div class="sl-text-sm">
-                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
-    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
-    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
-        <div class="sl-flex sl-items-center sl-max-w-full">
-                                        <div class="sl-flex sl-items-baseline sl-text-base">
-                    <div class="sl-font-mono sl-font-semibold sl-mr-2">X-Api-Key</div>
-                                    </div>
-                                        </div>
-                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
-                <span>Example:</span> <!-- <span> important for spacing -->
-                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
-                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
-                        {SUA_CHAVE_DE_API}
-                    </div>
-                </div>
-            </div>
-            </div>
-</div>
-                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
-    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
-    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
-        <div class="sl-flex sl-items-center sl-max-w-full">
-                                        <div class="sl-flex sl-items-baseline sl-text-base">
-                    <div class="sl-font-mono sl-font-semibold sl-mr-2">Content-Type</div>
-                                    </div>
-                                        </div>
-                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
-                <span>Example:</span> <!-- <span> important for spacing -->
-                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
-                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
-                        application/json
-                    </div>
-                </div>
-            </div>
-            </div>
-</div>
-                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
-    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
-    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
-        <div class="sl-flex sl-items-center sl-max-w-full">
-                                        <div class="sl-flex sl-items-baseline sl-text-base">
-                    <div class="sl-font-mono sl-font-semibold sl-mr-2">Accept</div>
-                                    </div>
-                                        </div>
-                                            <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
-                <span>Example:</span> <!-- <span> important for spacing -->
-                <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
-                    <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
-                        application/json
-                    </div>
-                </div>
-            </div>
-            </div>
-</div>
-                                                            </div>
-                        </div>
-                    
-                                            <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">URL Parameters</h3>
-
-                            <div class="sl-text-sm">
-                                                                    <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
-    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
-    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
-        <div class="sl-flex sl-items-center sl-max-w-full">
-                                        <div class="sl-flex sl-items-baseline sl-text-base">
-                    <div class="sl-font-mono sl-font-semibold sl-mr-2">station_code</div>
-                                            <span class="sl-truncate sl-text-muted">string</span>
-                                    </div>
-                                            <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
-                        <div class="sl-flex sl-items-center">
-                                                            <span class="sl-ml-2 sl-text-warning">required</span>
-                                                                                </div>
-                                        </div>
-                <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
-            <p>Código da estação.</p>
-        </div>
-                                    </div>
-</div>
-                                                            </div>
-                        </div>
-                    
-
-                                                <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                                <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Query Parameters</h3>
-
-                                <div class="sl-text-sm">
-                                                                            <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
-    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
-    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
-        <div class="sl-flex sl-items-center sl-max-w-full">
-                                        <div class="sl-flex sl-items-baseline sl-text-base">
-                    <div class="sl-font-mono sl-font-semibold sl-mr-2">date_from</div>
-                                            <span class="sl-truncate sl-text-muted">string</span>
-                                    </div>
-                                            <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
-                        <div class="sl-flex sl-items-center">
-                                                            <span class="sl-ml-2 sl-text-warning">required</span>
-                                                                                </div>
-                                        </div>
-                <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
-            <p>Data inicial (formato: Y-m-d).</p>
-        </div>
-                                    </div>
-</div>
-                                                                            <div class="sl-flex sl-relative sl-max-w-full sl-py-2 sl-pl-3">
-    <div class="sl-w-1 sl-mt-2 sl-mr-3 sl--ml-3 sl-border-t"></div>
-    <div class="sl-stack sl-stack--vertical sl-stack--1 sl-flex sl-flex-1 sl-flex-col sl-items-stretch sl-max-w-full sl-ml-2 ">
-        <div class="sl-flex sl-items-center sl-max-w-full">
-                                        <div class="sl-flex sl-items-baseline sl-text-base">
-                    <div class="sl-font-mono sl-font-semibold sl-mr-2">date_to</div>
-                                            <span class="sl-truncate sl-text-muted">string</span>
-                                    </div>
-                                            <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
-                        <div class="sl-flex sl-items-center">
-                                                            <span class="sl-ml-2 sl-text-warning">required</span>
-                                                                                </div>
-                                        </div>
-                <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
-            <p>Data final (formato: Y-m-d).</p>
-        </div>
-                                    </div>
-</div>
-                                                                </div>
-                        </div>
-                    
-                    
-                                    </div>
-            </div>
-        </div>
-
-        <div data-testid="two-column-right" class="sl-relative sl-w-2/5 sl-ml-16" style="max-width: 500px;">
-            <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-
-                                    <div class="sl-inverted">
-    <div class="sl-overflow-y-hidden sl-rounded-lg">
-        <form class="TryItPanel sl-bg-canvas-100 sl-rounded-lg"
-              data-method="GET"
-              data-path="api/v1/poco-simah/{station_code}/readings"
-              data-hasfiles="0"
-              data-hasjsonbody="0">
-                            <div class="sl-panel sl-outline-none sl-w-full expandable">
-                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                         role="button">
-                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
-                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                     data-icon="caret-down"
-                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                    <path fill="currentColor"
-                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                                </svg>
-                            </div>
-                            Auth
-                        </div>
-                    </div>
-                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
-                        <div class="ParameterGrid sl-p-4">
-                            <label aria-hidden="true"
-                                   for="auth-GETapi-v1-poco-simah--station_code--readings">X-Api-Key</label>
-                            <span class="sl-mx-3">:</span>
-                            <div class="sl-flex sl-flex-1">
-                                <div class="sl-input sl-flex-1 sl-relative">
-                                    <code></code>
-                                    <input aria-label="X-Api-Key"
-                                           id="auth-GETapi-v1-poco-simah--station_code--readings"
-                                           data-component="header"
-                                           data-prefix=""
-                                           name="X-Api-Key"
-                                           placeholder="{SUA_CHAVE_DE_API}"
-                                           class="auth-value sl-relative sl-w-full sl-pr-2.5 sl-pl-2.5 sl-h-md sl-text-base sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            
-                            <div class="sl-panel sl-outline-none sl-w-full expandable">
-                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                         role="button">
-                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
-                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                     data-icon="caret-down"
-                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                    <path fill="currentColor"
-                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                                </svg>
-                            </div>
-                            Headers
-                        </div>
-                    </div>
-                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
-                        <div class="ParameterGrid sl-p-4">
-                                                                                                                            <label aria-hidden="true"
-                                       for="header-GETapi-v1-poco-simah--station_code--readings-Content-Type">Content-Type</label>
-                                <span class="sl-mx-3">:</span>
-                                <div class="sl-flex sl-flex-1">
-                                    <div class="sl-input sl-flex-1 sl-relative">
-                                        <input aria-label="Content-Type" name="Content-Type"
-                                               id="header-GETapi-v1-poco-simah--station_code--readings-Content-Type"
-                                               value="application/json" data-component="header"
-                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
-                                    </div>
-                                </div>
-                                                                                            <label aria-hidden="true"
-                                       for="header-GETapi-v1-poco-simah--station_code--readings-Accept">Accept</label>
-                                <span class="sl-mx-3">:</span>
-                                <div class="sl-flex sl-flex-1">
-                                    <div class="sl-input sl-flex-1 sl-relative">
-                                        <input aria-label="Accept" name="Accept"
-                                               id="header-GETapi-v1-poco-simah--station_code--readings-Accept"
-                                               value="application/json" data-component="header"
-                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
-                                    </div>
-                                </div>
-                                                    </div>
-                    </div>
-                </div>
-            
-                            <div class="sl-panel sl-outline-none sl-w-full expandable">
-                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                         role="button">
-                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
-                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                     data-icon="caret-down"
-                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                    <path fill="currentColor"
-                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                                </svg>
-                            </div>
-                            URL Parameters
-                        </div>
-                    </div>
-                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
-                        <div class="ParameterGrid sl-p-4">
-                                                            <label aria-hidden="true"
-                                       for="urlparam-GETapi-v1-poco-simah--station_code--readings-station_code">station_code</label>
-                                <span class="sl-mx-3">:</span>
-                                <div class="sl-flex sl-flex-1">
-                                    <div class="sl-input sl-flex-1 sl-relative">
-                                        <input aria-label="station_code" name="station_code"
-                                               id="urlparam-GETapi-v1-poco-simah--station_code--readings-station_code"
-                                               placeholder="Código da estação."
-                                               value="" data-component="url"
-                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
-                                    </div>
-                                </div>
-                                                    </div>
-                    </div>
-                </div>
-            
-                            <div class="sl-panel sl-outline-none sl-w-full expandable">
-                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                         role="button">
-                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
-                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                     data-icon="caret-down"
-                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                    <path fill="currentColor"
-                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                                </svg>
-                            </div>
-                            Query Parameters
-                        </div>
-                    </div>
-                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
-                        <div class="ParameterGrid sl-p-4">
-                                                                                            <label aria-hidden="true"
-                                       for="queryparam-GETapi-v1-poco-simah--station_code--readings-date_from">date_from</label>
-                                <span class="sl-mx-3">:</span>
-                                <div class="sl-flex sl-flex-1">
-                                    <div class="sl-input sl-flex-1 sl-relative">
-                                                                                    <input aria-label="date_from" name="date_from"
-                                                   id="queryparam-GETapi-v1-poco-simah--station_code--readings-date_from"
-                                                   placeholder="Data inicial (formato: Y-m-d)."
-                                                   value="" data-component="query"
-                                                   class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
-                                            >
-                                                                            </div>
-                                </div>
-                                                                                            <label aria-hidden="true"
-                                       for="queryparam-GETapi-v1-poco-simah--station_code--readings-date_to">date_to</label>
-                                <span class="sl-mx-3">:</span>
-                                <div class="sl-flex sl-flex-1">
-                                    <div class="sl-input sl-flex-1 sl-relative">
-                                                                                    <input aria-label="date_to" name="date_to"
-                                                   id="queryparam-GETapi-v1-poco-simah--station_code--readings-date_to"
-                                                   placeholder="Data final (formato: Y-m-d)."
-                                                   value="" data-component="query"
-                                                   class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
-                                            >
-                                                                            </div>
-                                </div>
-                                                    </div>
-                    </div>
-                </div>
-            
-            
-            <div class="SendButtonHolder sl-mt-4 sl-p-4 sl-pt-0">
-                <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-center">
-                    <button type="button" data-endpoint="GETapi-v1-poco-simah--station_code--readings"
-                            class="tryItOut-btn sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-bg-primary hover:sl-bg-primary-dark active:sl-bg-primary-darker disabled:sl-bg-canvas-100 sl-text-on-primary disabled:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70"
-                    >
-                        Send Request 💥
-                    </button>
-                </div>
-            </div>
-
-            <div data-endpoint="GETapi-v1-poco-simah--station_code--readings"
-                 class="tryItOut-error expandable sl-panel sl-outline-none sl-w-full" hidden>
-                <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                     role="button">
-                    <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                        <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
-                            <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                 data-icon="caret-down"
-                                 class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                <path fill="currentColor"
-                                      d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                            </svg>
-                        </div>
-                        Request failed with error
-                    </div>
-                </div>
-                <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
-                    <div class="sl-panel__content sl-p-4">
-                        <p class="sl-pb-2"><strong class="error-message"></strong></p>
-                        <p class="sl-pb-2">Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</p>
-                    </div>
-                </div>
-            </div>
-
-                <div data-endpoint="GETapi-v1-poco-simah--station_code--readings"
-                     class="tryItOut-response expandable sl-panel sl-outline-none sl-w-full" hidden>
-                    <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                         role="button">
-                        <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                            <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
-                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                     data-icon="caret-down"
-                                     class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                    <path fill="currentColor"
-                                          d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                                </svg>
-                            </div>
-                            Received response
-                        </div>
-                    </div>
-                    <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
-                        <div class="sl-panel__content sl-p-4">
-                            <p class="sl-pb-2 response-status"></p>
-                            <pre><code class="sl-pb-2 response-content language-json"
-                                       data-empty-response-text="<Empty response>"
-                                       style="max-height: 300px;"></code></pre>
-                        </div>
-                    </div>
-                </div>
-        </form>
-    </div>
-</div>
-                
-                                            <div class="sl-panel sl-outline-none sl-w-full sl-rounded-lg">
-                            <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
-                                <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                                    <div class="sl--ml-2">
-                                        Example request:
-                                        <select class="example-request-lang-toggle sl-text-base"
-                                                aria-label="Request Sample Language"
-                                                onchange="switchExampleLanguage(event.target.value);">
-                                                                                            <option>bash</option>
-                                                                                            <option>javascript</option>
-                                                                                            <option>python</option>
-                                                                                    </select>
-                                    </div>
-                                </div>
-                            </div>
-                                                            <div class="sl-bg-canvas-100 example-request example-request-bash"
-                                     style="">
-                                    <div class="sl-px-0 sl-py-1">
-                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
-                                            <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/poco-simah//readings?date_from=&amp;date_to=" \
-    --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre>                                        </div>
-                                    </div>
-                                </div>
-                                                            <div class="sl-bg-canvas-100 example-request example-request-javascript"
-                                     style="display: none;">
-                                    <div class="sl-px-0 sl-py-1">
-                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
-                                            <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/poco-simah//readings"
-);
-
-const params = {
-    "date_from": "",
-    "date_to": "",
-};
-Object.keys(params)
-    .forEach(key =&gt; url.searchParams.append(key, params[key]));
-
-const headers = {
-    "X-Api-Key": "{SUA_CHAVE_DE_API}",
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre>                                        </div>
-                                    </div>
-                                </div>
-                                                            <div class="sl-bg-canvas-100 example-request example-request-python"
-                                     style="display: none;">
-                                    <div class="sl-px-0 sl-py-1">
-                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
-                                            <pre><code class="language-python">import requests
-import json
-
-url = 'http://localhost:8119/api/v1/poco-simah//readings'
-params = {
-  'date_from': '',
-  'date_to': '',
-}
-headers = {
-  'X-Api-Key': '{SUA_CHAVE_DE_API}',
-  'Content-Type': 'application/json',
-  'Accept': 'application/json'
-}
-
-response = requests.request('GET', url, headers=headers, params=params)
-response.json()</code></pre>                                        </div>
-                                    </div>
-                                </div>
-                                                    </div>
-                    
-                                            <div class="sl-panel sl-outline-none sl-w-full sl-rounded-lg">
-                            <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
-                                <div class="sl-flex sl-flex-1 sl-items-center sl-py-2">
-                                    <div class="sl--ml-2">
-                                        <div class="sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-text-muted sl-rounded sl-border-transparent sl-border">
-                                            <div class="sl-mb-2 sl-inline-block">Example response:</div>
-                                            <div class="sl-mb-2 sl-inline-block">
-                                                <select
-                                                        class="example-response-GETapi-v1-poco-simah--station_code--readings-toggle sl-text-base"
-                                                        aria-label="Response sample"
-                                                        onchange="switchExampleResponse('GETapi-v1-poco-simah--station_code--readings', event.target.value);">
-                                                                                                            <option value="0">200</option>
-                                                                                                    </select></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="button"
-                                        class="sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 hover:sl-bg-canvas-50 active:sl-bg-canvas-100 sl-text-muted hover:sl-text-body focus:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70">
-                                    <div class="sl-mx-0">
-                                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="copy"
-                                             class="svg-inline--fa fa-copy fa-fw fa-sm sl-icon" role="img"
-                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                            <path fill="currentColor"
-                                                  d="M384 96L384 0h-112c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48H464c26.51 0 48-21.49 48-48V128h-95.1C398.4 128 384 113.6 384 96zM416 0v96h96L416 0zM192 352V128h-144c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48h192c26.51 0 48-21.49 48-48L288 416h-32C220.7 416 192 387.3 192 352z"></path>
-                                        </svg>
-                                    </div>
-                                </button>
-                            </div>
-                                                            <div class="sl-panel__content-wrapper sl-bg-canvas-100 example-response-GETapi-v1-poco-simah--station_code--readings example-response-GETapi-v1-poco-simah--station_code--readings-0"
-                                     style=" "
-                                >
-                                    <div class="sl-panel__content sl-p-0">                                                                                                                                
-                                            <pre><code style="max-height: 300px;"
-                                                       class="language-json sl-overflow-x-auto sl-overflow-y-auto">{
-    &quot;data&quot;: [
-        {
-            &quot;number&quot;: 1,
-            &quot;datetime_local&quot;: &quot;2026-04-07T17:25:29.000000Z&quot;,
-            &quot;datetime_utc&quot;: &quot;2026-04-07T20:25:29.000000Z&quot;,
-            &quot;pd_bar&quot;: &quot;0.00075674057&quot;,
-            &quot;p1_bar&quot;: &quot;0.96156311035&quot;,
-            &quot;water_level_meters&quot;: &quot;9.807943725570000&quot;,
-            &quot;p2_bar&quot;: &quot;0.96080017090&quot;,
-            &quot;tob1_celsius&quot;: &quot;25.15673828125&quot;,
-            &quot;tob2_celsius&quot;: &quot;24.51025390625&quot;
-        }
-    ],
-    &quot;meta&quot;: {
-        &quot;station_code&quot;: &quot;1676349&quot;,
-        &quot;total&quot;: 1,
-        &quot;period&quot;: {
-            &quot;from&quot;: &quot;2026-04-01&quot;,
-            &quot;to&quot;: &quot;2026-04-30&quot;
-        },
-        &quot;retrieved_at&quot;: &quot;2026-04-25T10:00:00-03:00&quot;
     }
 }</code></pre>
                                                                             </div>
