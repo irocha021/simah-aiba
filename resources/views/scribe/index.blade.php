@@ -22,7 +22,7 @@
     </script>
 
             <script>
-            var tryItOutBaseUrl = "http://localhost:8119";
+            var tryItOutBaseUrl = "https://simah.studio1.tech";
             var useCsrf = Boolean();
             var csrfUrl = "/sanctum/csrf-cookie";
         </script>
@@ -584,7 +584,7 @@
 
         </div>
         <div class="sl-flex sl-items-center sl-px-4 sl-py-3 sl-border-t">
-            Last updated: June 2, 2026
+            Last updated: June 3, 2026
         </div>
 
         <div class="sl-flex sl-items-center sl-px-4 sl-py-3 sl-border-t">
@@ -614,7 +614,7 @@
                 <h1 id="introduction">Introduction</h1>
 <p>API pública do SIMAH para acesso a dados hidrológicos e ambientais do estado da Bahia.</p>
 <aside>
-    <strong>Base URL</strong>: <code>http://localhost:8119</code>
+    <strong>Base URL</strong>: <code>https://simah.studio1.tech</code>
 </aside>
 
                 <h1 id="authenticating-requests">Authenticating requests</h1>
@@ -644,7 +644,7 @@
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/cnarh"
+            <div title="https://simah.studio1.tech/api/v1/cnarh"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -654,7 +654,7 @@
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/cnarh</div>
                     </div>
 
@@ -922,7 +922,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/cnarh" \
+    --get "https://simah.studio1.tech/api/v1/cnarh" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
@@ -933,7 +933,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/cnarh"
+    "https://simah.studio1.tech/api/v1/cnarh"
 );
 
 const headers = {
@@ -956,7 +956,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/cnarh'
+url = 'https://simah.studio1.tech/api/v1/cnarh'
 headers = {
   'X-Api-Key': '{SUA_CHAVE_DE_API}',
   'Content-Type': 'application/json',
@@ -1041,7 +1041,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/cnarh/{cd_cnarh40}"
+            <div title="https://simah.studio1.tech/api/v1/cnarh/{cd_cnarh40}"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -1051,7 +1051,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/cnarh/{cd_cnarh40}</div>
                     </div>
 
@@ -1376,7 +1376,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/cnarh/" \
+    --get "https://simah.studio1.tech/api/v1/cnarh/" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
@@ -1387,7 +1387,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/cnarh/"
+    "https://simah.studio1.tech/api/v1/cnarh/"
 );
 
 const headers = {
@@ -1410,7 +1410,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/cnarh/'
+url = 'https://simah.studio1.tech/api/v1/cnarh/'
 headers = {
   'X-Api-Key': '{SUA_CHAVE_DE_API}',
   'Content-Type': 'application/json',
@@ -1565,7 +1565,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/lrgs/stations"
+            <div title="https://simah.studio1.tech/api/v1/lrgs/stations"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -1575,7 +1575,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/lrgs/stations</div>
                     </div>
 
@@ -1843,7 +1843,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/lrgs/stations" \
+    --get "https://simah.studio1.tech/api/v1/lrgs/stations" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
@@ -1854,7 +1854,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/lrgs/stations"
+    "https://simah.studio1.tech/api/v1/lrgs/stations"
 );
 
 const headers = {
@@ -1877,7 +1877,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/lrgs/stations'
+url = 'https://simah.studio1.tech/api/v1/lrgs/stations'
 headers = {
   'X-Api-Key': '{SUA_CHAVE_DE_API}',
   'Content-Type': 'application/json',
@@ -1964,7 +1964,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/lrgs/{station_code}/readings"
+            <div title="https://simah.studio1.tech/api/v1/lrgs/{station_code}/readings"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -1974,7 +1974,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/lrgs/{station_code}/readings</div>
                     </div>
 
@@ -2473,7 +2473,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/lrgs/B04041E0/readings?date_from=&amp;date_to=" \
+    --get "https://simah.studio1.tech/api/v1/lrgs/B04041E0/readings?date_from=&amp;date_to=" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -2489,7 +2489,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/lrgs/B04041E0/readings"
+    "https://simah.studio1.tech/api/v1/lrgs/B04041E0/readings"
 );
 
 const params = {
@@ -2524,7 +2524,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/lrgs/B04041E0/readings'
+url = 'https://simah.studio1.tech/api/v1/lrgs/B04041E0/readings'
 payload = {
     "date_from": null,
     "date_to": null
@@ -2642,7 +2642,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/hidroweb/stations"
+            <div title="https://simah.studio1.tech/api/v1/hidroweb/stations"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -2652,7 +2652,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/hidroweb/stations</div>
                     </div>
 
@@ -2975,7 +2975,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/hidroweb/stations" \
+    --get "https://simah.studio1.tech/api/v1/hidroweb/stations" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
@@ -2986,7 +2986,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/hidroweb/stations"
+    "https://simah.studio1.tech/api/v1/hidroweb/stations"
 );
 
 const headers = {
@@ -3009,7 +3009,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/hidroweb/stations'
+url = 'https://simah.studio1.tech/api/v1/hidroweb/stations'
 headers = {
   'X-Api-Key': '{SUA_CHAVE_DE_API}',
   'Content-Type': 'application/json',
@@ -3099,7 +3099,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/hidroweb/{station_code}/telemetry"
+            <div title="https://simah.studio1.tech/api/v1/hidroweb/{station_code}/telemetry"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -3109,7 +3109,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/hidroweb/{station_code}/telemetry</div>
                     </div>
 
@@ -3599,7 +3599,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/hidroweb//telemetry?date_from=&amp;date_to=" \
+    --get "https://simah.studio1.tech/api/v1/hidroweb//telemetry?date_from=&amp;date_to=" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -3615,7 +3615,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/hidroweb//telemetry"
+    "https://simah.studio1.tech/api/v1/hidroweb//telemetry"
 );
 
 const params = {
@@ -3650,7 +3650,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/hidroweb//telemetry'
+url = 'https://simah.studio1.tech/api/v1/hidroweb//telemetry'
 payload = {
     "date_from": null,
     "date_to": null
@@ -3754,7 +3754,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/hidroweb/{station_code}/quality"
+            <div title="https://simah.studio1.tech/api/v1/hidroweb/{station_code}/quality"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -3764,7 +3764,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/hidroweb/{station_code}/quality</div>
                     </div>
 
@@ -4254,7 +4254,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/hidroweb//quality?date_from=&amp;date_to=" \
+    --get "https://simah.studio1.tech/api/v1/hidroweb//quality?date_from=&amp;date_to=" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -4270,7 +4270,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/hidroweb//quality"
+    "https://simah.studio1.tech/api/v1/hidroweb//quality"
 );
 
 const params = {
@@ -4305,7 +4305,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/hidroweb//quality'
+url = 'https://simah.studio1.tech/api/v1/hidroweb//quality'
 payload = {
     "date_from": null,
     "date_to": null
@@ -4700,7 +4700,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/hidroweb/{station_code}/forecast"
+            <div title="https://simah.studio1.tech/api/v1/hidroweb/{station_code}/forecast"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -4710,7 +4710,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/hidroweb/{station_code}/forecast</div>
                     </div>
 
@@ -5121,7 +5121,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/hidroweb//forecast?year=" \
+    --get "https://simah.studio1.tech/api/v1/hidroweb//forecast?year=" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
@@ -5132,7 +5132,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/hidroweb//forecast"
+    "https://simah.studio1.tech/api/v1/hidroweb//forecast"
 );
 
 const params = {
@@ -5161,7 +5161,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/hidroweb//forecast'
+url = 'https://simah.studio1.tech/api/v1/hidroweb//forecast'
 params = {
   'year': '',
 }
@@ -5278,7 +5278,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/poco-simah/stations"
+            <div title="https://simah.studio1.tech/api/v1/poco-simah/stations"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -5288,7 +5288,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/poco-simah/stations</div>
                     </div>
 
@@ -5556,7 +5556,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/poco-simah/stations" \
+    --get "https://simah.studio1.tech/api/v1/poco-simah/stations" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
@@ -5567,7 +5567,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/poco-simah/stations"
+    "https://simah.studio1.tech/api/v1/poco-simah/stations"
 );
 
 const headers = {
@@ -5590,7 +5590,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/poco-simah/stations'
+url = 'https://simah.studio1.tech/api/v1/poco-simah/stations'
 headers = {
   'X-Api-Key': '{SUA_CHAVE_DE_API}',
   'Content-Type': 'application/json',
@@ -5670,7 +5670,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/poco-simah/{station_code}/readings"
+            <div title="https://simah.studio1.tech/api/v1/poco-simah/{station_code}/readings"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -5680,7 +5680,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/poco-simah/{station_code}/readings</div>
                     </div>
 
@@ -6095,7 +6095,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/poco-simah//readings?date_from=&amp;date_to=" \
+    --get "https://simah.studio1.tech/api/v1/poco-simah//readings?date_from=&amp;date_to=" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
@@ -6106,7 +6106,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/poco-simah//readings"
+    "https://simah.studio1.tech/api/v1/poco-simah//readings"
 );
 
 const params = {
@@ -6136,7 +6136,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/poco-simah//readings'
+url = 'https://simah.studio1.tech/api/v1/poco-simah//readings'
 params = {
   'date_from': '',
   'date_to': '',
@@ -6237,7 +6237,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/rimas/points"
+            <div title="https://simah.studio1.tech/api/v1/rimas/points"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -6247,7 +6247,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/rimas/points</div>
                     </div>
 
@@ -6515,7 +6515,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/rimas/points" \
+    --get "https://simah.studio1.tech/api/v1/rimas/points" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
@@ -6526,7 +6526,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/rimas/points"
+    "https://simah.studio1.tech/api/v1/rimas/points"
 );
 
 const headers = {
@@ -6549,7 +6549,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/rimas/points'
+url = 'https://simah.studio1.tech/api/v1/rimas/points'
 headers = {
   'X-Api-Key': '{SUA_CHAVE_DE_API}',
   'Content-Type': 'application/json',
@@ -6637,7 +6637,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/rimas/{id_ponto}/readings"
+            <div title="https://simah.studio1.tech/api/v1/rimas/{id_ponto}/readings"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -6647,7 +6647,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/rimas/{id_ponto}/readings</div>
                     </div>
 
@@ -7122,7 +7122,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/rimas//readings" \
+    --get "https://simah.studio1.tech/api/v1/rimas//readings" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -7134,7 +7134,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/rimas//readings"
+    "https://simah.studio1.tech/api/v1/rimas//readings"
 );
 
 const headers = {
@@ -7157,7 +7157,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/rimas//readings'
+url = 'https://simah.studio1.tech/api/v1/rimas//readings'
 headers = {
   'X-Api-Key': '{SUA_CHAVE_DE_API}',
   'Content-Type': 'application/json',
@@ -7264,7 +7264,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/siagas/wells"
+            <div title="https://simah.studio1.tech/api/v1/siagas/wells"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -7274,7 +7274,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/siagas/wells</div>
                     </div>
 
@@ -7542,7 +7542,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/siagas/wells" \
+    --get "https://simah.studio1.tech/api/v1/siagas/wells" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
@@ -7553,7 +7553,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/siagas/wells"
+    "https://simah.studio1.tech/api/v1/siagas/wells"
 );
 
 const headers = {
@@ -7576,7 +7576,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/siagas/wells'
+url = 'https://simah.studio1.tech/api/v1/siagas/wells'
 headers = {
   'X-Api-Key': '{SUA_CHAVE_DE_API}',
   'Content-Type': 'application/json',
@@ -7667,7 +7667,7 @@ response.json()</code></pre>                                        </div>
         </div>
 
         <div class="sl-relative">
-            <div title="http://localhost:8119/api/v1/siagas/{ponto}"
+            <div title="https://simah.studio1.tech/api/v1/siagas/{ponto}"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                                             <div class="sl-text-lg sl-font-semibold sl-px-2.5 sl-py-1 sl-text-on-primary sl-rounded-lg"
@@ -7677,7 +7677,7 @@ response.json()</code></pre>                                        </div>
                         </div>
                                         <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">http://localhost:8119</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">https://simah.studio1.tech</div>
                         <div class="sl-flex-1 sl-font-semibold">/api/v1/siagas/{ponto}</div>
                     </div>
 
@@ -8002,7 +8002,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8119/api/v1/siagas/" \
+    --get "https://simah.studio1.tech/api/v1/siagas/" \
     --header "X-Api-Key: {SUA_CHAVE_DE_API}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
@@ -8013,7 +8013,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8119/api/v1/siagas/"
+    "https://simah.studio1.tech/api/v1/siagas/"
 );
 
 const headers = {
@@ -8036,7 +8036,7 @@ fetch(url, {
                                             <pre><code class="language-python">import requests
 import json
 
-url = 'http://localhost:8119/api/v1/siagas/'
+url = 'https://simah.studio1.tech/api/v1/siagas/'
 headers = {
   'X-Api-Key': '{SUA_CHAVE_DE_API}',
   'Content-Type': 'application/json',
