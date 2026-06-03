@@ -40,4 +40,4 @@ RUN chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/storage/logs \
     && chown -R www-data:www-data /var/www/html/storage/logs
 
-CMD chown -R www-data:www-data /var/www/html/storage /var/www/html/lrgs /var/www/html/public/tiles && chmod -R 775 /var/www/html/storage /var/www/html/lrgs /var/www/html/public/tiles && apache2-foreground
+CMD chown -R www-data:www-data /var/www/html/storage /var/www/html/lrgs /var/www/html/public/tiles /var/www/html/public/geojson && chmod -R 775 /var/www/html/storage /var/www/html/lrgs /var/www/html/public/tiles /var/www/html/public/geojson && apache2-foreground
