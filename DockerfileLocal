@@ -21,6 +21,13 @@ RUN apt-get update \
     && apt-get install -y nodejs npm \
     && apt-get install -y default-jre
 
+# Instalar dependências Python para previsão de vazão
+RUN apt-get update && apt-get install -y \
+    python3-pip \
+    python3-pandas \
+    python3-numpy \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN docker-php-ext-install pdo_mysql zip \
     && a2enmod rewrite \
     && a2enmod headers \
