@@ -26,13 +26,36 @@
 
         /* ===== ESTILOS PARA POPUPS DO MAPA ===== */
 
-        /* Estilização básica dos popups do Leaflet */
+        /* Estilização básica dos popups do Leaflet - COM OPACIDADE INICIAL */
         .leaflet-popup-content-wrapper {
             border-radius: 12px !important;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
             border: 1px solid #ddd !important;
             padding: 0 !important;
             overflow: hidden !important;
+            opacity: 0.5 !important;
+            transition: opacity 0.3s ease-in-out !important;
+        }
+
+        /* Quando o mouse passar por cima do popup, opacidade normal */
+        .leaflet-popup-content-wrapper:hover {
+            opacity: 1 !important;
+        }
+
+        /* Para garantir que o hover também funcione na seta do popup */
+        .leaflet-popup:hover .leaflet-popup-content-wrapper {
+            opacity: 1 !important;
+        }
+
+        /* A seta do popup também segue a opacidade */
+        .leaflet-popup-tip {
+            box-shadow: 0 3px 14px rgba(0, 0, 0, 0.1) !important;
+            opacity: 0.5 !important;
+            transition: opacity 0.3s ease-in-out !important;
+        }
+
+        .leaflet-popup:hover .leaflet-popup-tip {
+            opacity: 1 !important;
         }
 
         .leaflet-popup-content {
@@ -40,10 +63,6 @@
             line-height: 1.5 !important;
             font-size: 14px !important;
             width: 300px !important;
-        }
-
-        .leaflet-popup-tip {
-            box-shadow: 0 3px 14px rgba(0, 0, 0, 0.1) !important;
         }
 
         /* Container principal do popup */
@@ -152,11 +171,19 @@
             top: 15px !important;
             right: 15px !important;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3) !important;
+            opacity: 0.5 !important;
+            transition: opacity 0.3s ease-in-out !important;
         }
 
         .leaflet-container a.leaflet-popup-close-button:hover {
             background: #165b9c !important;
             transform: scale(1.1) !important;
+            opacity: 1 !important;
+        }
+
+        /* Efeito hover também no botão de fechar quando o popup inteiro estiver com hover */
+        .leaflet-popup:hover .leaflet-popup-close-button {
+            opacity: 1 !important;
         }
 
         .map-label {
@@ -183,75 +210,12 @@
         }
 
         /* ===== LABEL DO NOME DA ESTAÇÃO (junto ao ponto) ===== */
-        /* .map-point-label {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0 !important;
-            font-size: 10px;
-            font-weight: 500;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-
-       
-        .map-point-label::before {
-            display: none !important;
-        }
-
-        body.mode-satellite .map-point-label {
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-        }
-
-        body.mode-street .map-point-label {
-            color: rgba(40, 40, 40, 0.9);
-            text-shadow: 0 0 3px rgba(255, 255, 255, 0.9), 0 0 2px rgba(255, 255, 255, 0.9);
-        }
-
-       
-        body.hide-point-labels .map-point-label {
-            display: none !important;
-        } */
-
-        /* ===== LABEL DO NOME DA ESTAÇÃO (junto ao ponto) =====
-           3 estilos pra testar. Deixe APENAS UM bloco "ESTILO X" sem comentário
-           por vez. As 2 regras finais (hide-point-labels e ::before) valem
-           para todos e devem ficar sempre ativas. */
-
-        /* Base comum a todos os estilos */
         .map-point-label {
             white-space: nowrap;
             pointer-events: none;
         }
 
-        /* ---------- ESTILO 1: PÍLULA ESCURA (ATIVO) ---------- */
-        /* .map-point-label {
-            background: rgba(26, 26, 26, 0.75) !important;
-            border: none !important;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
-            padding: 3px 8px !important;
-            border-radius: 10px !important;
-            color: #fff;
-            font-size: 10px;
-            font-weight: 600;
-        } */
-        /* ---------- FIM ESTILO 1 ---------- */
-
-        /* ---------- ESTILO 2: PÍLULA NA COR DA CAMADA ---------- */
-        /* .map-point-label {
-            background: rgba(26, 26, 26, 0.78) !important;
-            border: 1.5px solid #ff7800 !important;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
-            padding: 3px 8px !important;
-            border-radius: 10px !important;
-            color: #fff;
-            font-size: 10px;
-            font-weight: 600;
-        } */
-        /* ---------- FIM ESTILO 2 ---------- */
-
-        /* ---------- ESTILO 3: TEXTO COM MAIS PESO (sem caixa) ---------- */
+        /* ESTILO 3: TEXTO COM MAIS PESO (sem caixa) */
         .map-point-label {
             background: transparent !important;
             border: none !important;
@@ -268,7 +232,6 @@
             color: #1a1a1a;
             text-shadow: 0 0 4px rgba(255,255,255,1), 0 0 3px rgba(255,255,255,1);
         }
-        /* ---------- FIM ESTILO 3 ---------- */
 
         /* Remove a setinha padrão do tooltip do Leaflet (vale p/ todos) */
         .map-point-label::before {
