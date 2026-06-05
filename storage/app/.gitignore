@@ -6,3 +6,6 @@
 shapefiles/*
 !shapefiles/.gitkeep
 !shapefiles/*.zip
+!scripts/
+scripts/*
+!scripts/*.py
