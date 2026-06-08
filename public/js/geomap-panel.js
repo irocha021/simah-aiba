@@ -191,6 +191,41 @@ function setAllLayersOpacity(opacity) {
             });
         }
     });
+    
+    // ===== Aplica também nas camadas de drenagem =====
+    if (window.drainageByCode) {
+        Object.keys(window.drainageByCode).forEach(function (code) {
+            var drainageLayer = window.drainageByCode[code];
+            if (drainageLayer) {
+                // Se for um LayerGroup ou FeatureGroup
+                if (drainageLayer.eachLayer) {
+                    drainageLayer.eachLayer(function (subLayer) {
+                        if (subLayer.setStyle) {
+                            // Para polígonos/linhas (GeoJSON)
+                            subLayer.setStyle({ 
+                                opacity: opacity, 
+                                fillOpacity: opacity
+                            });
+                        }
+                        if (subLayer.setOpacity) {
+                            // Para tile layers
+                            subLayer.setOpacity(opacity);
+                        }
+                    });
+                }
+                // Se for uma layer direta (não um grupo)
+                else if (drainageLayer.setStyle) {
+                    drainageLayer.setStyle({ 
+                        opacity: opacity, 
+                        fillOpacity: opacity 
+                    });
+                }
+                else if (drainageLayer.setOpacity) {
+                    drainageLayer.setOpacity(opacity);
+                }
+            }
+        });
+    }
 }
 
 
