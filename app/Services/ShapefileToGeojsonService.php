@@ -29,8 +29,10 @@ class ShapefileToGeojsonService
      */
     public function convertToGeojson(string $zipPath, string $layerName): array
     {
+        $extractDir = null;
+
         try {
-            
+
             // 1. Extrair ZIP
             Log::info("Extraindo shapefile ZIP: {$zipPath}");
             $extractDir = $this->extractZip($zipPath);
@@ -49,9 +51,6 @@ class ShapefileToGeojsonService
             // 4. Contar features
             $featureCount = $this->countFeatures($geojsonFile);
 
-            // 5. Limpar arquivos temporários
-            $this->cleanupTemp($extractDir);
-
             return [
                 'success' => true,
                 'layer' => $layerName,
@@ -65,6 +64,12 @@ class ShapefileToGeojsonService
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
+        } finally {
+            // A limpeza precisa rodar também quando a conversão falha; caso
+            // contrário o diretório extraído fica órfão em storage/app/temp.
+            if ($extractDir !== null) {
+                $this->cleanupTemp($extractDir);
+            }
         }
     }
 
@@ -73,14 +78,24 @@ class ShapefileToGeojsonService
         $zip = new ZipArchive();
         $extractDir = $this->tempDir . '/' . uniqid('shp_');
 
-        if ($zip->open($zipPath) === true) {
-            mkdir($extractDir, 0755, true);
-            $zip->extractTo($extractDir);
-            $zip->close();
-            return $extractDir;
+        if ($zip->open($zipPath) !== true) {
+            throw new \Exception("Não foi possível abrir o arquivo ZIP");
         }
 
-        throw new \Exception("Não foi possível abrir o arquivo ZIP");
+        mkdir($extractDir, 0755, true);
+
+        // Daqui em diante o diretório já existe no disco. Se a extração
+        // falhar, ele precisa ser removido aqui: o finally do chamador só
+        // recebe o caminho quando este método retorna.
+        if (!$zip->extractTo($extractDir)) {
+            $zip->close();
+            $this->cleanupTemp($extractDir);
+            throw new \Exception("Falha ao extrair o ZIP: {$zipPath}");
+        }
+
+        $zip->close();
+
+        return $extractDir;
     }
 
     private function findShapeFile(string $dir): ?string

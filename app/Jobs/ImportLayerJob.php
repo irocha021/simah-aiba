@@ -21,6 +21,13 @@ class ImportLayerJob implements ShouldQueue
 
     public function handle(): void
     {
+        // Remove restos de imports que morreram sem chance de limpar (timeout
+        // do worker, OOM). O container de cron não tem o código do projeto
+        // montado, então não há schedule:run para pendurar isso; o ponto de
+        // entrada dos imports é o lugar natural, já que é ele quem gera esse
+        // lixo. Só apaga diretório com mais de 24h — nunca o do import atual.
+        Artisan::call('temp:prune');
+
         if ($this->layerData['type'] === 'tile') {
             $pathZip = base_path($this->layerData['path_zip']);
             $exitCode = Artisan::call('tiles:generate', [

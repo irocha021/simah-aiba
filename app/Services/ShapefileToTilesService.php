@@ -47,7 +47,9 @@ class ShapefileToTilesService
      * @return array Resultado da conversão
      */
     public function convertToTilesWithConfig(string $zipPath, string $layerName, array $config, int $zoomMin = 5, int $zoomMax = 10): array
-    {   
+    {
+    $extractDir = null;
+
     try {
 
         // Configuração injetada (banco ou caller direto)
@@ -205,9 +207,6 @@ class ShapefileToTilesService
                 Log::info("[labels] ===== FINALIZADO labels.geojson: {$count} labels gerados =====");
             }
 
-            // 7. Limpar arquivos temporários
-            $this->cleanupTemp($extractDir);
-            
             return [
                 'success' => true,
                 'layer' => $layerName,
@@ -215,13 +214,21 @@ class ShapefileToTilesService
                 'zoom_range' => "{$zoomMin}-{$zoomMax}",
                 'bounds' => $bounds,
             ];
-            
+
         } catch (\Exception $e) {
             Log::error("Erro ao converter shapefile: " . $e->getMessage());
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
+        } finally {
+            // A limpeza precisa rodar também quando o import falha. Enquanto
+            // ela ficou só no caminho de sucesso, cada falha deixou seu
+            // diretório para trás (o maior tinha 2,9 GB) e o acúmulo passou
+            // de 7,9 GB em storage/app/temp.
+            if ($extractDir !== null) {
+                $this->cleanupTemp($extractDir);
+            }
         }
     }
 
@@ -229,15 +236,25 @@ class ShapefileToTilesService
     {
         $zip = new ZipArchive();
         $extractDir = $this->tempDir . '/' . uniqid('shp_');
-        
-        if ($zip->open($zipPath) === true) {
-            mkdir($extractDir, 0755, true);
-            $zip->extractTo($extractDir);
-            $zip->close();
-            return $extractDir;
+
+        if ($zip->open($zipPath) !== true) {
+            throw new \Exception("Não foi possível abrir o arquivo ZIP");
         }
-        
-        throw new \Exception("Não foi possível abrir o arquivo ZIP");
+
+        mkdir($extractDir, 0755, true);
+
+        // Daqui em diante o diretório já existe no disco. Se a extração
+        // falhar, ele precisa ser removido aqui: o finally do chamador só
+        // recebe o caminho quando este método retorna.
+        if (!$zip->extractTo($extractDir)) {
+            $zip->close();
+            $this->cleanupTemp($extractDir);
+            throw new \Exception("Falha ao extrair o ZIP: {$zipPath}");
+        }
+
+        $zip->close();
+
+        return $extractDir;
     }
 
     private function findShapeFile(string $dir): ?string
