@@ -1,0 +1,88 @@
+# Publica a imagem do SIMAH no GHCR.
+#
+# Este workflow NÃO conecta na VM da AIBA. O modelo antigo (deploy_production)
+# usa scp + ssh, ou seja, o runner da GitHub conecta de fora para dentro — o
+# que exige SSH exposto à internet, coisa que datacenter corporativo não
+# permite. Aqui o fluxo inverte: publicamos a imagem e a VM a busca, iniciando
+# a conexão de dentro para fora (ver item 6 do DRT-SIMAH-001).
+#
+# Na VM: ./deploy.sh sha-<commit>   (ou ./deploy.sh para a tag latest)
+
+name: Build and Publish Image (AIBA)
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag adicional para a imagem (opcional)'
+        required: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=sha-,format=short
+            type=raw,value=${{ inputs.tag }},enable=${{ inputs.tag != '' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # O cache do GitHub Actions evita reinstalar GDAL, JRE e Python a
+          # cada build — sem ele o build leva vários minutos.
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Summary
+        run: |
+          {
+            echo "### Imagem publicada"
+            echo ""
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+            echo ""
+            echo "Para implantar na VM da AIBA:"
+            echo ""
+            echo '```bash'
+            echo "./deploy.sh sha-$(git rev-parse --short HEAD)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

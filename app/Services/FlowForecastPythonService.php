@@ -14,7 +14,10 @@ class FlowForecastPythonService
     public function __construct()
     {
         $this->pythonPath = env('PYTHON_PATH', '/usr/bin/python3');
-        $this->scriptPath = storage_path('app/scripts/previsao_otimizada.py');
+        // Os scripts são código versionado, não dado de aplicação: ficam fora
+        // de storage/ para que storage/app inteiro possa ser um volume sem
+        // sobrescrevê-los.
+        $this->scriptPath = base_path('resources/scripts/previsao_otimizada.py');
         $this->tempDir = storage_path('app/temp');
 
         // Criar diretório temp se não existir
