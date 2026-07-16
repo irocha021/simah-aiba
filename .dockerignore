@@ -1,0 +1,57 @@
+# Mantém o build context enxuto. Sem isto, o .git (46 MB) e os dados de
+# storage/ (centenas de MB em produção) viajam para o daemon a cada build.
+
+.git
+.gitattributes
+.github
+.idea
+.vscode
+.fleet
+.nova
+.zed
+
+# Reinstalados no stage de build — nunca copiar do host
+vendor
+node_modules
+
+# Cache de package discovery gerado na máquina do dev, COM dev dependencies.
+# Se copiado, a imagem tenta carregar providers que não existem no runtime
+# (--no-dev) e todo o artisan quebra. É regerado no build.
+bootstrap/cache/*.php
+
+# Segredos: as variáveis chegam pelo compose, nunca pela imagem
+.env
+.env.*
+!.env.example
+auth.json
+
+# Dados de aplicação: são volumes, não conteúdo de imagem
+storage/app/temp
+storage/app/uploads
+storage/app/lrgs
+storage/app/shapefiles
+storage/app/hw_station_drainages
+storage/app/dbf_temp
+storage/app/private
+storage/app/public
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+public/tiles
+public/geojson
+public/storage
+public/build
+public/hot
+
+# Documentação e artefatos locais
+docs
+diagrams
+.scribe
+tests
+phpunit.xml
+.phpunit.result.cache
+.phpunit.cache
+README.md
+docker-compose.local.yml
+DockerfileLocal

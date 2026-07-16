@@ -1,0 +1,164 @@
+# Ambiente de produção do SIMAH na AIBA.
+#
+# Diferenças em relação ao docker-compose.production.yml (studio1):
+#   - o código vem DA IMAGEM, não de bind mount: nada de `.:/var/www/html`;
+#   - banco dedicado no próprio compose, em vez de um MariaDB compartilhado do
+#     host acessado via host.docker.internal;
+#   - volumes nomeados para tudo que é escrito, já que a imagem é imutável;
+#   - healthchecks e limites de recursos em todos os serviços.
+#
+# A imagem vem do registro (GHCR), publicada pelo workflow deploy_aiba.yml.
+# Defina IMAGE_TAG no .env para fixar uma versão; o padrão é latest.
+
+services:
+    app:
+        image: ${IMAGE_REGISTRY:-ghcr.io/studio1-tech/mhb-web}:${IMAGE_TAG:-latest}
+        container_name: mhb
+        restart: unless-stopped
+        ports:
+            - '${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-8119}:80'
+        env_file: .env
+        volumes:
+            - storage_app:/var/www/html/storage/app
+            - storage_logs:/var/www/html/storage/logs
+            - tiles:/var/www/html/public/tiles
+            - geojson:/var/www/html/public/geojson
+        depends_on:
+            db:
+                condition: service_healthy
+        networks:
+            - simah
+        # 4 vCPU / 8 GB é a VM inteira (ver DRT-SIMAH-001). O teto do app deixa
+        # margem para o banco e para os processos de importação, que rodam sob
+        # o worker e são os que realmente consomem.
+        deploy:
+            resources:
+                limits:
+                    cpus: '2.0'
+                    memory: 2G
+        logging: &logging
+            driver: json-file
+            options:
+                max-size: '10m'
+                max-file: '3'
+
+    queue:
+        image: ${IMAGE_REGISTRY:-ghcr.io/studio1-tech/mhb-web}:${IMAGE_TAG:-latest}
+        container_name: mhb_queue
+        restart: unless-stopped
+        # Roda como www-data para que os arquivos criados pelos jobs (tiles,
+        # geojson, laravel.log) fiquem legíveis para o Apache, que roda com o
+        # mesmo usuário.
+        user: www-data
+        # Espera as migrações antes de iniciar. `depends_on: app healthy` não
+        # basta: o app responde /up sem que o banco esteja migrado, e como fila
+        # e cache são tabelas (QUEUE_CONNECTION/CACHE_STORE=database), o worker
+        # morria em loop até o deploy.sh migrar. O restart automático acabava
+        # convergindo, mas às custas de crash loop a cada primeiro deploy — e
+        # de um loop infinito silencioso caso a migração falhasse.
+        command: >
+            bash -c "
+            until php artisan migrate:status > /dev/null 2>&1; do
+                echo '[queue] aguardando as migrações...' ;
+                sleep 3 ;
+            done ;
+            echo '[queue] banco pronto, iniciando worker' ;
+            exec php artisan queue:work --timeout=3600 --tries=3 --max-time=3600
+            "
+        env_file: .env
+        volumes:
+            - storage_app:/var/www/html/storage/app
+            - storage_logs:/var/www/html/storage/logs
+            - tiles:/var/www/html/public/tiles
+            - geojson:/var/www/html/public/geojson
+        depends_on:
+            db:
+                condition: service_healthy
+            app:
+                condition: service_healthy
+        networks:
+            - simah
+        # É aqui que a importação de camadas roda: gdal2tiles usa 4 processos e
+        # a maior camada do acervo gera 2,9 GB de intermediários.
+        deploy:
+            resources:
+                limits:
+                    cpus: '4.0'
+                    memory: 4G
+        healthcheck:
+            test: ["CMD-SHELL", "pgrep -f 'queue:work' > /dev/null || exit 1"]
+            interval: 60s
+            timeout: 5s
+            retries: 3
+            start_period: 30s
+        logging: *logging
+
+    cron:
+        image: ${IMAGE_REGISTRY:-ghcr.io/studio1-tech/mhb-web}:${IMAGE_TAG:-latest}
+        container_name: mhb_cron
+        restart: unless-stopped
+        command: bash -c "crontab /etc/cron.d/crontab && cron -f"
+        volumes:
+            - ./docker/aiba/crontab:/etc/cron.d/crontab:ro
+        depends_on:
+            app:
+                condition: service_healthy
+        networks:
+            - simah
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 256M
+        logging: *logging
+
+    db:
+        image: mariadb:10.11
+        container_name: mhb_db
+        restart: unless-stopped
+        environment:
+            MARIADB_DATABASE: ${DB_DATABASE:-mhb}
+            MARIADB_USER: ${DB_USERNAME:-mhb}
+            MARIADB_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD no .env}
+            MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?defina DB_ROOT_PASSWORD no .env}
+        # buffer pool de 256M para uma base de ~127 MB: cabe inteira em memória,
+        # com folga para anos de crescimento (~20 MB/mês). O ambiente atual roda
+        # 5 bases com 128M no total.
+        command: >
+            --innodb-buffer-pool-size=256M
+            --character-set-server=utf8mb4
+            --collation-server=utf8mb4_unicode_ci
+            --max-connections=100
+        volumes:
+            - db_data:/var/lib/mysql
+        # Sem `ports`: o banco só é alcançável pela rede interna do compose.
+        networks:
+            - simah
+        healthcheck:
+            test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+        deploy:
+            resources:
+                limits:
+                    cpus: '2.0'
+                    memory: 1G
+        logging: *logging
+
+networks:
+    simah:
+        driver: bridge
+
+volumes:
+    # storage/app: uploads, shapefiles, dados do LRGS e drenagens. Os scripts
+    # Python NÃO estão mais aqui (foram para resources/scripts), justamente
+    # para que este volume não sobrescreva código versionado.
+    storage_app:
+    storage_logs:
+    # 465.747 arquivos pequenos. Ver a nota de backup no DRT-SIMAH-001: tratar
+    # como snapshot de volume ou tar único, nunca varredura arquivo a arquivo.
+    tiles:
+    geojson:
+    db_data:

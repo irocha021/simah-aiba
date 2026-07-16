@@ -1,0 +1,24 @@
+# Agendamento do SIMAH.
+#
+# Os endpoints são chamados pelo nome do serviço na rede interna do compose
+# (http://app), não pelo domínio público. Motivos:
+#   - o domínio deixa de ser hardcoded (antes: simah.std1.net, que não existe
+#     fora do ambiente do studio1);
+#   - o agendamento passa a não depender de DNS, TLS nem do proxy reverso —
+#     se o certificado vencer ou o proxy cair, os jobs continuam rodando;
+#   - o tráfego não sai da máquina.
+#
+# curl: --max-time 3600 acompanha o timeout do Apache; -sS silencia o progresso
+# mas mantém erros; -o /dev/null descarta o corpo da resposta.
+# A saída vai para o log do contêiner (docker logs mhb_cron).
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+30 1 * * * root curl -sS --max-time 3600 -o /dev/null http://app/jobs/hidroweb/inventory-station || echo "[cron] falha em inventory-station"
+00 2 * * * root curl -sS --max-time 3600 -o /dev/null http://app/jobs/hidroweb/readings/hidro-serie-qa || echo "[cron] falha em hidro-serie-qa"
+30 2 * * * root curl -sS --max-time 3600 -o /dev/null http://app/jobs/hidroweb/info-ana-adopted-telemetric-series-reading || echo "[cron] falha em info-ana-adopted-telemetric-series-reading"
+10 * * * * root curl -sS --max-time 3600 -o /dev/null http://app/jobs/lrgs/readings/dcp-messages || echo "[cron] falha em dcp-messages"
+
+# Previsão de vazão — 1x por mês, dia 1 às 02:00
+0 2 1 * * root curl -sS --max-time 3600 -o /dev/null http://app/jobs/hidroweb/flow-forecast || echo "[cron] falha em flow-forecast"
