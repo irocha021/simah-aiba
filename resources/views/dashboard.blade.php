@@ -12,6 +12,7 @@
     <!-- MarkerCluster CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="{{ asset('css/fire-monitoring.css') }}">
 
     <style>
         body {
@@ -255,6 +256,9 @@
     <!-- Painel GEOMAP -->
     @include('partials.geomap-panel')
 
+    <!-- Painel Fogo -->
+    @include('partials.fire-monitoring-panel')
+
     <!-- Painel de Legenda -->
     @include('partials.legend-panel')
 
@@ -271,6 +275,7 @@
 
         // Criar o mapa
         var map = L.map('map').setView([-13.0, -41.5], 6);
+        window.map = map;
         map.zoomControl.setPosition('bottomright');
 
         // Setar referência do mapa para o GEOMAP panel
@@ -617,6 +622,7 @@
 
     <!-- Modal JS -->
     <script src="{{ asset('js/station-modal.js') }}"></script>
+    <script src="{{ asset('js/fire-monitoring.js') }}"></script>
 
     <!-- Modals HTML -->
     @include('partials.rimas-readings-modal')

@@ -1,0 +1,380 @@
+body.fire-mode-active #geomapPanel {
+    display: none !important;
+}
+
+.fire-menu-icon {
+    color: #0b7f55;
+}
+
+.fire-option-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #e9f5ef;
+    color: #0b7f55;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.select-option.active .fire-option-status {
+    background: #2f80d0;
+    color: #fff;
+}
+
+.fire-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 995;
+    display: none;
+    flex-direction: column;
+    width: min(390px, calc(100vw - 120px));
+    height: 100vh;
+    background: #fff;
+    border-left: 1px solid rgba(20, 45, 80, 0.15);
+    box-shadow: -8px 0 24px rgba(15, 35, 60, 0.18);
+    color: #0f2544;
+    font-family: "Inter", Arial, sans-serif;
+    overflow-y: auto;
+}
+
+.fire-panel.active {
+    display: flex;
+}
+
+.fire-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid #d9e2ea;
+}
+
+.fire-panel-kicker {
+    display: block;
+    margin-bottom: 4px;
+    color: #0b7f55;
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.fire-panel-header h2 {
+    margin: 0;
+    font-size: 1.18rem;
+    line-height: 1.25;
+    color: #08396b;
+}
+
+.fire-panel-close {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 8px;
+    background: #eef5fb;
+    color: #185ea0;
+    cursor: pointer;
+}
+
+.fire-status,
+.fire-clock {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 18px 0;
+}
+
+.fire-status {
+    color: #0f2544;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.fire-status-dot {
+    width: 13px;
+    height: 13px;
+    border-radius: 999px;
+    background: #f3423f;
+    box-shadow: 0 0 0 4px rgba(243, 66, 63, 0.15);
+}
+
+.fire-clock {
+    width: fit-content;
+    padding: 8px 12px;
+    border: 1px solid #b9d5ed;
+    border-radius: 6px;
+    background: #eff7ff;
+    color: #164c83;
+    font-size: 0.84rem;
+}
+
+.fire-tool-section,
+.fire-summary,
+.fire-wind-card,
+.fire-list-section,
+.fire-sos {
+    margin: 18px;
+}
+
+.fire-tool-section,
+.fire-wind-card {
+    padding: 16px;
+    border: 1px solid #cde4d9;
+    border-radius: 8px;
+    background: #fbfefc;
+}
+
+.fire-tool-section h3,
+.fire-wind-card h3,
+.fire-list-heading h3,
+.fire-sos h3 {
+    margin: 0 0 14px;
+    color: #66819e;
+    font-size: 0.82rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.fire-segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 6px;
+    border-radius: 8px;
+    background: #eef4f1;
+}
+
+.fire-segmented button {
+    min-height: 42px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: #4f5e71;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.fire-segmented button.active {
+    border-color: #b9dcca;
+    background: #fff;
+    color: #0b7f55;
+    box-shadow: 0 2px 8px rgba(15, 70, 45, 0.08);
+}
+
+.fire-tool-section label {
+    display: block;
+    margin: 14px 0 6px;
+    color: #66819e;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.fire-tool-section select {
+    width: 100%;
+    height: 46px;
+    padding: 0 12px;
+    border: 1px solid #c9d7e6;
+    border-radius: 6px;
+    background: #fff;
+    color: #08396b;
+    font-weight: 800;
+}
+
+.fire-tool-section p {
+    margin: 8px 0 0;
+    color: #60728a;
+    font-size: 0.76rem;
+}
+
+.fire-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.fire-summary > div,
+.fire-sos > div,
+.fire-wind-card > div {
+    min-height: 68px;
+    padding: 12px;
+    border: 1px solid #d5e6dd;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.fire-summary-main {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f0faf6 !important;
+}
+
+.fire-summary strong,
+.fire-sos strong,
+.fire-wind-card strong {
+    display: block;
+    color: #f3423f;
+    font-size: 1.4rem;
+    line-height: 1.1;
+}
+
+.fire-summary span,
+.fire-sos span,
+.fire-wind-card span {
+    color: #43546a;
+    font-size: 0.76rem;
+}
+
+.fire-wind-card {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.fire-wind-card.active {
+    display: grid;
+}
+
+.fire-wind-card h3,
+.fire-wind-card p {
+    grid-column: 1 / -1;
+}
+
+.fire-wind-card p {
+    margin: 0;
+    color: #43546a;
+    font-size: 0.8rem;
+}
+
+.fire-list-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.fire-list-heading span {
+    padding: 5px 8px;
+    border-radius: 5px;
+    background: #eaf4ff;
+    color: #0f5c9f;
+    font-size: 0.75rem;
+    font-weight: 900;
+}
+
+.fire-list {
+    display: grid;
+    gap: 8px;
+}
+
+.fire-list-item {
+    padding: 12px;
+    border: 1px solid #e0e7ef;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.fire-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #08396b;
+}
+
+.fire-list-item span {
+    display: block;
+    color: #52657c;
+    font-size: 0.78rem;
+}
+
+.fire-empty {
+    padding: 18px;
+    border: 1px dashed #cbd7e4;
+    border-radius: 8px;
+    color: #60728a;
+    text-align: center;
+}
+
+.fire-sos {
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff4f4;
+    border: 1px solid #ffd2d2;
+}
+
+.fire-sos h3 {
+    color: #c62828;
+}
+
+.fire-focus-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fire-focus-marker span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    background: #ff4545;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 0 0 3px rgba(255, 69, 69, 0.35), 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+.fire-focus-marker.fire-focus-high span {
+    width: 30px;
+    height: 30px;
+    background: #d91515;
+}
+
+.fire-wind-particle {
+    stroke-dasharray: 5 8;
+    animation: fireWindDash 1.5s linear infinite;
+}
+
+@keyframes fireWindDash {
+    to {
+        stroke-dashoffset: -26;
+    }
+}
+
+.fire-popup {
+    min-width: 220px;
+    color: #0f2544;
+}
+
+.fire-popup h3 {
+    margin: 0 0 8px;
+    color: #08396b;
+    font-size: 1rem;
+}
+
+.fire-popup p {
+    margin: 4px 0;
+}
+
+@media (max-width: 760px) {
+    .fire-panel {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 58vh;
+        border-left: 0;
+        border-top: 1px solid rgba(20, 45, 80, 0.15);
+    }
+}

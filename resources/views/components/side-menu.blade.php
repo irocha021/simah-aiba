@@ -42,6 +42,49 @@
                     </div>
                 </li>
                 <!-- ===== FIM CONTROLE DE CAMADAS ===== -->
+
+                <!-- ===== CONTROLE DE FOGO ===== -->
+                <li class="menu-item select-control" id="fire-control">
+                    <div class="select-header">
+                        <i class="fas fa-fire select-icon-open fire-menu-icon"></i>
+                        <i class="far fa-circle select-icon-closed fire-menu-icon"></i>
+                        <span class="select-text">Fogo</span>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </div>
+
+                    <div class="select-dropdown">
+                        <div class="select-content">
+                            <div class="select-box">
+                                <div class="select-options" id="fire-control-buttons">
+                                    <button class="select-option fire-nav-option active" type="button"
+                                        data-fire-view="realtime">
+                                        <span class="option-name">Tempo Real</span>
+                                        <span class="fire-option-status" data-fire-count="realtime">0</span>
+                                    </button>
+                                    <button class="select-option fire-nav-option" type="button"
+                                        data-fire-view="panorama">
+                                        <span class="option-name">Panorama do Fogo</span>
+                                        <span class="fire-option-status" data-fire-count="panorama">0</span>
+                                    </button>
+                                    <button class="select-option fire-nav-option" type="button" data-fire-view="wind">
+                                        <span class="option-name">Ventos e Fogo</span>
+                                        <span class="fire-option-status" data-fire-count="wind">0</span>
+                                    </button>
+                                    <button class="select-option fire-nav-option" type="button" data-fire-view="risk">
+                                        <span class="option-name">Areas de Risco</span>
+                                        <span class="fire-option-status" data-fire-count="risk">0</span>
+                                    </button>
+                                    <button class="select-option fire-nav-option" type="button" data-fire-view="map">
+                                        <span class="option-name">Mapa</span>
+                                        <i class="fas fa-map option-status"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <!-- ===== FIM CONTROLE DE FOGO ===== -->
+
                 @auth
                     <!-- ===== TEXTO DE CONFIGURAÇÃO ===== -->
                     <li class="config-text-item">
